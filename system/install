@@ -1,0 +1,171 @@
+<?php
+
+define('ENTRANSE', 'install');
+define('INDEX', true);
+define('ROOT', str_replace('\\', '/', dirname(__DIR__)));
+define('SYSTEM', ROOT . '/system');
+// require_once SYSTEM . '/function.php';
+require_once SYSTEM . '/autoloader.php';
+
+function bollRequest(string $request) : bool
+{
+    $ok = ['1', 'y', 'yes', 'да', 'д'];
+    return in_array(mb_strtolower($request), $ok) ? true : false;
+}
+
+function parametrs() : array
+{
+    global $argv;
+    $r = [];
+    if($argv){
+        foreach($argv as $a => $i){
+            if($a == 1){
+                $r['itemName'] = $i;
+            }elseif($a > 1){
+                $s = explode('=', $i);
+                $r[$s[0]] = (count($s) == 1) ? 1 : $s[1];                
+            }
+        }
+    }
+    return $r;
+}
+
+function listItems() : array
+{
+    $items = [];
+    $itemsDir = scandir(SYSTEM . '/inst/items/');
+    if($itemsDir){
+        foreach($itemsDir as $i){
+            if($i == '.' || $i == '..'){
+                continue;
+            }
+            $items[] = $i;
+        }
+    }
+    return $items;
+}
+
+function complectParams($item) : bool
+{
+    $a = SYSTEM . '/inst/items/' . $item . '/param.ini';
+    $b = parametrs();
+    $r = true;
+    if(file_exists($a)){
+        $c = parse_ini_file($a);
+        foreach($c as $j => $i){
+            $r = $r && isset($b[$j]) ? true : false;
+        }
+    }
+    return $r;
+}
+
+function infoListItem() : void
+{
+    foreach(listItems() as $i){
+        $item = SYSTEM . '/inst/items/' . $i;
+        if(file_exists($item . '/info.txt')){
+            echo '    ' . $i . ': ' . file_get_contents($item . '/info.txt') . PHP_EOL;
+        }else{
+            echo $i . PHP_EOL;
+        }
+    }
+}
+
+function createDir($path)
+{
+    if (!file_exists($path)) {
+        mkdir($path, 0755, true);
+    }
+}
+
+function copyFile($p)
+{
+    //Читаем параметры по умолчанию
+    $paramsPath = __DIR__ . '/inst/items/' . $p['itemName'] . '/param.ini';
+    if(file_exists($paramsPath)){
+        $param = parse_ini_file($paramsPath);
+    }else{
+        $param = []; 
+    }
+
+    $param = array_merge($param, $p);
+
+    //Читаем список файлов
+    $filesPath = __DIR__ . '/inst/items/' . $p['itemName'] . '/files.ini';
+    if(file_exists($paramsPath)){
+        $ftext = file_get_contents($filesPath);
+        preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);
+        $t = [];
+        foreach($matches[1] as $a => $i){
+            if(!isset($param[$i])){
+                $t []= $i;
+            }
+            // $ftext = str_replace($matches[0][$a], $param[$i], $ftext);
+        }
+        if(!empty($t)){
+            $t = array_unique($t);
+            echo 'Отсутствует параметр(ы): ' . implode(', ', $t) . PHP_EOL;
+            echo 'Установка прервана' . PHP_EOL;
+        }
+        
+        $fArray = explode(PHP_EOL, $ftext);
+        foreach($fArray as &$i){
+            $ia = explode('=', $i);
+            if(count($ia) < 2){
+                $i = preg_replace('/\s\s+/', ' ', $i);
+                $ib = explode(' ', $i);
+                if(!isset($ib[1])){
+                    continue;
+                }
+
+                if($ib[1] == '>'){
+                    preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+                    if(!empty($m)){
+                        $ri = str_replace($m[0], $m[1], $ib[0]);
+                        $l = str_replace($m[0], $param[$m[1]], $ib[0]);                        
+                        $i = $l. ' = ' . $ri;
+                    }else{
+                        $i = $ib[0] . ' = ' . $ib[0];
+                    }
+                }
+
+                if($ib[1] == 'd'){
+                    preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+                    if(!empty($m)){
+                        $l = str_replace($m[0], $param[$m[1]], $ib[0]);
+                        $i = $l . ' = null';
+                    }else{
+                        $i = $ib[0] . ' = null';
+                    }
+                }
+            }
+        }
+        $ftext = implode(PHP_EOL, $fArray);
+
+        $files = parse_ini_string($ftext, false, INI_SCANNER_TYPED);
+        
+        foreach($files as $a => $i){
+            //Кого
+            $f1 = __DIR__ . '/inst/items/' . $p['itemName'] . '/files/' . $i;
+            //Куда
+            $f2 = ROOT . '/' . $a;
+
+            if(!is_null($i)){
+                $ff = explode('/', $f2);
+                array_pop($ff);  
+                createDir(implode('/', $ff)); 
+                if(!file_exists($f1)){
+                    echo 'Файл: ' . $f1 . ' отсутствует' . PHP_EOL;
+                }else{
+                    copy($f1, $f2);
+                }                
+            }else{
+                createDir($f2); 
+            } 
+        }
+    }else{
+        $files = []; 
+    }
+}
+
+require __DIR__ . '/inst/index.php';
