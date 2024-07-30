@@ -1,8 +1,8 @@
 <?php
 
-namespace app\controllers\index;
+namespace {app}\controllers\index;
 
-use app\controllers\controller;
+use {app}\controllers\controller;
 use electronic\core\view\view;
 
 class indexController extends controller

@@ -1,5 +1,5 @@
 <?php 
-namespace app\configs;
+namespace {app}\configs;
 class sass
 {
     public function set() : array

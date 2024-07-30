@@ -1,8 +1,8 @@
 <?php 
 
-namespace app\controllers;
+namespace {app}\controllers;
 
-use app\models\users;
+use {app}\models\users;
 use electronic\core\config\config;
 use electronic\core\collection\collection;
 

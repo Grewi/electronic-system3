@@ -1,5 +1,5 @@
 <?php 
-namespace app\configs;
+namespace {app}\configs;
 class globals
 {
     public function set() : array
