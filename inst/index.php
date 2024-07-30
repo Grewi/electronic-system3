@@ -1,4 +1,5 @@
 <?php
+use system\inst\classes\files;
 $p = parametrs();
 
 if (isset($p['itemName'])) {
@@ -11,6 +12,7 @@ if (isset($p['itemName'])) {
             } else {
                 echo 'Справочная информация не обнаружена.' . PHP_EOL;
             }
+            exit();
         } else {
             if (!complectParams($p['itemName'])) {
                 echo 'Будут применены параметры по умолчанию' . PHP_EOL;
@@ -20,13 +22,15 @@ if (isset($p['itemName'])) {
         $adminPanel = null;
         while ($adminPanel === null) {
             echo "Продолжить установку? (yes/no): ";
-            $adminPanel = bollRequest(trim(fgets(STDIN)));
+            $adminPanel = yes(trim(fgets(STDIN)));
         }
         if (!$adminPanel) {
             echo 'Установка прервана' . PHP_EOL;
             exit();
         }else{
-            copyFile($p);
+            files::copy($p);
+            //install database
+            addNameRelation($p['itemName']);
         }
 
     } else {
