@@ -4,21 +4,12 @@ namespace system\inst\classes;
 
 class files
 {
-    public static function copy($p)
+    public static function copy($param)
     {
-        //Читаем параметры по умолчанию
-        $paramsPath = ROOT . '/system/inst/items/' . $p['itemName'] . '/param.ini';
-        if (file_exists($paramsPath)) {
-            $param = parse_ini_file($paramsPath);
-        } else {
-            $param = [];
-        }
-
-        $param = array_merge($param, $p);
 
         //Читаем список файлов
-        $filesPath = ROOT . '/system/inst/items/' . $p['itemName'] . '/files.ini';
-        if (file_exists($paramsPath)) {
+        $filesPath = ROOT . '/system/inst/items/' . $param['itemName'] . '/files.ini';
+        if (file_exists($filesPath)) {
             $ftext = file_get_contents($filesPath);
             preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);
             $t = [];
@@ -71,7 +62,7 @@ class files
 
             foreach ($files as $a => $i) {
                 //Кого
-                $f1 = ROOT . '/system/inst/items/' . $p['itemName'] . '/files/' . $i;
+                $f1 = ROOT . '/system/inst/items/' . $param['itemName'] . '/files/' . $i;
                 //Куда
                 $f2 = ROOT . '/' . $a;
 
