@@ -4,11 +4,12 @@ namespace system\inst\classes;
 
 class files
 {
+    static $permissions = 0755;
+
     public static function copy($param)
     {
-
         //Читаем список файлов
-        $filesPath = ROOT . '/system/inst/items/' . $param['itemName'] . '/files.ini';
+        $filesPath = ITEMS . '/' . $param['itemName'] . '/files.ini';
         if (file_exists($filesPath)) {
             $ftext = file_get_contents($filesPath);
             preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);
@@ -61,15 +62,13 @@ class files
             $files = parse_ini_string($ftext, false, INI_SCANNER_TYPED);
 
             foreach ($files as $a => $i) {
-                //Кого
-                $f1 = ROOT . '/system/inst/items/' . $param['itemName'] . '/files/' . $i;
-                //Куда
+                $f1 = ITEMS . '/' . $param['itemName'] . '/files/' . $i;
                 $f2 = ROOT . '/' . $a;
 
                 if (!is_null($i)) {
                     $ff = explode('/', $f2);
                     array_pop($ff);
-                    createDir(implode('/', $ff));
+                    self::createDir(implode('/', $ff));
                     if (!file_exists($f1)) {
                         echo 'Файл: ' . $f1 . ' отсутствует' . PHP_EOL;
                     } else {
@@ -95,12 +94,19 @@ class files
                         }
                     }
                 } else {
-                    createDir($f2);
+                    self::createDir($f2);
                 }
             }
             echo 'Файлы скопированны' . PHP_EOL;
         } else {
             echo 'Файлов для копирования нет' . PHP_EOL;
+        }
+    }
+
+    public static function createDir($path): void
+    {
+        if (!file_exists($path)) {
+            mkdir($path, self::$permissions, true);
         }
     }
 }
