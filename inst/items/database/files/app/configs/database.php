@@ -13,7 +13,7 @@ class database
             'user' => '{user}',
             'pass' => '{pass}',
             'host' => '{host}',
-            'file_name' => '{file}',
+            'file' => '{file}',
         ];
     }
 }

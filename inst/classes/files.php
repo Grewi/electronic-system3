@@ -10,6 +10,7 @@ class files
     {
         //Читаем список файлов
         $filesPath = ITEMS . '/' . $param['itemName'] . '/files.ini';
+        
         if (file_exists($filesPath)) {
             $ftext = file_get_contents($filesPath);
             preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);

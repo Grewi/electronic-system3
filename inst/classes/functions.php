@@ -72,21 +72,21 @@ class functions
     public static function addNameRelation($param) : void
     {
 
-        if (file_exists(ROOT . '/relation.json')) {
-            $data = json_decode(file_get_contents(ROOT . '/relation.json'), true);
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
         } else {
             $data = [];
         }
         $data[$param['app']]['relations'][] = $param['itemName'];
         $data[$param['app']]['relations'] = array_unique($data[$param['app']]['relations']);
-        file_put_contents(ROOT . '/relation.json', json_encode($data));
+        file_put_contents(INSTALL_JSON, json_encode($data));
     }
 
     public static function checkRelation($param) : bool
     {
         $data = [];
-        if (file_exists(ROOT . '/relation.json')) {
-            $data = json_decode(file_get_contents(ROOT . '/relation.json'), true);
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
         }
 
         $relPath = ITEMS . '/' . $param['itemName'] . '/relations.ini';
@@ -105,11 +105,10 @@ class functions
 
     public static function parseInstallIni(): array
     {
-        $iniPath = ROOT . '/install.ini';
-        if (!file_exists($iniPath)) {
+        if (!file_exists(INSTALL_INI)) {
             return [];
         }
-        $ini = parse_ini_file($iniPath, true, INI_SCANNER_TYPED);
+        $ini = parse_ini_file(INSTALL_INI, true, INI_SCANNER_TYPED);
         $r = [];
         foreach ($ini as $a => $i) {
             foreach ($i as $aa => $ii) {

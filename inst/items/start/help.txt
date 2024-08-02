@@ -6,4 +6,4 @@
     user = Пользователь базы данных. По умолчанию root
     pass = Пароль пользователя
     host = Хост. По умолчанию localhost
-    file_name = Имя файла для sqlite
+    file = Имя файла для sqlite

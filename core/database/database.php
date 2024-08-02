@@ -11,16 +11,16 @@ class database
 {
 
     /** @var \PDO */
-    private $pdo;
-    private static $db;
-    private static $connect = [];
+    protected $pdo;
+    protected static $db;
+    protected static $connect = [];
 
-    private $type = '';
-    private $file_name = '';
-    private $host = '';
-    private $name = '';
-    private $user = '';
-    private $pass = '';
+    protected $type = '';
+    protected $file = '';
+    protected $host = '';
+    protected $name = '';
+    protected $user = '';
+    protected $pass = '';
 
     static public function connect($configName = null)
     {
@@ -33,18 +33,23 @@ class database
         return self::$connect[$configName];
     }
 
-    /** @var Подключение к базе */
-    private function __construct($configName)
+    protected function __construct($configName)
     {
         $this->config($configName);
+        $this->dpo();
+    }
+
+    /** @var Подключение к базе */
+    protected function dpo()
+    {
         try {
             if ($this->type == 'sqlite') {
                 $options = [
                     \PDO::ATTR_EMULATE_PREPARES => false,
                     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
                 ];
-                if (file_exists(ROOT . '/sqlite/' . $this->file_name . '.db')) {
-                    $this->pdo = new \PDO('sqlite:' . ROOT . '/sqlite/' . $this->file_name . '.db', '', '', $options);
+                if (file_exists(ROOT . '/sqlite/' . $this->file . '.db')) {
+                    $this->pdo = new \PDO('sqlite:' . ROOT . '/sqlite/' . $this->file . '.db', '', '', $options);
                 } else {
                     throw new \PDOException('Ошибка подключения к БД');
                 }
@@ -64,16 +69,16 @@ class database
         } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage());
             // dd('Ошибка подключения к БД: ' . $e->getMessage());
-        }
+        }        
     }
 
-    private function config($name)
+    protected function config($name)
     {
         $config = config::$name();
         if (!$config) {
             exit('Не установленны настройки для подключения к базе данных');
         }
-        $this->file_name = $config->file_name;
+        $this->file = $config->file;
         $this->type = $config->type;
         $this->name = $config->name;
         $this->host = $config->host;
@@ -81,7 +86,7 @@ class database
         $this->pass = $config->pass;
     }
 
-    private function query(string $sql, array $params = [], string $className = 'stdClass')
+    protected function query(string $sql, array $params = [], string $className = 'stdClass')
     {
         $sth = $this->pdo->prepare($sql);
         foreach ($params as $param => &$value) {
@@ -92,7 +97,7 @@ class database
         return $sth;
     }
 
-    private function fetchAll(string $sql, array $params = [], string $className = 'stdClass')
+    protected function fetchAll(string $sql, array $params = [], string $className = 'stdClass')
     {
         cacheQuery::addKey($sql, $params);
         if (!cacheQuery::control()) {

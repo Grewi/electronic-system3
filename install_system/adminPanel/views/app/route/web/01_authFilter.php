@@ -1,2 +1,0 @@
-<?php
-$route->filter('auth');
