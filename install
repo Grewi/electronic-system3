@@ -53,6 +53,7 @@ if (isset($p['itemName'])) {
         //Читаем параметры из ini файла
         $installIni = functions::parseInstallIni();
         $app = isset($p['app']) ? $p['app'] : 'app';
+        $iniParam = [];
         if(isset($installIni[$app][$p['itemName']])){
             $iniParam = $installIni[$app][$p['itemName']];
         }
@@ -88,6 +89,7 @@ if (isset($p['itemName'])) {
             }
         }  
         $ItemIndexPath = ITEMS . '/' . $p['itemName'] . '/index.php';
+        $itemIndex = null;
         if(file_exists($ItemIndexPath)){
             $class = 'system\\inst\\items\\' . $p['itemName'] . '\\index';
             $itemIndex = new $class();
