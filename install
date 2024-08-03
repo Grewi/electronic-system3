@@ -87,7 +87,8 @@ if (isset($p['itemName'])) {
                 echo 'Установка прервана' . PHP_EOL;
                 exit();
             }
-        }  
+        } 
+         
         $ItemIndexPath = ITEMS . '/' . $p['itemName'] . '/index.php';
         $itemIndex = null;
         if(file_exists($ItemIndexPath)){

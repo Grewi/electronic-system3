@@ -1,5 +1,5 @@
 <?php 
-namespace system\inst\items\database;
+namespace system\inst\items\auth;
 
 class index
 {

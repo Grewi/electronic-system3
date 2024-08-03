@@ -101,6 +101,7 @@ class functions
             }
             return $res;
         }
+        return true;
     }
 
     public static function parseInstallIni(): array
