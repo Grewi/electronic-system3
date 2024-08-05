@@ -165,9 +165,10 @@ class route
     public function controller($class, $method): route
     {
         if ($this->get) {
+            $app = app::app();
             $controller = $this->namespace . $class;
             $_SERVER['routeController'] = $controller;
-            (new $controller)->$method();
+            (new $controller)->$method($app);
             if ($this->autoExitController) {
                 exit();
             }

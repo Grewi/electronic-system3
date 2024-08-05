@@ -36,6 +36,11 @@ CREATE TABLE `user_role` (
 INSERT INTO `users` (`id`, `email`, `email_code`, `email_status`, `password`, `name`, `login`, `active`, `user_role_id`, `date_create`) VALUES
 (1, '{admin_email}', 0000, 1, '{admin_pass}', '{admin_login}', '{admin_login}', 1, 1, '2022-10-21 05:54:22');
 
+INSERT INTO `user_role` (`id`, `name`, `slug`) VALUES
+(1, 'Администратор', 'admin'),
+(2, 'Пользователь', 'user'),
+(3, 'Гость', 'goust');
+
 ALTER TABLE `sessions` ADD PRIMARY KEY (`id`);
 ALTER TABLE `sessions` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
