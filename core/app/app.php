@@ -1,6 +1,5 @@
 <?php
 namespace system\core\app;
-use system\core\traits\singleton;
 use system\core\collection\collection;
 
 class app{
@@ -21,6 +20,11 @@ class app{
             $this->collections[$name] = new collection();
         }
         return $this->collections[$name];
+    }
+
+    public function toController()
+    {
+        return self::app();
     }
     
 }

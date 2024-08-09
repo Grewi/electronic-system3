@@ -23,15 +23,14 @@ class route
             $url = explode('/', $urls[0]);
             unset($url[0]);
             $this->url = $url;
-            $app->request->set(['type' => 'web']);
-            $app->request->set(['params' => $url]);
-            request('global')->set(['url' => implode('/', $url)]);
+            $app->request->type = 'web';
+            $app->request->params = $url;
         } elseif (ENTRANSE == 'console') {
             $argv = ARGV;
             unset($argv[0]);
             $this->url = $argv;
-            $app->request->set(['type' => 'console']);
-            $app->request->set(['params' => $argv]);
+            $app->request->type = 'console';
+            $app->request->params = $argv;
         }
     }
 
@@ -168,7 +167,22 @@ class route
             $app = app::app();
             $controller = $this->namespace . $class;
             $_SERVER['routeController'] = $controller;
-            (new $controller)->$method($app);
+
+            $reflection = new \ReflectionClass($controller);
+
+            $params = $reflection->getMethod($method)->getParameters();
+            $cla = [];
+            foreach ($params AS $param) {
+                $cl = $param->getType()->getName();
+                $nc = new $cl();
+                if(method_exists($nc, 'toController')){
+                    $cla[] = $nc->toController();
+                }else{
+                    $cla[] = $nc;
+                }
+            }
+
+            (new $controller)->$method(... $cla);
             if ($this->autoExitController) {
                 exit();
             }
@@ -229,8 +243,7 @@ class route
                 //Проверка не обязательного параметра
                 if (isset($freeParam[1])) {
                     $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
-                    $app->getparams->set([$freeParam[1] => $getReturn]);
-                    request('get')->set([$freeParam[1] => $getReturn]);
+                    $app->getparams->{$freeParam[1]} = $getReturn;
                     continue;
                 }
 
@@ -240,8 +253,7 @@ class route
                     break;
                 } elseif ((isset($param[1]) && !empty($url[$a])) && $check) {
                     $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
-                    $app->getparams->set([$param[1] => $getReturn]);
-                    request('get')->set([$param[1] => $getReturn]);
+                    $app->getparams->{$param[1]} = $getReturn;
                 }
 
                 //Проверка элемента url

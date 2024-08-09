@@ -6,15 +6,18 @@ namespace system\core\collection;
 class collection 
 {
 
-    public function set( array $param)
+    private $collections;
+
+    public function __get($name)
     {
-        foreach($param as $a => $i){
-            $this->$a = $i;
+        if(!isset($this->collections[$name])){
+            $this->collections[$name] = new collection();
         }
+        return $this->collections[$name];
     }
 
-    public function __get($name) : void
+    public function __toString()
     {
-
+        return '';
     }
 } 

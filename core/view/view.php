@@ -1,7 +1,10 @@
 <?php
 
 namespace system\core\view;
+use system\core\database\database;
 use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
 
 class view
 {
@@ -40,7 +43,10 @@ class view
     public function out(string $file, $data = null) : void
     {
         $this->render($file);
+        $db = database::connect();
         $app = app::app();
+        $lang = new lang();
+        $config = new config();
         extract($data);
         $file = $this->countInclude[0];
         if(file_exists($this->cacheDir . '/' . $file . '.php')){

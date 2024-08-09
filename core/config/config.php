@@ -7,7 +7,6 @@ class config
     private $path = APP . '/configs/';
     private $element = '';
     private $iniArr = [];
-    private $phpArr = [];
     private static $connect = null;
 
     static public function connect()
@@ -19,6 +18,14 @@ class config
 	}
 
     public static function __callStatic($element, $parameters)
+    {
+        if($element == 'createConfig'){
+            self::connect()->createConfig($parameters[0]);
+        }
+        return self::connect()->m($element, $parameters);
+    }
+
+    public function __call($element, $parameters)
     {
         if($element == 'createConfig'){
             self::connect()->createConfig($parameters[0]);

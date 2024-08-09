@@ -59,6 +59,7 @@ class auth
      */
     protected function login($function = null): void
     {
+        $app = app::app();
         $valid = new validate();
         $where = [];
         $bild = [];
@@ -84,7 +85,7 @@ class auth
         $bruteforce->addTry();
 
         $user = !empty($where) ? db()->fetch('SELECT * FROM `users` WHERE ' . implode(' AND ', $where), $bild) : null;
-
+        
         if ($valid->control() && $user && password_verify($valid->return('password'), is_null($user->password) ? '' : $user->password) && $bruteforce->status()) {
             $bruteforce->resetTry();
             $passForCook = bin2hex(random_bytes(15)); //временный хеш сессии
@@ -94,16 +95,16 @@ class auth
                 'user_id'     => $user->id,
                 'session_key' => $passForCook,
                 'active_time' => $date,
-                'user_agent' => request('global')->user_agent,
-                'ip' => request('global')->ip,
+                'user_agent' => $app->bootstrap->user_agent,
+                'ip' => $app->bootstrap->ip,
             ];
+
             db()->query('INSERT INTO `sessions` (`user_id`, `session_key`, `active_time`, `user_agent`, `ip`) VALUES (:user_id,  :session_key, :active_time, :user_agent, :ip)', $param);
 
             setcookie('us', $passForCook, date('U') + $this->session_time(), '/');
             $_SESSION['us'] = $passForCook;
             $this->status = $user->id;
-            // var_dump($this, $user, $valid);
-            // exit();
+
             if ($function) {
                 $function($this, $user, $valid);
             }
@@ -154,6 +155,7 @@ class auth
             //Проверяем актуальность кук и сессии
             $ses = db()->fetch('SELECT * FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $coockie]);
             if (isset($ses->user_id) && $this->sanitary($ses)) {
+                
                 //При активности пользователя, продлеваем сессию
                 db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
                 @setcookie('us', $ses->session_key, date('U') + $this->session_time(), '/');
@@ -189,10 +191,10 @@ class auth
         $user = db()->fetch('SELECT * FROM `users` WHERE id = ' . $result);
         if ($result > 0 && $user) {
             foreach ($user as $a => $i) {
-                $app->user->set([$a => $i]);
+                $app->user->{$a} = $i;
             }
         } else {
-            $app->user->set(['id' => 0]);
+            $app->user->id = 0;
         }
         return $result;
     }
@@ -214,9 +216,10 @@ class auth
 
     protected function sanitary($ses)
     {
-        if ($ses->user_agent && $ses->user_agent == request('global')->user_agent) {
+        $app = app::app();
+        if ($ses->user_agent && $ses->user_agent == $app->bootstrap->user_agent) {
             return true;
-        } elseif (is_null($ses->user_agent) && is_null(request('global')->user_agent)) {
+        } elseif (is_null($ses->user_agent) && is_null($app->bootstrap->user_agent)) {
             return true;
         } else {
             return false;

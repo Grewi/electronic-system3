@@ -16,20 +16,20 @@ if (!function_exists('db')) {
     }
 }
 
-if (!function_exists('lang')) {
-    function lang(string $fileName, string $lex, array $param = [])
-    {
-        $lang = lang::{$fileName}($lex);
-        return $lang;
-    }
-}
+// if (!function_exists('lang')) {
+//     function lang(string $fileName, ... $lex)
+//     {
+//         $lang = lang::{$fileName}(... $lex);
+//         return $lang;
+//     }
+// }
 
-if (!function_exists('config')) {
-    function config(string $fileName, string $lex)
-    {
-        return config::{$fileName}($lex);
-    }
-}
+// if (!function_exists('config')) {
+//     function config(string $fileName, string $lex)
+//     {
+//         return config::{$fileName}($lex);
+//     }
+// }
 
 if (!function_exists('user_id')) {
     function user_id()
@@ -38,20 +38,20 @@ if (!function_exists('user_id')) {
     }
 }
 
-if (!function_exists('request')) {
-    function request($param = null, $val = null)
-    {
-        if ($param) {
-            if ($val) {
-                return request::connect()->$param->$val;
-            } else {
-                return request::connect()->$param;
-            }
-        } else {
-            return request::connect();
-        }
-    }
-}
+// if (!function_exists('request')) {
+//     function request($param = null, $val = null)
+//     {
+//         if ($param) {
+//             if ($val) {
+//                 return request::connect()->$param->$val;
+//             } else {
+//                 return request::connect()->$param;
+//             }
+//         } else {
+//             return request::connect();
+//         }
+//     }
+// }
 
 if (!function_exists('includeFile')) {
     function includeFile($path)

@@ -34,7 +34,7 @@ class history
                 ]);
             }
         }
-        $app->history->set($_SESSION['history']);
+        $app->history = $_SESSION['history'];
     }
 
     /**
@@ -44,7 +44,7 @@ class history
     {
         $app = app::app();
         array_shift($_SESSION['history']);
-        $app->history->set($_SESSION['history']);
+        $app->history = $_SESSION['history'];
     }
 
     /**

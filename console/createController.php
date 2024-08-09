@@ -73,6 +73,10 @@ class createController
 namespace " . $this->namespace . ";
 use " . APP_NAME . "\controllers\controller;
 use electronic\core\\view\\view;
+use electronic\core\\validate\\validate;
+use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
 
 class " . $this->className . " extends controller
 {
@@ -123,6 +127,10 @@ class " . $this->className . " extends controller
 namespace " . $this->namespace . ";
 use " . APP_NAME . "\controllers\controller;
 use electronic\core\\view\\view;
+use electronic\core\\validate\\validate;
+use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
 
 class " . $this->className . " extends controller
 {
@@ -185,6 +193,9 @@ namespace " . $this->namespace . ";
 use " . APP_NAME . "\controllers\controller;
 use electronic\core\\view\\view;
 use electronic\core\\validate\\validate;
+use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
 
 class " . $this->className . " extends controller
 {

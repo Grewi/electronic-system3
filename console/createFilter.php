@@ -36,6 +36,9 @@ class createFilter
     {
 return "<?php 
 namespace " . $this->namespace . ";
+use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
 
 class " . $this->className . "
 {

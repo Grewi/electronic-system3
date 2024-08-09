@@ -1,17 +1,13 @@
 <?php declare(strict_types=1);
 
 namespace system\core\lang;
-use system\core\traits\singleton;
 use system\core\config\config;
 
 class lang 
 {
-    private static $connect = null;
     private $default = 'ru';
 
-    use singleton;
-
-    private function __construct()
+    public function __construct()
     {
         $l = config::globals('lang');
         if($l){
@@ -21,17 +17,28 @@ class lang
 
     public static function __callStatic($name, $arguments)
     {
-        $lex = $arguments[0];
-        if(!isset($arguments[0]) || empty($arguments[0])){
-            return $lex;
-        }
-        
+        return (new static)->action($name, $arguments);
+    }
+
+    public function __call($name, $arguments)
+    {
+        return (new static)->action($name, $arguments);
+    } 
+
+    private function action($name, $arguments)
+    {
+        $lex = array_shift($arguments);
         $file = APP . '/lang/' . (new static)->default . '/' . $name . '.php';
         $str = '';
         if(file_exists($file)){
             $langs = require $file;
             if(isset($langs[$lex])){
                 $str = $langs[$lex];
+                try{
+                    $str = sprintf($str, ...$arguments);
+                }catch(\Throwable $e){
+                    dd($e);
+                }
             }
         }
 
@@ -39,7 +46,7 @@ class lang
             return $lex;
         }else{
             return $str;
-        }
+        }        
     }
 
 }
