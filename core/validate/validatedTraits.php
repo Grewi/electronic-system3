@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace system\core\validate;
 
 use system\core\database\database;
-use system\core\csrf\csrf;
 
 trait validatedTraits
 {
