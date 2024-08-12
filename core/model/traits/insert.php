@@ -1,5 +1,6 @@
 <?php 
 namespace system\core\model\traits;
+use system\core\config\config;
 
 trait insert
 {
@@ -25,7 +26,7 @@ trait insert
         db($this->_databaseName)->query($sql, $data);
         try{
 
-            if (config('database', 'type') == 'sqlite') {
+            if (config::database('type') == 'sqlite') {
                 $dbId = db($this->_databaseName)->fetch('SELECT Last_insert_rowid() as ' . $this->_id, []);
             }else{
                 $dbId = db($this->_databaseName)->fetch('SELECT * FROM ' . $this->_table . ' where ' . $this->_id .' = LAST_INSERT_ID()', []);

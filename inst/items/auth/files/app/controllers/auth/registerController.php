@@ -7,12 +7,12 @@ use {app}\controllers\controller;
 use electronic\core\view\view;
 use electronic\core\validate\validate;
 use system\core\app\app;
-class registrationController extends controller
+class registerController extends controller
 {
     public function index()
     {
         $this->title('Вход');
-        new view('auth/registration/index', $this->data);
+        new view('auth/register/index', $this->data);
     } 
 
     public function register(validate $valid, app $app)
@@ -24,20 +24,20 @@ class registrationController extends controller
         // }
 
         $valid->name('csrf')->csrf('register');
-        $valid->name('loginUser')->latRuInt()->empty()->strlenMin(3)->unique('users', 'login');
-        $valid->name('emailUser')->mail()->empty()->unique('users', 'email');
-        $valid->name('pass')->empty()->strlenMin(5)->pass();       
-        $valid->name('confirm')->confirmPass();
-        
+        $valid->name('name')->latRuInt()->empty()->strlenMin(3)->unique('users', 'login');
+        $valid->name('email2')->mail()->empty()->unique('users', 'email');
+        $valid->name('password')->empty()->strlenMin(5)->pass();       
+        $valid->name('confirm_password')->confirmPass();
+        dump($_POST);
         if($valid->control()){
             $userRole = user_role::where('slug', 'user')->get();
             $emailCode = rand(1000, 9999);
             $data = [
-                'email' => $valid->return('emailUser'),
+                'email' => $valid->return('email2'),
                 'email_code' => $emailCode,
                 'email_status' => 0,
-                'password' => $valid->return('pass'),
-                'login' => $valid->return('loginUser'),
+                'password' => $valid->return('password'),
+                'login' => $valid->return('name'),
                 'active' => 1,
                 'user_role_id' => $userRole->id,
             ];
@@ -58,6 +58,7 @@ class registrationController extends controller
                 }
             });
         }else{
+            dd($valid);
             redirect(referal_url(), $valid->data(), $valid->error());
         } 
     }

@@ -1,6 +1,7 @@
 <?php
 namespace system\core\validate;
 use system\core\user\register;
+use system\core\lang\lang;
 
 trait validetePassTrait
 {
@@ -15,7 +16,7 @@ trait validetePassTrait
 
     public function confirmPass()
     {
-        $errorText = $this->errorText ? $this->errorText : lang('valid', 'confirmPass');
+        $errorText = $this->errorText ? $this->errorText : lang::valid('confirmPass');
         if ($this->pass != $this->data[$this->currentName]) {
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
@@ -33,7 +34,7 @@ trait validetePassTrait
         $data = $this->data[$this->currentName];
         $user = db()->fetch('SELECT * FROM `' . $table . '` WHERE `id` = "' . $id . '"', []);
         if(isset($user->{$col})){
-            $errorText = $this->errorText ? $this->errorText : lang('valid', 'currentPass');
+            $errorText = $this->errorText ? $this->errorText : lang::valid('currentPass');
             $current = $user->{$col};
             if(!password_verify($data, $current)){
                 
@@ -41,7 +42,7 @@ trait validetePassTrait
                 $this->setControl(false);
             }
         }else{
-            $errorText = $this->errorText ? $this->errorText : lang('valid', 'noData');
+            $errorText = $this->errorText ? $this->errorText : lang::valid('noData');
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
         }

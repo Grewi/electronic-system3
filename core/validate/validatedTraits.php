@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace system\core\validate;
 
 use system\core\database\database;
+use system\core\lang\lang;
 
 trait validatedTraits
 {
@@ -24,7 +25,7 @@ trait validatedTraits
         }
 
         if ($data != $a) {
-            $this->error[$this->currentName][] = lang('valid', 'csrf');
+            $this->error[$this->currentName][] = lang::valid('csrf');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -39,7 +40,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (empty(strip_tags($data ?? ''))) {
-            $this->error[$this->currentName][] = lang('valid', 'noEmpty');
+            $this->error[$this->currentName][] = lang::valid('noEmpty');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -54,7 +55,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^[0-9-]+$/u", (string)$data)) {
-            $this->error[$this->currentName][] = lang('valid', 'noInt');
+            $this->error[$this->currentName][] = lang::valid('noInt');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -70,7 +71,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && $data < $min) {
-            $this->error[$this->currentName][] = lang('valid', 'noMin');
+            $this->error[$this->currentName][] = lang::valid('noMin');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -86,7 +87,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && $data > $max) {
-            $this->error[$this->currentName][] = lang('valid', 'noMax');
+            $this->error[$this->currentName][] = lang::valid('noMax');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -101,7 +102,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^[0-9\.\,-]+$/u", (string)$data)) {
-            $this->error[$this->currentName][] = lang('valid', 'noInt');;
+            $this->error[$this->currentName][] = lang::valid('noInt');;
             $this->setControl(false);
         }
         if($data){
@@ -120,11 +121,11 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!is_null($bool) && $bool && (bool)$bool != (bool)$data) {
-            $this->error[$this->currentName][] = lang('valid', 'boolTrue');
+            $this->error[$this->currentName][] = lang::valid('boolTrue');
             $this->setControl(false);
         }
         if (!is_null($bool) && !$bool && (bool)$bool != (bool)$data) {
-            $this->error[$this->currentName][] = lang('valid', 'boolFalse');
+            $this->error[$this->currentName][] = lang::valid('boolFalse');
             $this->setControl(false);
         }
         if ($data) {
@@ -143,7 +144,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^[\s a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'latRuInt');
+            $this->error[$this->currentName][] = lang::valid('latRuInt');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -158,7 +159,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^[\s a-zA-Z0-9\-_]+$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'latInt');
+            $this->error[$this->currentName][] = lang::valid('latInt');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -173,7 +174,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^[\s а-яА-ЯёЁ\.]+$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'ru');
+            $this->error[$this->currentName][] = lang::valid('ru');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -189,7 +190,7 @@ trait validatedTraits
         $this->data[$this->currentName] = $this->data[$this->currentName] ? mb_strtolower($this->data[$this->currentName]) : '';
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match("/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'mail');
+            $this->error[$this->currentName][] = lang::valid('mail');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -205,7 +206,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && preg_match("/^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?([\d\- ]{7,10})$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'tel');
+            $this->error[$this->currentName][] = lang::valid('tel');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -216,7 +217,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && preg_match("/^(https?:\/\/)?([\da-z\.-]+)?\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'url');
+            $this->error[$this->currentName][] = lang::valid('url');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -227,7 +228,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && preg_match("/^[0-9а-яА-ЯёЁ\.-]+$/u", $data)) {
-            $this->error[$this->currentName][] = lang('valid', 'url');
+            $this->error[$this->currentName][] = lang::valid('url');
             $this->setControl(false);
         }
         $this->setReturn($data);
@@ -250,7 +251,7 @@ trait validatedTraits
             }
 
             if (!preg_match("/^[0-9\-]+$/u", $data) || !$check) {
-                $this->error[$this->currentName][] = lang('valid', 'date');
+                $this->error[$this->currentName][] = lang::valid('date');
                 $this->setControl(false);
             }
         }
@@ -275,7 +276,7 @@ trait validatedTraits
             }
 
             if (!preg_match("/^[0-9\:]+$/u", $data) || !$check) {
-                $this->error[$this->currentName][] = lang('valid', 'date');
+                $this->error[$this->currentName][] = lang::valid('date');
                 $this->setControl(false);
                 dump(0123);
             }
@@ -291,7 +292,7 @@ trait validatedTraits
         $data = $this->data[$this->currentName];
         if (!empty($data)) {
             if(!(\DateTime::createFromFormat($format, $data) !== false)){
-                $this->error[$this->currentName][] = lang('valid', 'date');
+                $this->error[$this->currentName][] = lang::valid('date');
                 $this->setControl(false);
             }
         }
@@ -324,7 +325,7 @@ trait validatedTraits
         $data = $this->data[$this->currentName];
         $db = database::connect();
 
-        $errorText = $this->errorText ? $this->errorText : lang('valid', 'unique');
+        $errorText = $this->errorText ? $this->errorText : lang::valid('unique');
 
         $i = $db->fetch('SELECT COUNT(*) as `count`  FROM `' . $table . '` WHERE `' . $col . '` = :data AND id != :id', ['data'  => $data, 'id' => $id]);
 
@@ -348,7 +349,7 @@ trait validatedTraits
     public function id(string $table, string $col, int $id)
     {
         $data = $this->data[$this->currentName];
-        $errorText = $this->errorText ? $this->errorText : lang('valid', 'unique');
+        $errorText = $this->errorText ? $this->errorText : lang::valid('unique');
 
         $i = db()->fetch('SELECT COUNT(*) as `count`  FROM `' . $table . '` WHERE `' . $col . '` = :data AND id != :id', ['data'  => $data, 'id' => $id]);
 
@@ -383,7 +384,7 @@ trait validatedTraits
     public function strlen($strlen)
     {
         $data = $this->data[$this->currentName];
-        $errorText = $this->errorText ? $this->errorText : sprintf(lang('valid', 'strlen'), (string)$strlen);
+        $errorText = $this->errorText ? $this->errorText : lang::valid('strlen', (string)$strlen);
         if (!empty($data) && mb_strlen((string)$data) != $strlen) {
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
@@ -400,7 +401,7 @@ trait validatedTraits
     public function strlenMin($strlen)
     {
         $data = $this->data[$this->currentName];
-        $errorText = $this->errorText ? $this->errorText : sprintf(lang('valid', 'strlenMin'), (string)$strlen);
+        $errorText = $this->errorText ? $this->errorText : lang::valid('strlenMin', (string)$strlen);
         if (!empty($data) && mb_strlen((string)$data) < $strlen) {
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
@@ -418,7 +419,7 @@ trait validatedTraits
     public function strlenMax($strlen)
     {
         $data = $this->data[$this->currentName];
-        $errorText = $this->errorText ? $this->errorText : sprintf(lang('valid', 'strlenMax'), (string)$strlen);
+        $errorText = $this->errorText ? $this->errorText : lang::valid('strlenMax', (string)$strlen);
         if (!empty($data) && mb_strlen((string)$data) > $strlen) {
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
@@ -431,7 +432,7 @@ trait validatedTraits
     {
         $data = $this->data[$this->currentName];
         if (!empty($data) && !preg_match($regex, (string)$data)) {
-            $this->error[$this->currentName][] = lang('valid', 'noRegex');
+            $this->error[$this->currentName][] = lang::valid('noRegex');
             $this->setControl(false);
         }
         $this->setReturn($data);
