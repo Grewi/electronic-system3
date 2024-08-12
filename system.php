@@ -31,6 +31,12 @@ if(!defined('MODELS')){
     define('MODELS', APP . '/models');
 }
 
+if(!defined('TIMEZONE')){
+    define('TIMEZONE', 'UTC');
+}
+
+date_default_timezone_set(TIMEZONE);
+
 require_once SYSTEM . '/exception/exception.php';
 
 try{
