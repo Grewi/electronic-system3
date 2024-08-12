@@ -1,6 +1,5 @@
 <?php 
 namespace system\core\user;
-use system\core\traits\singleton;
 
 class bruteforce
 {

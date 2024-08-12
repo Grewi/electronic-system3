@@ -4,7 +4,6 @@ namespace system\core\database;
 
 use system\core\config\config;
 use system\core\database\cacheQuery;
-use system\core\traits\singleton;
 
 #[\AllowDynamicProperties]
 class database

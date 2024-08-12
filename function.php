@@ -1,6 +1,6 @@
 <?php
 
-$appFunctionDir = APP . '/system/function';
+$appFunctionDir = APP . '/system/functions';
 if (file_exists($appFunctionDir)) {
     $systemFnctionFiles = scandir($appFunctionDir);
     if (is_iterable($systemFnctionFiles)) {
@@ -16,7 +16,7 @@ if (file_exists($appFunctionDir)) {
     }
 }
 
-$systemFunctionDir = SYSTEM . '/function';
+$systemFunctionDir = SYSTEM . '/functions';
 if (file_exists($systemFunctionDir)) {
     $systemFnctionFiles = scandir($systemFunctionDir);
     if (is_iterable($systemFnctionFiles)) {
