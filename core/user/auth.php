@@ -4,17 +4,12 @@ namespace system\core\user;
 
 use system\core\validate\validate;
 use system\core\user\bruteforce;
-use system\core\request\request;
-use system\core\traits\singleton;
 use system\core\config\config;
 use system\core\system\header;
 use system\core\app\app;
 
 class auth
 {
-    use singleton;
-
-    static private $connect;
     public $status;
     private $session_time = 60 * 60 * 24;
     private $loginRegex = "/^[\s a-zA-Z0-9а-яА-ЯёЁ.,\(\)$@!?#=+\-_]+$/u";
@@ -25,8 +20,15 @@ class auth
     private $pass;
     private $csrf = true;
     public $error;
+    private static $connect = null;
 
-
+    static public function connect()
+    {
+		if(self::$connect === null){ 
+			self::$connect = new self();
+		}
+		return self::$connect;
+	}
 
     protected function setLogin($login)
     {
@@ -255,6 +257,20 @@ class auth
             return (int)$globalConfig;
         } else {
             return $this->session_time;
+        }
+    }
+
+    public static function __callStatic($method, $parameters)
+    {
+        if(method_exists(self::connect(), $method)){
+            return self::connect()->$method(...$parameters);
+        }
+    }
+
+    public function __call($method, $param)
+    {
+        if(method_exists($this, $method)){
+            return $this->$method(...$param);
         }
     }
 }

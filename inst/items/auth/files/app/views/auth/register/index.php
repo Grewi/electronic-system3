@@ -43,43 +43,4 @@
             </div>
         </form>
     </div>
-    <script>
-        $('.ajax-control').on('input', function() {
-            let el = $(this);
-            let er = el.next();
-            let val = $(this).val();
-            let type = el.attr('data-type');
-            let pass = $('#password').val();
-
-            $.ajax({
-                'url': '/registration/valid/' + type,
-                'method': 'post',
-                'data': {
-                    val: val,
-                    pass: pass
-                },
-                success: function(e) {
-                    el.addClass('is-valid').removeClass('is-invalid');
-                    er.html('');
-                },
-                error: function(e) {
-                    let d = JSON.parse(e.responseText);
-                    el.addClass('is-invalid').removeClass('is-valid');
-                    er.html(d.val);
-                },
-            });
-        });
-
-        let pps = true;
-        $('#pps').on('click', function(){
-            $('.pps').each(function(e){
-                if(pps){
-                    $(this).attr('type', 'text');
-                }else{
-                    $(this).attr('type', 'password');
-                }
-            });
-            pps = pps ? false : true;
-        });
-    </script>
 </block>

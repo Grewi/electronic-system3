@@ -1,11 +1,18 @@
 <?php
 namespace system\core\database;
-use system\core\traits\singleton;
 
 #[\AllowDynamicProperties]
 class cacheQuery
 {
-    use singleton;
+    private static $connect = null;
+
+    static public function connect()
+    {
+		if(self::$connect === null){ 
+			self::$connect = new self();
+		}
+		return self::$connect;
+	}
 
     private $data = [];
     public $key = '';
@@ -46,5 +53,15 @@ class cacheQuery
 
     private function sanitizer($str){
         return preg_replace('/[^a-zA-Z0-9\<\>\=]/ui', '', $str ?? '');
+    }
+
+    public static function __callStatic($method, $parameters)
+    {
+        $m = '_' . $method;
+        if(method_exists(self::connect(), $method)){
+            return self::connect()->$method(...$parameters);
+        }elseif(method_exists(self::connect(), $m)){
+            return self::connect()->$m(...$parameters);
+        }
     }
 }

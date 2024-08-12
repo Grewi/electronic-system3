@@ -15,19 +15,19 @@
                     <csrf type="input" name="auth" />
                     <input name="auth" value="1" hidden />
                     <div class="mb-3">
-                        <input class="form-control" type="text" name="login" placeholder="<?= lang('register', 'login') ?>"
+                        <input class="form-control" type="text" name="login" placeholder="<?= $lang->register('login') ?>"
                             value="<?= $return->data->login ?>">
                     </div>
                     <div class="mb-3">
-                        <input class="form-control" type="email" name="email" placeholder="<?= lang('register', 'email') ?>"
+                        <input class="form-control" type="email" name="email" placeholder="<?= $lang->register('email') ?>"
                             value="<?= $return->data->email ?>">
                     </div>
                     <div class="mb-3">
-                        <input class="form-control" type="password" name="pass" placeholder="<?= lang('register', 'pass') ?>"
+                        <input class="form-control" type="password" name="pass" placeholder="<?= $lang->register('pass') ?>"
                             required>
                     </div>
                     <div class="mb-3">
-                        <input class="btn btn-primary" type="submit" value="<?= lang('global', 'login') ?>">
+                        <input class="btn btn-primary" type="submit" value="<?= $lang->global('login') ?>">
                     </div>
                 </form>
             </div>
