@@ -46,7 +46,7 @@ class registerController extends controller
 
             $login = new \system\core\user\auth();
             $login->setCsrf(false);
-            $login->setPass($_POST['pass']);
+            $login->setPass($_POST['password']);
             $login->setEmail($user->email);
             $login->setLogin($user->login);
             $login->redirect(referal_url());
