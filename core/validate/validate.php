@@ -122,4 +122,9 @@ class validate
             return $this->return;
         }
     }
+
+    public function toController()
+    {
+        return $this;
+    }
 }

@@ -15,16 +15,14 @@ class registrationController extends controller
         new view('auth/registration/index', $this->data);
     } 
 
-    public function register()
+    public function register(validate $valid, app $app)
     {
-        $app = app::app();
         // ban::cl();
         // if((!empty($_POST['login']) || !empty($_POST['email'])) || ban::status()){ 
         //     alert2('В бан!');
         //     ban::add();
         // }
 
-        $valid = new validate();
         $valid->name('csrf')->csrf('register');
         $valid->name('loginUser')->latRuInt()->empty()->strlenMin(3)->unique('users', 'login');
         $valid->name('emailUser')->mail()->empty()->unique('users', 'email');

@@ -9,4 +9,9 @@ class users extends model
     {
         return user_role::find($this->user_role_id);
     }
+
+    public function toController()
+    {
+        return $this->find(user_id());
+    }
 }
