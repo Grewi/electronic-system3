@@ -66,20 +66,7 @@ class installItem
         }
 
         if(!functions::checkRelation($p)){
-            $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
-            if(file_exists($relPath)){
-                $rel = parse_ini_file($relPath);
-                echo 'Для продолжения требуется установить: ' . $rel['items'] . PHP_EOL;
-            }
-            $a = null;
-            while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
-                $a = functions::yes(trim(fgets(STDIN)));
-            }
-            if (!$a) {
-                echo 'Установка прервана' . PHP_EOL;
-                exit();
-            }
+            $this->checkRelation($p);
         } 
          
         $ItemIndexPath = ITEMS . '/' . $p['itemName'] . '/index.php';
@@ -97,5 +84,23 @@ class installItem
         database::install($p);
         functions::addNameRelation($p);
         echo 'Установка компонента '. $p['itemName'] . ' завершена'. PHP_EOL;
+    }
+
+    private function checkRelation($p)
+    {
+        $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
+        if(file_exists($relPath)){
+            $rel = parse_ini_file($relPath);
+            echo 'Для продолжения требуется установить: ' . $rel['items'] . PHP_EOL;
+        }
+        $a = null;
+        while ($a === null) {
+            echo "Продолжить установку? (yes/no): ";
+            $a = functions::yes(trim(fgets(STDIN)));
+        }
+        if (!$a) {
+            echo 'Установка прервана' . PHP_EOL;
+            exit();
+        }
     }
 }
