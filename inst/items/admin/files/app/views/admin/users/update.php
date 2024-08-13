@@ -44,6 +44,15 @@
                             <div class="invalid-feedback"><?= $return->error->user_role_id ?></div>
                         </div>
                         <div class="mb-3">
+                            <select name="timezone" class="form-select <?= $return->class->timezone ?>">
+                                <option disabled selected>Часовой пояс</option>
+                                <?php foreach ($timezones as $i) : ?>
+                                    <option value="<?= $i->id ?>" <?= $i->id == $return->data->timezone ? 'selected' : '' ?> ><?= $i->region ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="invalid-feedback"><?= $return->error->timezone ?></div>
+                        </div> 
+                        <div class="mb-3">
                             <input class="btn btn-primary" type="submit" value="Сохранить">
                         </div>
                     </form>

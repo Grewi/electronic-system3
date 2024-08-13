@@ -106,7 +106,7 @@ class files
                         }
                         copy($f1, $f2);
                         $pext = pathinfo($f2);
-                        if (isset($pext['extension']) && $pext['extension'] == 'php') {
+                        if ( (isset($pext['extension']) && $pext['extension'] == 'php') || empty($pext['extension']) ) {
                             $content = file_get_contents($f2);
                             foreach ($param as $aa => $ii) {
                                 preg_match_all('/\{\s*(' . $aa . ')\s*\}/si', $content, $mm);

@@ -3,6 +3,7 @@ namespace app\controllers\admin;
 
 use app\models\users;
 use app\models\user_role;
+use app\models\timezones;
 use app\controllers\admin\controller;
 use electronic\core\view\view;
 use electronic\core\validate\validate;
@@ -26,12 +27,12 @@ class usersController extends controller
 
     public function create()
     {
-        $userRoles = user_role::all();
         $this->title(lang::admin('createUser'));
         $this->bc(lang::admin('users'), '/' . ADMIN . '/users');
         $this->bc(lang::admin('createUser'));
         $this->data['userSubMenu'] = true;
-        $this->data['userRoles'] = $userRoles;
+        $this->data['userRoles'] = user_role::all();
+        $this->data['timezones'] = timezones::all();
         new view('admin/users/create', $this->data);
     }
 
@@ -44,6 +45,7 @@ class usersController extends controller
         $valid->name('login')->latRuInt()->unique('users', 'login')->empty();
         $valid->name('active')->bool();
         $valid->name('user_role_id')->isset('user_role')->empty();
+        $valid->name('timezone')->isset('timezones');
 
         if($valid->control()){
             $data = [
@@ -54,6 +56,7 @@ class usersController extends controller
                 'login' => $valid->return('login'),
                 'active' => $valid->return('active'),
                 'user_role_id' => $valid->return('user_role_id'),
+                'timezones' => $valid->return('timezone'),
             ];
 
             users::insert($data);
@@ -68,14 +71,14 @@ class usersController extends controller
     public function update(app $app)
     {
         $user = users::find($app->getparams->user_id);
-        $userRoles = user_role::all();
         $this->return($user);
         $this->title(lang::admin('editUser'));
         $this->bc(lang::admin('users'), '/' . ADMIN . '/users');
         $this->bc(lang::admin('editUser'));
         $this->data['userSubMenu'] = true;
         $this->data['user'] = $user;
-        $this->data['userRoles'] = $userRoles;
+        $this->data['userRoles'] = user_role::all();
+        $this->data['timezones'] = timezones::all();
         new view('admin/users/update', $this->data);
     }
 
@@ -91,6 +94,7 @@ class usersController extends controller
         $valid->name('login')->latRuInt()->empty()->unique('users', 'login', $user->id);
         $valid->name('active')->bool();
         $valid->name('user_role_id')->isset('user_role')->empty();
+        $valid->name('timezone')->isset('timezones');
 
         if($user && $valid->control()){
 
@@ -99,6 +103,7 @@ class usersController extends controller
             $user->email_status = $valid->return('email_status');
             $user->login = $valid->return('login');
             $user->active = $valid->return('active');
+            $user->timezones = $valid->return('timezone');
             $user->user_role_id = $valid->return('user_role_id');
             if(isset($_POST['password'])){
                 $user->password = $valid->return('password');
