@@ -15,8 +15,17 @@ require_once SYSTEM . '/system.php';
 $p = functions::parametrs();
 if(isset($p['itemName']) && $p['itemName'] == 'all'){
         $installIni = functions::parseInstallIni();
+        $data = [];
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
+        }
         foreach($installIni as $a => $i){
             foreach($i as $aa => $ii){
+                if(isset($data[$a]['relations'])){
+                    if(in_array($aa, $data[$a]['relations'])){
+                        continue;
+                    }
+                }
                 $p = [];
                 $p['app'] = $a;                
                 $p['itemName'] = $aa;

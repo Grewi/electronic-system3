@@ -1,5 +1,5 @@
     <a class="siteName" href="/" target="_blank">
-        <?= config('globals', 'title'); ?>
+        <?= $config->globals('title'); ?>
     </a>
     <ul class="adm-menu-list">
         <li><a class="" href="/<?= ADMIN ?>">Админка</a></li>

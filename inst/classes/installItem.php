@@ -25,7 +25,7 @@ class installItem
             echo 'Параметр app не указан, будет применено значение app.' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
+                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -56,7 +56,7 @@ class installItem
             echo 'К некоторым параметрам будут применены значения по умолчанию' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
+                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -66,7 +66,20 @@ class installItem
         }
 
         if(!functions::checkRelation($p)){
-            $this->checkRelation($p);
+            $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
+            if(file_exists($relPath)){
+                $rel = parse_ini_file($relPath);
+                echo 'Для продолжения требуется установить: ' . $rel['items'] . PHP_EOL;
+            }
+            $a = null;
+            while ($a === null) {
+                echo "Продолжить установку? (yes/no): ";
+                $a = functions::yes(trim(fgets(STDIN)));
+            }
+            if (!$a) {
+                echo 'Установка прервана' . PHP_EOL;
+                exit();
+            }
         } 
          
         $ItemIndexPath = ITEMS . '/' . $p['itemName'] . '/index.php';

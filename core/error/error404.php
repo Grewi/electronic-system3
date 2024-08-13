@@ -22,9 +22,10 @@ trait error404
 
     protected function errorTypeStr()
     {
-        $ex = explode('/', request('global')->uri);
+        $app = app::app();
+        $ex = explode('/', $app->bootstrap->uri);
         $el = array_pop($ex);
-        $el = pathinfo(request('global')->uri);
+        $el = pathinfo($app->bootstrap->uri);
 
         if (isset($el['extension'])) {
             $name = mb_strtolower($el['extension']);
