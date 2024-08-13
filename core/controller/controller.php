@@ -61,7 +61,7 @@ abstract class controller
         if(is_object($data)){
             foreach($data as $a => $i){
                 if(empty( $this->data['return']->data->{$a})){
-                    $this->data['return']->data->set([$a => $i]);
+                    $this->data['return']->data->{$a} = $i;
                 }
             }
         }

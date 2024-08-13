@@ -56,6 +56,29 @@ class files
                             $i = $ib[0] . ' = null';
                         }
                     }
+
+                    if($ib[1] == '>>'){
+                        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+                        if (!empty($m)) {
+                            $ri = str_replace($m[0], $m[1], $ib[0]);
+                            $l = str_replace($m[0], $param[$m[1]], $ib[0]);
+                            $i = $l . ' = ' . $ri;
+                        }
+                        $sd = ITEMS . '/' . $param['itemName'] . '/files/' . $ri;
+                        $sdFiles = new \RecursiveIteratorIterator(
+                            new \RecursiveDirectoryIterator($sd), \RecursiveIteratorIterator::LEAVES_ONLY
+                        );
+                        $list = '';
+                        foreach($sdFiles as $i){
+                            if($i->isFile()){
+                                $filePath = $i->getRealPath();
+                                $relativePath = substr($filePath, strlen($sd));
+                                $relativePath = str_replace('\\', '/', $relativePath);
+                                $list .= $l . $relativePath . ' = ' . $ri . $relativePath . PHP_EOL;
+                            }
+                        }
+                        $i = $list;
+                    }
                 }
             }
             $ftext = implode(PHP_EOL, $fArray);

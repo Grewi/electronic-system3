@@ -25,7 +25,7 @@ class installItem
             echo 'Параметр app не указан, будет применено значение app.' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
+                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -56,7 +56,7 @@ class installItem
             echo 'К некоторым параметрам будут применены значения по умолчанию' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
+                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -73,7 +73,7 @@ class installItem
             }
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку? (yes/no): ";
+                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
