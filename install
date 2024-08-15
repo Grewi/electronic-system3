@@ -1,4 +1,5 @@
 <?php
+
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
 use system\core\app\app;
@@ -15,53 +16,42 @@ define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
 $app = app::app();
 
-$p = functions::parametrs();
+functions::parametrs();
 
-if(empty($app->item->name)){
+if (empty($app->item->name)) {
     echo 'Необходимо указать компонент установки.' . PHP_EOL;
     echo ('Для установки доступны: ' . PHP_EOL);
     functions::infoListItem();
     exit();
 }
 
-functions::constantFilesItem();
+if ($app->item->name == 'all') {
+    $installIni = functions::parseInstallIni();
+    $data = [];
+    if (file_exists(INSTALL_JSON)) {
+        $data = json_decode(file_get_contents(INSTALL_JSON), true);
+    }
 
-if($app->item->name == 'all'){
-        $installIni = functions::parseInstallIni();
-        $data = [];
-        if (file_exists(INSTALL_JSON)) {
-            $data = json_decode(file_get_contents(INSTALL_JSON), true);
+    foreach (functions::listItemsForInstall() as $a => $i) {
+        $app->item->params->app = $a;
+        $app->item->name = $a;
+        functions::constantFilesItem();
+        foreach ($i as $aa => $ii) {
+            $app->item->params->{$aa} = $ii;
         }
-        // var_dump($installIni);
-        // exit();
-        foreach($installIni as $a => $i){
-            foreach($i as $aa => $ii){
-                if(isset($data[$a]['relations'])){
-                    if(in_array($aa, $data[$a]['relations'])){
-                        continue;
-                    }
-                }
-                if($aa == 'all'){
-                    continue;
-                }
-                
-                $app->item->params->app = $a;
-                $app->item->name = $aa;
-                foreach($ii as $aaa => $iii){
-                    $app->item->params->{$aaa} = $iii;
-                }
-                new installItem();
-            }
-        }
-        
-}else{
-    $iDir = ITEMS . '/' . $p['itemName'];
+        var_dump($app);
+        // new installItem();
+    }
+
+} else {
+    $iDir = ITEMS . '/' . $app->item->name;
+    functions::constantFilesItem();
+
     if (file_exists($iDir)) {
 
-        new installItem($p);
-
+        new installItem();
     } else {
-        echo ('Проверьте параметры запроса. ' . $p['itemName'] . ' не найден!' . PHP_EOL);
+        echo ('Проверьте параметры запроса. ' . $app->item->name . ' не найден!' . PHP_EOL);
         echo ('Для установки доступны: ' . PHP_EOL);
         functions::infoListItem();
         echo ('Для более подробной информации используйте параметр help ' . PHP_EOL);

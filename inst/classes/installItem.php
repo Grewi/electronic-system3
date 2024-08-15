@@ -9,9 +9,11 @@ use system\core\app\app;
 class installItem
 {
 
-    public function __construct(/*$p*/)
+    public function __construct()
     {
+        
         $app = app::app();
+
         if (!empty($app->item->params->help)) {
             if (file_exists($app->item->path->help)) {
                 echo file_get_contents($app->item->path->help) . PHP_EOL;
@@ -83,11 +85,7 @@ class installItem
             }
             $a = null;
             while ($a === null) {
-<<<<<<< HEAD
                 echo "Продолжить установку компонента " . $app->item->name . "? (yes/no): ";
-=======
-                echo "Продолжить установку? (yes/no): ";
->>>>>>> 1843c625c52b3edbf3bb70e90d409967428dd31e
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {

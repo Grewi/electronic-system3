@@ -1,0 +1,39 @@
+<?php
+
+use system\inst2\classes\installItem;
+use system\inst2\classes\functions;
+use system\core\app\app;
+
+define('ENTRANSE', 'install');
+define('INDEX', true);
+define('ROOT', str_replace('\\', '/', dirname(__DIR__)));
+define('SYSTEM', ROOT . '/system');
+define('INST', SYSTEM . '/inst');
+define('ITEMS', INST . '/items');
+define('INSTALL_INI', ROOT . '/install.ini');
+define('INSTALL_JSON', ROOT . '/install.json');
+require_once SYSTEM . '/system.php';
+$app = app::app();
+functions::parametrs();
+
+if (empty($app->param)) {
+    echo 'Необходимо указать компонент установки.' . PHP_EOL;
+    echo ('Для установки доступны: ' . PHP_EOL);
+    functions::infoListItem();
+    exit();
+}
+
+if($app->param == 'all'){
+    foreach (functions::listItemsForInstall() as $a => $i) {
+        // $app->item->params->app = $a;
+        // $app->item->name = $a;
+        // functions::constantFilesItem();
+        // foreach ($i as $aa => $ii) {
+        //     $app->item->params->{$aa} = $ii;
+        // }
+        var_dump($a);
+        // new installItem();
+    }
+}else{
+
+}

@@ -26,7 +26,7 @@ class functions
     /**
      * Определяет параметры запроса
      */
-    public static function parametrs(): array
+    public static function parametrs(): void
     {
         global $argv;
         $app = app::app();
@@ -34,16 +34,13 @@ class functions
         if ($argv) {
             foreach ($argv as $a => $i) {
                 if ($a == 1) {
-                    $r['itemName'] = $i;
                     $app->item->name = $i;
                 } elseif ($a > 1) {
                     $s = explode('=', $i);
-                    $r[$s[0]] = (count($s) == 1) ? 1 : $s[1];
                     $app->item->params->{$s[0]} = (count($s) == 1) ? 1 : $s[1];
                 }
             }
         }
-        return $r;
     }
 
     /**
@@ -71,12 +68,11 @@ class functions
     {
         $app = app::app();
         $installIni = self::parseInstallIni();
-        $b = self::parametrs();
         $r = true;
         if (file_exists($app->item->path->params)) {
             $c = parse_ini_file($app->item->path->params);
             foreach ($c as $j => $i) { 
-                $r = $r && (isset($b[$j]) || isset($installIni[$app->item->params->app][$app->item->name][$j]) ) ? true : false;
+                $r = $r && ( !empty($app->item->params->{$j}) || isset($installIni[$app->item->params->app][$app->item->name][$j]) ) ? true : false;
             }
         }
         return $r;
@@ -169,4 +165,34 @@ class functions
         
         return $r;
     }
+
+    /**
+     * Список доступных к установке компонентов
+     */
+    public static function listItemsForInstall() : array
+    {
+        $installIni = functions::parseInstallIni();
+        $data = [];
+        $r = [];
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
+        }
+
+        foreach($installIni as $a => $i){
+            foreach($i as $aa => $ii){
+                if(isset($data[$a]['relations'])){
+                    if(in_array($aa, $data[$a]['relations'])){
+                        continue;
+                    }
+                }
+                if($aa == 'all'){
+                    continue;
+                }
+                $r[$aa] = $ii;
+            }
+        }
+
+        return $r;
+    }
+
 }
