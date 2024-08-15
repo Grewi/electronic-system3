@@ -83,7 +83,11 @@ class installItem
             }
             $a = null;
             while ($a === null) {
+<<<<<<< HEAD
                 echo "Продолжить установку компонента " . $app->item->name . "? (yes/no): ";
+=======
+                echo "Продолжить установку? (yes/no): ";
+>>>>>>> 1843c625c52b3edbf3bb70e90d409967428dd31e
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -106,5 +110,23 @@ class installItem
         database::install();
         functions::addNameRelation();
         echo 'Установка компонента '. $app->item->name . ' завершена'. PHP_EOL;
+    }
+
+    private function checkRelation($p)
+    {
+        $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
+        if(file_exists($relPath)){
+            $rel = parse_ini_file($relPath);
+            echo 'Для продолжения требуется установить: ' . $rel['items'] . PHP_EOL;
+        }
+        $a = null;
+        while ($a === null) {
+            echo "Продолжить установку? (yes/no): ";
+            $a = functions::yes(trim(fgets(STDIN)));
+        }
+        if (!$a) {
+            echo 'Установка прервана' . PHP_EOL;
+            exit();
+        }
     }
 }
