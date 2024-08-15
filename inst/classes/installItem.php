@@ -4,59 +4,70 @@ namespace system\inst\classes;
 use system\inst\classes\files;
 use system\inst\classes\database;
 use system\inst\classes\functions;
+use system\core\app\app;
 
 class installItem
 {
 
-    public function __construct($p)
+    public function __construct(/*$p*/)
     {
-        $iDir = ITEMS . '/' . $p['itemName'];
-        if (isset($p['help'])) {
-            $iDirHelp = $iDir . '/help.txt';
-            if (file_exists($iDirHelp)) {
-                echo file_get_contents($iDirHelp) . PHP_EOL;
+        $app = app::app();
+        if (!empty($app->item->params->help)) {
+            if (file_exists($app->item->path->help)) {
+                echo file_get_contents($app->item->path->help) . PHP_EOL;
             } else {
                 echo 'Справочная информация не обнаружена.' . PHP_EOL;
             }
             exit();
         }
 
-        if(!isset($p['app'])){
+        if(empty($app->item->params->app)){
             echo 'Параметр app не указан, будет применено значение app.' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
+                echo "Продолжить установку компонента " . $app->item->name . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
                 echo 'Установка прервана' . PHP_EOL;
                 exit();
             } 
-            $p['app'] = 'app';
+            $app->item->params->app = 'app';
         }
 
         //Читаем параметры по умолчанию
-        $paramsPath = ITEMS . '/' . $p['itemName'] . '/params.ini';
-        if (file_exists($paramsPath)) {
-            $param = parse_ini_file($paramsPath);
+        if (file_exists($app->item->path->params)) {
+            $param = parse_ini_file($app->item->path->params);
         } else {
             $param = [];
         }
 
         //Читаем параметры из ini файла
         $installIni = functions::parseInstallIni();
-        $app = isset($p['app']) ? $p['app'] : 'app';
-        $iniParam = [];
-        if(isset($installIni[$app][$p['itemName']])){
-            $iniParam = $installIni[$app][$p['itemName']];
-        }
-        $p = array_merge($param, $iniParam, $p);
+        $appN = !empty($app->item->params->app) ? $app->item->params->app : 'app';
 
-        if (!functions::complectParams($p['itemName'], $p)) {
+        $iniParam = [];
+        if(isset($installIni[$appN][$app->item->name])){
+            $iniParam = $installIni[$appN][$app->item->name];
+        }
+
+        foreach($iniParam as $a => $i){
+            if(empty($app->item->params->{$a})){
+                $app->item->params->{$a} = $i;
+            }
+        }
+
+        foreach($param as $a => $i){
+            if(empty($app->item->params->{$a})){
+                $app->item->params->{$a} = $i;
+            }
+        }
+
+        if (!functions::complectParams()) {
             echo 'К некоторым параметрам будут применены значения по умолчанию' . PHP_EOL;
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
+                echo "Продолжить установку компонента " . $app->item->name . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -65,15 +76,14 @@ class installItem
             }            
         }
 
-        if(!functions::checkRelation($p)){
-            $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
-            if(file_exists($relPath)){
-                $rel = parse_ini_file($relPath);
+        if(!functions::checkRelation()){
+            if(file_exists($app->item->path->relations)){
+                $rel = parse_ini_file($app->item->path->relations);
                 echo 'Для продолжения требуется установить: ' . $rel['items'] . PHP_EOL;
             }
             $a = null;
             while ($a === null) {
-                echo "Продолжить установку компонента " . $p['itemName'] . "? (yes/no): ";
+                echo "Продолжить установку компонента " . $app->item->name . "? (yes/no): ";
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
@@ -82,20 +92,19 @@ class installItem
             }
         } 
          
-        $ItemIndexPath = ITEMS . '/' . $p['itemName'] . '/index.php';
         $itemIndex = null;
-        if(file_exists($ItemIndexPath)){
-            $class = 'system\\inst\\items\\' . $p['itemName'] . '\\index';
+        if(file_exists($app->item->path->index)){
+            $class = $app->item->path->class;
             $itemIndex = new $class();
         }    
         
         if($itemIndex){
-            $p = $itemIndex->param($p);
+            $itemIndex->param();
         }
 
-        files::copy($p);
-        database::install($p);
-        functions::addNameRelation($p);
-        echo 'Установка компонента '. $p['itemName'] . ' завершена'. PHP_EOL;
+        files::copy();
+        database::install();
+        functions::addNameRelation();
+        echo 'Установка компонента '. $app->item->name . ' завершена'. PHP_EOL;
     }
 }

@@ -1,11 +1,12 @@
 <?php 
 namespace system\inst\items\auth;
+use system\core\app\app;
 
 class index
 {
-    public function param($param)
+    public function param()
     {
-        $param['admin_pass'] =  password_hash($param['admin_pass'], PASSWORD_DEFAULT);
-        return $param;
+        $app = app::app();
+        $app->item->params->admin_pass =  password_hash($app->item->params->admin_pass, PASSWORD_DEFAULT);
     }
 }

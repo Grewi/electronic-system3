@@ -1,22 +1,23 @@
 <?php
 
 namespace system\inst\classes;
+use system\core\app\app;
 
 class files
 {
     static $permissions = 0755;
 
-    public static function copy($param)
+    public static function copy()
     {
+        $app = app::app();
         //Читаем список файлов
-        $filesPath = ITEMS . '/' . $param['itemName'] . '/files.ini';
-        
-        if (file_exists($filesPath)) {
-            $ftext = file_get_contents($filesPath);
+        if (file_exists($app->item->path->files)) {
+            $ftext = file_get_contents($app->item->path->files);
             preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);
             $t = [];
+
             foreach ($matches[1] as $a => $i) {
-                if (!isset($param[$i])) {
+                if (empty($app->item->params->{$i})) {
                     $t[] = $i;
                 }
             }
@@ -24,6 +25,7 @@ class files
                 $t = array_unique($t);
                 echo 'Отсутствует параметр(ы): ' . implode(', ', $t) . PHP_EOL;
                 echo 'Установка прервана' . PHP_EOL;
+                exit();
             }
 
             $fArray = explode(PHP_EOL, $ftext);
@@ -40,8 +42,9 @@ class files
                         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
                         if (!empty($m)) {
                             $ri = str_replace($m[0], $m[1], $ib[0]);
-                            $l = str_replace($m[0], $param[$m[1]], $ib[0]);
+                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
                             $i = $l . ' = ' . $ri;
+                            // var_dump($l . ' = ' . $ri);
                         } else {
                             $i = $ib[0] . ' = ' . $ib[0];
                         }
@@ -50,7 +53,7 @@ class files
                     if ($ib[1] == 'd') {
                         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
                         if (!empty($m)) {
-                            $l = str_replace($m[0], $param[$m[1]], $ib[0]);
+                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
                             $i = $l . ' = null';
                         } else {
                             $i = $ib[0] . ' = null';
@@ -61,10 +64,10 @@ class files
                         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
                         if (!empty($m)) {
                             $ri = str_replace($m[0], $m[1], $ib[0]);
-                            $l = str_replace($m[0], $param[$m[1]], $ib[0]);
+                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
                             $i = $l . ' = ' . $ri;
                         }
-                        $sd = ITEMS . '/' . $param['itemName'] . '/files/' . $ri;
+                        $sd = ITEMS . '/' . $app->item->name . '/files/' . $ri;
                         $sdFiles = new \RecursiveIteratorIterator(
                             new \RecursiveDirectoryIterator($sd), \RecursiveIteratorIterator::LEAVES_ONLY
                         );
@@ -81,12 +84,12 @@ class files
                     }
                 }
             }
-            $ftext = implode(PHP_EOL, $fArray);
 
+            $ftext = implode(PHP_EOL, $fArray);
             $files = parse_ini_string($ftext, false, INI_SCANNER_TYPED);
 
             foreach ($files as $a => $i) {
-                $f1 = ITEMS . '/' . $param['itemName'] . '/files/' . $i;
+                $f1 = ITEMS . '/' . $app->item->name . '/files/' . $i;
                 $f2 = ROOT . '/' . $a;
 
                 if (!is_null($i)) {
@@ -108,10 +111,10 @@ class files
                         $pext = pathinfo($f2);
                         if ( (isset($pext['extension']) && $pext['extension'] == 'php') || empty($pext['extension']) ) {
                             $content = file_get_contents($f2);
-                            foreach ($param as $aa => $ii) {
+                            foreach ($app->item->params as $aa => $ii) {
                                 preg_match_all('/\{\s*(' . $aa . ')\s*\}/si', $content, $mm);
                                 foreach ($mm[1] as $aaa => $iii) {
-                                    $content = str_replace($mm[0][$aaa], $param[$iii], $content);
+                                    $content = str_replace($mm[0][$aaa], $app->item->params->{$iii}, $content);
                                 }
                             }
                             file_put_contents($f2, $content);
@@ -127,6 +130,9 @@ class files
         }
     }
 
+    /**
+     * Проверяет наличие и создаёт директории, если их нет
+     */
     public static function createDir($path): void
     {
         if (!file_exists($path)) {

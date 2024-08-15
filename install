@@ -1,6 +1,8 @@
 <?php
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
+use system\core\app\app;
+
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -11,14 +13,27 @@ define('ITEMS', INST . '/items');
 define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
+$app = app::app();
 
 $p = functions::parametrs();
-if(isset($p['itemName']) && $p['itemName'] == 'all'){
+
+if(empty($app->item->name)){
+    echo 'Необходимо указать компонент установки.' . PHP_EOL;
+    echo ('Для установки доступны: ' . PHP_EOL);
+    functions::infoListItem();
+    exit();
+}
+
+functions::constantFilesItem();
+
+if($app->item->name == 'all'){
         $installIni = functions::parseInstallIni();
         $data = [];
         if (file_exists(INSTALL_JSON)) {
             $data = json_decode(file_get_contents(INSTALL_JSON), true);
         }
+        // var_dump($installIni);
+        // exit();
         foreach($installIni as $a => $i){
             foreach($i as $aa => $ii){
                 if(isset($data[$a]['relations'])){
@@ -26,17 +41,20 @@ if(isset($p['itemName']) && $p['itemName'] == 'all'){
                         continue;
                     }
                 }
-                $p = [];
-                $p['app'] = $a;                
-                $p['itemName'] = $aa;
-                $p = array_merge($p, $ii);
-                new installItem($p);
+                if($aa == 'all'){
+                    continue;
+                }
+                
+                $app->item->params->app = $a;
+                $app->item->name = $aa;
+                foreach($ii as $aaa => $iii){
+                    $app->item->params->{$aaa} = $iii;
+                }
+                new installItem();
             }
         }
         
-        exit;
-}elseif (isset($p['itemName'])) {
-
+}else{
     $iDir = ITEMS . '/' . $p['itemName'];
     if (file_exists($iDir)) {
 
@@ -48,9 +66,4 @@ if(isset($p['itemName']) && $p['itemName'] == 'all'){
         functions::infoListItem();
         echo ('Для более подробной информации используйте параметр help ' . PHP_EOL);
     }
-
-} else {
-    echo 'Необходимо указать компонент установки.' . PHP_EOL;
-    echo ('Для установки доступны: ' . PHP_EOL);
-    functions::infoListItem();
 }

@@ -3,15 +3,15 @@
 namespace system\inst\classes;
 
 use system\inst\classes\connectDb;
+use system\core\app\app;
 
 class database
 {
-    public static function install($param)
+    public static function install()
     {
-
-
-        $configIni = ROOT . '/' . $param['app'] . '/configs/.database.ini';
-        $configPhp = ROOT . '/' . $param['app'] . '/configs/database.php';
+        $app = app::app();
+        $configIni = ROOT . '/' . $app->item->name . '/configs/.database.ini';
+        $configPhp = ROOT . '/' . $app->item->name . '/configs/database.php';
         $dbType = null;
         $dbFile = null;
         $dbName = null;
@@ -29,7 +29,7 @@ class database
             $dbPass = $dbData['pass'];
 
         } elseif (file_exists($configPhp)) {
-            $class = $param['app'] . '\\configs\\database';
+            $class = $app->item->params->app . '\\configs\\database';
             $dbClass = new $class();
             $dbData = $dbClass->set();
             $dbType = $dbData['type'];
@@ -40,17 +40,17 @@ class database
             $dbPass = $dbData['pass'];
         } elseif (file_exists(INSTALL_INI)) {
             $instIni = parse_ini_file(INSTALL_INI, true);
-            if (isset($instIni[$param['app']]['database.type'])) {
-                $dbType = $instIni[$param['app']]['database.type'];
-                $dbFile = $instIni[$param['app']]['database.file'];
-                $dbName = $instIni[$param['app']]['database.name'];
-                $dbHost = $instIni[$param['app']]['database.host'];
-                $dbUser = $instIni[$param['app']]['database.user'];
-                $dbPass = $instIni[$param['app']]['database.pass'];
+            if (isset($instIni[$app->item->params->app]['database.type'])) {
+                $dbType = $instIni[$app->item->params->app]['database.type'];
+                $dbFile = $instIni[$app->item->params->app]['database.file'];
+                $dbName = $instIni[$app->item->params->app]['database.name'];
+                $dbHost = $instIni[$app->item->params->app]['database.host'];
+                $dbUser = $instIni[$app->item->params->app]['database.user'];
+                $dbPass = $instIni[$app->item->params->app]['database.pass'];
             }
         }
 
-        $filesPath = ITEMS . '/' . $param['itemName'] . '/database/' . $dbType . '.sql';
+        $filesPath = ITEMS . '/' . $app->item->name . '/database/' . $dbType . '.sql';
 
         if (file_exists($filesPath)) {
 
@@ -79,10 +79,10 @@ class database
                 $db = connectDb::c($configs);
 
                 $sql = file_get_contents($filesPath);
-                foreach ($param as $aa => $ii) {
+                foreach ($app->item->params as $aa => $ii) {
                     preg_match_all('/\{\s*(' . $aa . ')\s*\}/si', $sql, $mm);
                     foreach ($mm[1] as $aaa => $iii) {
-                        $sql = str_replace($mm[0][$aaa], $param[$iii], $sql);
+                        $sql = str_replace($mm[0][$aaa], $app->item->params->{$iii}, $sql);
                     }
                 }
                 $db->query($sql);
