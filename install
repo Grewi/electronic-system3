@@ -4,7 +4,6 @@ use system\inst\classes\installItem;
 use system\inst\classes\functions;
 use system\core\app\app;
 
-
 define('ENTRANSE', 'install');
 define('INDEX', true);
 define('ROOT', str_replace('\\', '/', dirname(__DIR__)));
@@ -15,45 +14,35 @@ define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
 $app = app::app();
-
 functions::parametrs();
 
-if (empty($app->item->name)) {
+// exec('cd ' . ROOT . '/composer && php ' . ROOT . '/composer/composer.phar require phpmailer/phpmailer');
+// exit();
+
+if (empty($app->param)) {
     echo 'Необходимо указать компонент установки.' . PHP_EOL;
     echo ('Для установки доступны: ' . PHP_EOL);
     functions::infoListItem();
     exit();
 }
 
-if ($app->item->name == 'all') {
-    $installIni = functions::parseInstallIni();
-    $data = [];
-    if (file_exists(INSTALL_JSON)) {
-        $data = json_decode(file_get_contents(INSTALL_JSON), true);
-    }
-
+if($app->param == 'all'){
     foreach (functions::listItemsForInstall() as $a => $i) {
-        $app->item->params->app = $a;
-        $app->item->name = $a;
-        functions::constantFilesItem();
         foreach ($i as $aa => $ii) {
-            $app->item->params->{$aa} = $ii;
+            $app->item->clean();
+            $app->item->name = $aa;
+            functions::constantFilesItem();
+            $app->item->params->app = $a;
+            foreach($ii as $aaa => $iii){
+                $app->item->params->{$aaa} = $iii;
+            }
+            new installItem();
         }
-        var_dump($app);
-        // new installItem();
     }
-
-} else {
-    $iDir = ITEMS . '/' . $app->item->name;
+}else{
+    
+    $app->item->name = $app->param;
+    $app->item->params->app = $app->params->app;
     functions::constantFilesItem();
-
-    if (file_exists($iDir)) {
-
-        new installItem();
-    } else {
-        echo ('Проверьте параметры запроса. ' . $app->item->name . ' не найден!' . PHP_EOL);
-        echo ('Для установки доступны: ' . PHP_EOL);
-        functions::infoListItem();
-        echo ('Для более подробной информации используйте параметр help ' . PHP_EOL);
-    }
+    new installItem();
 }

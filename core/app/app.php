@@ -27,4 +27,8 @@ class app{
         return self::app();
     }
     
+    public function clean() : void
+    {
+        $this->collections = [];
+    }
 }

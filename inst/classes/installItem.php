@@ -11,10 +11,8 @@ class installItem
 
     public function __construct()
     {
-        
         $app = app::app();
-
-        if (!empty($app->item->params->help)) {
+        if (!is_object($app->params->help)) {
             if (file_exists($app->item->path->help)) {
                 echo file_get_contents($app->item->path->help) . PHP_EOL;
             } else {
@@ -23,7 +21,7 @@ class installItem
             exit();
         }
 
-        if(empty($app->item->params->app)){
+        if(!is_string($app->item->params->app) || empty($app->item->params->app)){
             echo 'Параметр app не указан, будет применено значение app.' . PHP_EOL;
             $a = null;
             while ($a === null) {
@@ -46,13 +44,14 @@ class installItem
 
         //Читаем параметры из ini файла
         $installIni = functions::parseInstallIni();
-        $appN = !empty($app->item->params->app) ? $app->item->params->app : 'app';
 
         $iniParam = [];
-        if(isset($installIni[$appN][$app->item->name])){
-            $iniParam = $installIni[$appN][$app->item->name];
+        if(isset($installIni[$app->item->params->app][$app->item->name])){
+            $iniParam = $installIni[$app->item->params->app][$app->item->name];
         }
 
+
+        //Собираем все параметры в app
         foreach($iniParam as $a => $i){
             if(empty($app->item->params->{$a})){
                 $app->item->params->{$a} = $i;
@@ -64,6 +63,8 @@ class installItem
                 $app->item->params->{$a} = $i;
             }
         }
+
+
 
         if (!functions::complectParams()) {
             echo 'К некоторым параметрам будут применены значения по умолчанию' . PHP_EOL;
@@ -93,7 +94,9 @@ class installItem
                 exit();
             }
         } 
-         
+
+ 
+        // Если в компоненте есть обработчик index.php создаём его объект       
         $itemIndex = null;
         if(file_exists($app->item->path->index)){
             $class = $app->item->path->class;
@@ -101,12 +104,26 @@ class installItem
         }    
         
         if($itemIndex){
-            $itemIndex->param();
+            $itemIndex->params();
         }
 
         files::copy();
+ 
+        if($itemIndex){
+            $itemIndex->files();
+        }
+
         database::install();
+
+        if($itemIndex){
+            $itemIndex->database();
+        }
+
         functions::addNameRelation();
+
+        if($itemIndex){
+            $itemIndex->finish();
+        }
         echo 'Установка компонента '. $app->item->name . ' завершена'. PHP_EOL;
     }
 

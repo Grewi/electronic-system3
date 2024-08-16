@@ -20,4 +20,9 @@ class collection
     {
         return '';
     }
+
+    public function clean() : void
+    {
+        $this->collections = [];
+    }
 } 

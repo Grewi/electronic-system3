@@ -1,6 +1,7 @@
 <?php
 
 namespace system\inst\classes;
+
 use system\core\app\app;
 
 class functions
@@ -11,11 +12,11 @@ class functions
         return in_array(mb_strtolower($request), $ok) ? true : false;
     }
 
-    public static function constantFilesItem() : void
+    public static function constantFilesItem(): void
     {
         $app = app::app();
         $app->item->path->files = ITEMS . '/' . $app->item->name . '/files.ini';
-        $app->item->path->help = ITEMS . '/' . $app->item->name . '/help.ini';
+        $app->item->path->help = ITEMS . '/' . $app->item->name . '/help.txt';
         $app->item->path->info = ITEMS . '/' . $app->item->name . '/info.txt';
         $app->item->path->params = ITEMS . '/' . $app->item->name . '/params.ini';
         $app->item->path->relations = ITEMS . '/' . $app->item->name . '/relations.ini';
@@ -30,15 +31,29 @@ class functions
     {
         global $argv;
         $app = app::app();
-        $r = [];
         if ($argv) {
             foreach ($argv as $a => $i) {
                 if ($a == 1) {
-                    $app->item->name = $i;
+                    $app->param = $i;
                 } elseif ($a > 1) {
                     $s = explode('=', $i);
-                    $app->item->params->{$s[0]} = (count($s) == 1) ? 1 : $s[1];
+                    $app->params->{$s[0]} = (count($s) == 1) ? '' : $s[1];
                 }
+            }
+        }
+    }
+
+    /**
+     * Выводит содержимое info.txt установленных в системе компонентов
+     */
+    public static function infoListItem(): void
+    {
+        foreach (self::listItems() as $i) {
+            $item = ITEMS . '/' . $i;
+            if (file_exists($item . '/info.txt')) {
+                echo '    ' . $i . ': ' . file_get_contents($item . '/info.txt') . PHP_EOL;
+            } else {
+                echo $i . PHP_EOL;
             }
         }
     }
@@ -62,76 +77,31 @@ class functions
     }
 
     /**
-     * Проверяет наличие необходимых параметров
+     * Список доступных к установке компонентов
      */
-    public static function complectParams(): bool
+    public static function listItemsForInstall(): array
     {
-        $app = app::app();
-        $installIni = self::parseInstallIni();
-        $r = true;
-        if (file_exists($app->item->path->params)) {
-            $c = parse_ini_file($app->item->path->params);
-            foreach ($c as $j => $i) { 
-                $r = $r && ( !empty($app->item->params->{$j}) || isset($installIni[$app->item->params->app][$app->item->name][$j]) ) ? true : false;
+        $installIni = functions::parseInstallIni();
+        $data = [];
+        $r = [];
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
+        }
+
+        foreach ($installIni as $a => $i) {
+            foreach ($i as $aa => $ii) {
+                if (isset($data[$a]['relations'])) {
+                    if (in_array($aa, $data[$a]['relations'])) {
+                        continue;
+                    }
+                }
+                if ($aa == 'all') {
+                    continue;
+                }
+                $r[$a][$aa] = $ii;
             }
         }
         return $r;
-    }
-
-    /**
-     * Выводит содержимое info.txt установленных в системе компонентов
-     */
-    public static function infoListItem(): void
-    {
-        foreach (self::listItems() as $i) {
-            $item = ITEMS . '/' . $i;
-            if (file_exists($item . '/info.txt')) {
-                echo '    ' . $i . ': ' . file_get_contents($item . '/info.txt') . PHP_EOL;
-            } else {
-                echo $i . PHP_EOL;
-            }
-        }
-    }
-
-    /**
-     * Добавляет имя компонента в файл install.json
-     */
-    public static function addNameRelation() : void
-    {
-        $app = app::app();
-        if (file_exists(INSTALL_JSON)) {
-            $data = json_decode(file_get_contents(INSTALL_JSON), true);
-        } else {
-            $data = [];
-        }
-        $data[$app->item->params->app]['relations'][] = $app->item->name;
-        $data[$app->item->params->app]['relations'] = array_unique($data[$app->item->params->app]['relations']);
-        file_put_contents(INSTALL_JSON, json_encode($data));
-    }
-
-    /**
-     * Проверяет наличие записи о компоненте в файле install.json
-     */
-    public static function checkRelation() : bool
-    {
-        $app = app::app();
-        $data = [];
-        if (file_exists(INSTALL_JSON)) {
-            $data = json_decode(file_get_contents(INSTALL_JSON), true);
-        }
-
-        if (file_exists($app->item->path->relations)) {
-            $rel = parse_ini_file($app->item->path->relations);
-            $r = isset($rel['items']) ? explode(',', $rel['items']) : [];
-
-            $rr = isset($data[$app->item->params->app]['relations']) ? $data[$app->item->params->app]['relations'] : [];
-            $res = true;
-            foreach ($r as $i) {
-                $res = in_array(trim($i), $rr) && $res ? true : false;
-            }
-            return $res;
-        }
-        return true;
     }
 
     /**
@@ -139,7 +109,7 @@ class functions
      */
     public static function parseInstallIni(): array
     {
-        $app = app::app();
+        // $app = app::app();
         if (!file_exists(INSTALL_INI)) {
             return [];
         }
@@ -149,7 +119,8 @@ class functions
             foreach ($i as $aa => $ii) {
                 $n = explode('.', $aa);
 
-                $item = empty($n[0]) ? $app->item->name : $n[0];
+                // $item = empty($n[0]) ? $app->item->name : $n[0];
+                $item = $n[0];
 
                 if (isset($n[1])) {
                     $param = $n[1];
@@ -162,37 +133,65 @@ class functions
                 }
             }
         }
-        
+
         return $r;
     }
 
     /**
-     * Список доступных к установке компонентов
+     * Проверяет наличие необходимых параметров
      */
-    public static function listItemsForInstall() : array
+    public static function complectParams(): bool
     {
-        $installIni = functions::parseInstallIni();
+        $app = app::app();
+        $installIni = self::parseInstallIni();
+        $r = true;
+        if (file_exists($app->item->path->params)) {
+            $c = parse_ini_file($app->item->path->params);
+            foreach ($c as $j => $i) {
+                $r = $r && (!empty($app->item->params->{$j}) || isset($installIni[$app->item->params->app][$app->item->name][$j])) ? true : false;
+            }
+        }
+        return $r;
+    }
+
+    /**
+     * Проверяет наличие записи о компоненте в файле install.json
+     */
+    public static function checkRelation(): bool
+    {
+        $app = app::app();
         $data = [];
-        $r = [];
         if (file_exists(INSTALL_JSON)) {
             $data = json_decode(file_get_contents(INSTALL_JSON), true);
         }
 
-        foreach($installIni as $a => $i){
-            foreach($i as $aa => $ii){
-                if(isset($data[$a]['relations'])){
-                    if(in_array($aa, $data[$a]['relations'])){
-                        continue;
-                    }
-                }
-                if($aa == 'all'){
-                    continue;
-                }
-                $r[$aa] = $ii;
-            }
-        }
+        if (file_exists($app->item->path->relations)) {
+            $rel = parse_ini_file($app->item->path->relations);
+            $r = isset($rel['items']) ? explode(',', $rel['items']) : [];
 
-        return $r;
+            $rr = isset($data[(string)$app->item->params->app]['relations']) ? $data[$app->item->params->app]['relations'] : [];
+            $res = true;
+            foreach ($r as $i) {
+                $res = in_array(trim($i), $rr) && $res ? true : false;
+            }
+            return $res;
+        }
+        return true;
     }
 
+    /**
+     * Добавляет имя компонента в файл install.json
+     */
+    public static function addNameRelation(): void
+    {
+        $app = app::app();
+        if (file_exists(INSTALL_JSON)) {
+            $data = json_decode(file_get_contents(INSTALL_JSON), true);
+        } else {
+            $data = [];
+        }
+        $data[$app->item->params->app]['relations'][] = $app->item->name;
+        $data[$app->item->params->app]['relations'] = array_unique($data[$app->item->params->app]['relations']);
+        file_put_contents(INSTALL_JSON, json_encode($data));
+    }
 }

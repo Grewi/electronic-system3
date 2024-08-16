@@ -1,0 +1,9 @@
+Для установки требуются следующие параметры:
+    host
+    port
+    userName
+    password
+    fromEmail
+    fromName
+    replyTo
+    logs = 
