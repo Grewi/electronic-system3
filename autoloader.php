@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 !INDEX ? exit('exit') : true;
 
-function systemAutoLoader(string $className) {
-    $autoloader = new autoloader();
-    $autoloader->start($className);
-}
-spl_autoload_register('systemAutoLoader');
+spl_autoload_register(function(string $className){
+    new autoloader($className);
+});
 
 class autoloader
 {
@@ -14,7 +12,7 @@ class autoloader
     private $pathSystem = '';
     private $pathApp = '';
 
-    public function start(string $namespace) : void
+    public function __construct(string $namespace)
     {
         $this->namespace = str_replace('\\', '/', $namespace);
         $this->classArray = explode('/', $this->namespace);
@@ -23,7 +21,7 @@ class autoloader
             $this->system();
         }else{
             $this->includeFile(ROOT . '/' . $this->namespace . '.php');
-        }
+        }        
     }
 
     private function system() : void
