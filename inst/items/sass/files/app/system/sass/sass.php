@@ -14,7 +14,7 @@
         
             // Путь к scss файлам 'имя' => 'путь'
             public $input = [
-                'style'     => '/public/assets/scss/style.scss',
+                'style'     => '/composer/vendor/twbs/bootstrap/scss/bootstrap.scss',
             ];
         
             // Путь к css файлам 'имя' => 'путь'
