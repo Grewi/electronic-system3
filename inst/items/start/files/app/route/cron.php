@@ -1,5 +1,5 @@
 <?php 
-namespace route\crone;
+namespace {namespace}\route\crone;
 use system\core\cron\cron;
 
 

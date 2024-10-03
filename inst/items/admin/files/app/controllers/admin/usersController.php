@@ -1,10 +1,10 @@
 <?php 
-namespace app\controllers\admin;
+namespace {namespace}\controllers\admin;
 
-use app\models\users;
-use app\models\user_role;
-use app\models\timezones;
-use app\controllers\admin\controller;
+use db\models\users;
+use db\models\user_role;
+use db\models\timezones;
+use {namespace}\controllers\admin\controller;
 use electronic\core\view\view;
 use electronic\core\validate\validate;
 use system\core\config\config;

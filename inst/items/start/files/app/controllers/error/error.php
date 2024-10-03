@@ -1,7 +1,7 @@
 <?php
-namespace {app}\controllers\error;
+namespace {namespace}\controllers\error;
 
-use {app}\controllers\controller;
+use {namespace}\controllers\controller;
 use electronic\core\view\view;
 use system\core\error\error404;
 

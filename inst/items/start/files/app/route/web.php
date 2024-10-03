@@ -1,6 +1,6 @@
 <?php 
 use electronic\core\route\route;
-use {app}\controllers\error\error;
+use {namespace}\controllers\error\error;
 
 if(!defined('ADMIN')){
     define('ADMIN', 'admin');

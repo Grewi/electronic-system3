@@ -1,6 +1,6 @@
 <?php 
-namespace app\controllers\admin;
-use app\controllers\admin\controller;
+namespace {namespace}\controllers\admin;
+use {namespace}\controllers\admin\controller;
 use electronic\core\view\view;
 use system\core\app\app;
 

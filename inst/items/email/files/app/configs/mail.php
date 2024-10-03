@@ -1,6 +1,6 @@
 <?php 
 
-namespace {app}\configs;
+namespace {namespace}\configs;
 !INDEX ? exit('exit') : true;
 
 class mail

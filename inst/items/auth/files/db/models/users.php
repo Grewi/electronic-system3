@@ -1,6 +1,6 @@
 <?php 
-namespace {app}\models;
-use {app}\models\user_role;
+namespace db\models;
+use db\models\user_role;
 use electronic\core\model\model;
 
 class users extends model

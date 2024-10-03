@@ -35,6 +35,8 @@ class installItem
             $app->item->params->app = 'app';
         }
 
+        $app->item->params->namespace = str_replace('/', '\\', $app->item->params->app);
+
         //Читаем параметры по умолчанию
         if (file_exists($app->item->path->params)) {
             $param = parse_ini_file($app->item->path->params);

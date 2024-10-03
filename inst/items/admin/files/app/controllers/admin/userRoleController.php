@@ -1,7 +1,7 @@
 <?php 
-namespace app\controllers\admin;
-use app\models\user_role;
-use app\controllers\admin\controller;
+namespace {namespace}\controllers\admin;
+use db\models\user_role;
+use {namespace}\controllers\admin\controller;
 use electronic\core\view\view;
 use system\core\lang\lang;
 

@@ -2,6 +2,7 @@
 namespace system\core\app;
 use system\core\collection\collection;
 
+#[\AllowDynamicProperties]
 class app{
     private static $connect = null;
     private $collections = [];

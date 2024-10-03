@@ -5,6 +5,9 @@ define('ENTRANSE', 'console');
 define('ARGV', $argv);
 define('APP_NAME', '{app}');
 define('APP', ROOT . '/' . APP_NAME);
+define('APP_NAMESPACE', str_replace('/', '\\', APP_NAME));
 define('SYSTEM', ROOT . '/system');
-
+define('MODELS', ROOT . '/db/models');
+define('MIGRATIONS', ROOT . '/db/migrations');
+define('E_PUBLIC', ROOT . '/public');
 require_once ROOT . '/system/system.php';

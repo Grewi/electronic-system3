@@ -30,6 +30,7 @@ class functions
     public static function parametrs(): void
     {
         global $argv;
+        
         $app = app::app();
         if ($argv) {
             foreach ($argv as $a => $i) {

@@ -19,16 +19,20 @@ if(!defined('APP')){
     define('APP', ROOT . '/' . APP_NAME);
 }
 
+if(!defined('APP_NAMESPACE')){
+    define('APP_NAMESPACE', str_replace('/', '\\', APP_NAME));
+}
+
 if(!defined('SYSTEM')){
     define('SYSTEM', ROOT . '/system');
 }
 
 if(!defined('MIGRATIONS')){
-    define('MIGRATIONS', APP . '/migrations');
+    define('MIGRATIONS', ROOT . '/db/migrations');
 }
 
 if(!defined('MODELS')){
-    define('MODELS', APP . '/models');
+    define('MODELS', APP . '/db/models');
 }
 
 if(!defined('TIMEZONE')){

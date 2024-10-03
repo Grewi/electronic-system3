@@ -31,7 +31,7 @@ class createController
         $this->path    = APP . '/controllers/' . $parametr . 'Controller.php';
         $this->pathDir = APP . '/controllers/' . implode('/', $ArrParam);
         $this->route   = APP . '/route/web/00_' . str_replace('/', '_', $parametr) . '.php';
-        $_ArrParam     = array_merge([APP_NAME, 'controllers'], $ArrParam);
+        $_ArrParam     = array_merge([APP_NAMESPACE, 'controllers'], $ArrParam);
         $this->namespace = implode('\\', $_ArrParam);
         $v = null;
         if (!isset(ARGV[3])) {
@@ -71,7 +71,7 @@ class createController
             }
             $layout = "<?php 
 namespace " . $this->namespace . ";
-use " . APP_NAME . "\controllers\controller;
+use " . APP_NAMESPACE . "\controllers\controller;
 use electronic\core\\view\\view;
 use electronic\core\\validate\\validate;
 use system\core\app\app;
@@ -125,7 +125,7 @@ class " . $this->className . " extends controller
             }
             $layout = "<?php 
 namespace " . $this->namespace . ";
-use " . APP_NAME . "\controllers\controller;
+use " . APP_NAMESPACE . "\controllers\controller;
 use electronic\core\\view\\view;
 use electronic\core\\validate\\validate;
 use system\core\app\app;
@@ -190,7 +190,7 @@ class " . $this->className . " extends controller
                     }
                     $layout = "<?php 
 namespace " . $this->namespace . ";
-use " . APP_NAME . "\controllers\controller;
+use " . APP_NAMESPACE . "\controllers\controller;
 use electronic\core\\view\\view;
 use electronic\core\\validate\\validate;
 use system\core\app\app;

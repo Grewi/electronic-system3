@@ -1,5 +1,5 @@
 <?php 
-namespace {app}\models;
+namespace db\models;
 use electronic\core\model\model;
 
 class timezones extends model

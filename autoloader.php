@@ -28,18 +28,18 @@ class autoloader
     {
         $path = $this->classArray;
         unset($path[0]);
-        $this->pathApp = '/' . APP_NAME . '/system/' . implode('/', $path);
+        $this->pathApp =  APP . '/system/' . implode('/', $path);
         $this->pathSystem = '/system/' . implode('/', $path);
 
         if(file_exists(ROOT . $this->pathSystem . '.php')){
-            if(!file_exists(ROOT . $this->pathApp . '.php')){
-                $this->createFile(ROOT . $this->pathApp);
+            if(!file_exists($this->pathApp . '.php')){
+                $this->createFile($this->pathApp);
             }
-            $this->includeFile(ROOT . $this->pathApp . '.php');
+            $this->includeFile($this->pathApp . '.php');
         }
 
-        if(!file_exists(ROOT . $this->pathSystem . '.php') && file_exists(ROOT . $this->pathApp . '.php')){
-            $this->includeFile(ROOT . $this->pathApp . '.php');
+        if(!file_exists(ROOT . $this->pathSystem . '.php') && file_exists($this->pathApp . '.php')){
+            $this->includeFile($this->pathApp . '.php');
         }
     }
 
@@ -49,14 +49,14 @@ class autoloader
         $className = $path[count($path) - 1];
         unset($path[0]);
         unset($path[count($path)]);
-        $p = ROOT . '/' . APP_NAME . '/system/' . implode('/', $path);
+        $p = APP . '/system/' . implode('/', $path);
         createDir($p);
 
         $namespace = $this->classArray;
         unset($namespace[0]);
         unset($namespace[count($namespace)]);
         $n = 'electronic/' . implode('/', $namespace);
-        
+
         $class = '<?php
 namespace ' . str_replace('/', '\\', $n) . ';
 class ' . $className .' extends ' . str_replace('/', '\\', $this->pathSystem) . '
@@ -64,7 +64,7 @@ class ' . $className .' extends ' . str_replace('/', '\\', $this->pathSystem) . 
 
 }
 ';
-        file_put_contents(ROOT . $this->pathApp . '.php', $class);
+        file_put_contents($this->pathApp . '.php', $class);
     }
 
     private function includeFile($path)

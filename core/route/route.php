@@ -146,7 +146,7 @@ class route
     public function prefix($name): route
     {
         if ($this->get) {
-            $class = '\\' . APP_NAME . '\\prefix\\' . $name;
+            $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
             $get = (new $class)->index();
             if (!is_null($get)) {
                 $this->get = $get;
@@ -157,7 +157,7 @@ class route
 
     public function filter($name)
     {
-        $class = '\\' . APP_NAME . '\\filter\\' . $name;
+        $class = '\\' . APP_NAMESPACE . '\\filter\\' . $name;
         (new $class)->index();
     }
 

@@ -1,8 +1,8 @@
 <?php 
-namespace app\prefix;
-use app\models\users;
-use app\models\user_role;
-use app\controllers\error\error;
+namespace {namespace}\prefix;
+use db\models\users;
+use db\models\user_role;
+use {namespace}\controllers\error\error;
 
 class admin
 {

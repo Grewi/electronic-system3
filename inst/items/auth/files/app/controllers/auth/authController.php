@@ -1,8 +1,8 @@
 <?php
 
-namespace {app}\controllers\auth;
-use {app}\models\users; 
-use {app}\controllers\controller;
+namespace {namespace}\controllers\auth;
+use {namespace}\models\users; 
+use {namespace}\controllers\controller;
 use electronic\core\view\view;
 use system\core\app\app;
 class authController extends controller

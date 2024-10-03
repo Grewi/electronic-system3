@@ -1,8 +1,8 @@
 <?php
-namespace app\controllers\admin;
+namespace {namespace}\controllers\admin;
 use system\core\lang\lang;
 
-class controller extends \app\controllers\controller
+class controller extends \{namespace}\controllers\controller
 {
     protected function bc(string $name, string $url = '')
     {
