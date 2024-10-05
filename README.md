@@ -62,3 +62,75 @@ auth.admin_email = admin@admin.ru
 admin.public = public
 ```
 В файле перечислены значения всех необходимых параметров
+
+## Минимальная установка системы (ручной режим)
+Для работы достаточно создать папку system в корне проекта и скопировать туда системные файлы или клонировать репозиторий
+```bash
+git clone git@github.com:Grewi/electronic-system.git ./system
+```
+Создать папку для доступа по http например public. Создать в ней файл index.php
+
+```php
+<?php
+require_once dirname(__DIR__) . '/index.php';
+```
+Необходимо направить все запросы на данный файл, за исключением запросов на существующие в этой директории файлы. 
+Для сервера apache можно создать файл .htaccess
+```bash
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule> 
+```
+В корне проекта нужно создать файл index.php
+```php
+define('INDEX', true);
+define('ENTRANSE', 'web');
+require_once __DIR__ . '/system/system.php'
+```
+Далее необходимо создать директрию приложения - app 
+Общая структура должна выглядеть так:
+```
+app
+  controllers
+    indexController.php
+  route
+    web.php
+public
+  index.php
+  .htaccess
+system
+index.php
+```
+Файл app/route/web.php
+```php
+use app\controllers\indexController;
+use system\core\route\route;
+
+$route = new route();
+
+$route->controller(indexController::class, 'index');
+
+exit('404');
+```
+
+Файл app/controllers/indexController.php
+```php
+namespace app\controllers;
+
+class IndexController
+{
+    public function index()
+    {
+        var_dump('index');
+    }
+}
+```
