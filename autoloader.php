@@ -1,70 +1,64 @@
 <?php declare(strict_types=1);
 !INDEX ? exit('exit') : true;
 
-spl_autoload_register(function(string $className){
+spl_autoload_register(function (string $className) {
     new autoloader($className);
 });
 
 class autoloader
 {
-    private $namespace  = '';
-    private $classArray = [];
-    private $pathSystem = '';
-    private $pathApp = '';
+    private $namespace;
+    private $path;
+    private $arrayPath = [];
+    private $appSystem = APP . '/' . SYSTEM_NAME;
+    private $p;
 
-    public function __construct(string $namespace)
+    public function __construct(string $a)
     {
-        $this->namespace = str_replace('\\', '/', $namespace);
-        $this->classArray = explode('/', $this->namespace);
-        
-        if($this->classArray[0] == 'electronic'){
+        $this->namespace = $this->namespace($a);
+        $this->path = $this->path($a);
+        $this->arrayPath = explode('/', $this->path);
+
+        if ($this->arrayPath[0] == 'electronic') {
             $this->system();
-        }else{
-            $this->includeFile(ROOT . '/' . $this->namespace . '.php');
-        }        
+        } else {
+            $this->includeFile(ROOT . '/' . $this->path . '.php');
+        }
     }
 
-    private function system() : void
+    private function system(): void
     {
-        $path = $this->classArray;
+
+        $path = $this->arrayPath;
         unset($path[0]);
-        $this->pathApp =  APP . '/system/' . implode('/', $path);
-        $this->pathSystem = '/system/' . implode('/', $path);
+        $this->p = '/' . implode('/', $path);
 
-        if(file_exists(ROOT . $this->pathSystem . '.php')){
-            if(!file_exists($this->pathApp . '.php')){
-                $this->createFile($this->pathApp);
+        if (file_exists(SYSTEM . $this->p . '.php')) {
+
+            if (!file_exists($this->appSystem . '/' . $this->p . '.php')) {
+                $this->createFile();
             }
-            $this->includeFile($this->pathApp . '.php');
+            $this->includeFile($this->appSystem . '/' . $this->p . '.php');
         }
 
-        if(!file_exists(ROOT . $this->pathSystem . '.php') && file_exists($this->pathApp . '.php')){
-            $this->includeFile($this->pathApp . '.php');
+        if (!file_exists(ROOT . $this->p . '.php') && file_exists(APP . $this->p . '.php')) {
+            $this->includeFile(APP . $this->p . '.php');
         }
     }
 
-    private function createFile() : void
+    private function createFile(): void
     {
-        $path = $this->classArray;
+        $path = $this->arrayPath;
         $className = $path[count($path) - 1];
         unset($path[0]);
         unset($path[count($path)]);
-        $p = APP . '/system/' . implode('/', $path);
-        createDir($p);
-
-        $namespace = $this->classArray;
-        unset($namespace[0]);
-        unset($namespace[count($namespace)]);
-        $n = 'electronic/' . implode('/', $namespace);
+        createDir($this->appSystem . $this->p);
 
         $class = '<?php
-namespace ' . str_replace('/', '\\', $n) . ';
-class ' . $className .' extends ' . str_replace('/', '\\', $this->pathSystem) . '
-{
+namespace electronic\\' . implode('\\', $path) . ';
+class ' . $className . ' extends \\' . SYSTEM_NAME . $this->namespace($this->p) . ' {}';
 
-}
-';
-        file_put_contents($this->pathApp . '.php', $class);
+        file_put_contents($this->appSystem . $this->p . '.php', $class);
     }
 
     private function includeFile($path)
@@ -79,5 +73,15 @@ class ' . $className .' extends ' . str_replace('/', '\\', $this->pathSystem) . 
             var_dump($e);
             exit($e->message);
         }
+    }
+
+    private function namespace(string $i): string
+    {
+        return str_replace('/', '\\', $i);
+    }
+
+    private function path(string $i): string
+    {
+        return str_replace('\\', '/', $i);
     }
 }
