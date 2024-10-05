@@ -71,8 +71,9 @@ git clone git@github.com:Grewi/electronic-system.git ./system
 Создать папку для доступа по http например public. Создать в ней файл index.php
 
 ```php
-<?php
-require_once dirname(__DIR__) . '/index.php';
+define('INDEX', true);
+define('ENTRANSE', 'web');
+require_once dirname(__DIR__) . '/system/system.php';
 ```
 Необходимо направить все запросы на данный файл, за исключением запросов на существующие в этой директории файлы. 
 Для сервера apache можно создать файл .htaccess
@@ -90,12 +91,7 @@ require_once dirname(__DIR__) . '/index.php';
     RewriteRule ^ index.php [L]
 </IfModule> 
 ```
-В корне проекта нужно создать файл index.php
-```php
-define('INDEX', true);
-define('ENTRANSE', 'web');
-require_once __DIR__ . '/system/system.php'
-```
+
 Далее необходимо создать директрию приложения - app 
 Общая структура должна выглядеть так:
 ```
@@ -108,7 +104,6 @@ public
   index.php
   .htaccess
 system
-index.php
 ```
 Файл app/route/web.php
 ```php
