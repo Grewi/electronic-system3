@@ -23,15 +23,6 @@ class index implements itemIndex
 
     public function finish() :void
     {
-        $a = null;
-        while ($a === null) {
-            echo "Запустить composer require twbs/bootstrap:5.0.2? (yes/no): ";
-            $a = functions::yes(trim(fgets(STDIN)));
-        }
-        if ($a) {
-            exec('cd ' . ROOT . '/composer && php ' . ROOT . '/composer/composer.phar require twbs/bootstrap:5.0.2');
-        }else{
-            echo "Вы можете запустить установу позже вручную";
-        }
+
     }    
 }
