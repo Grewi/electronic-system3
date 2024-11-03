@@ -1,6 +1,7 @@
 <?php
 
 namespace system\console;
+use system\core\symlink\symlink;
 
 class createSymlink
 {
@@ -9,23 +10,17 @@ class createSymlink
         $target = ARGV[2];
         $link = ARGV[3];
 
-        $_linkDir = pathinfo(getcwd() . DIRECTORY_SEPARATOR . $link);
-        $linkDir = $_linkDir['dirname'];
-        createDir($linkDir);
-
-        if(!file_exists(getcwd() . DIRECTORY_SEPARATOR . $target)){
-            exit('Файл не найден!');
+        if(empty($target) || empty($link)){
+            echo 'Отсутствуют необходимые значения. 
+            Первым значением необходимо указать существующий источник (директория или файл), 
+            а вторым место, где будет создана ссылка' . PHP_EOL;
         }
 
-        $a1 = getcwd() . DIRECTORY_SEPARATOR . $target;
-        $a2 = getcwd() . DIRECTORY_SEPARATOR . $link;
-
-        function linkSlash($a)
-        {
-            return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $a);
+        if( (new symlink())->create($target, $link) ){
+            echo 'Выполненно успешно.' . PHP_EOL;
+        }else{
+            echo 'Ошибка выполнения.' . PHP_EOL;
         }
-
-        symlink(linkSlash($a1), linkSlash($a2));
     }
 
 

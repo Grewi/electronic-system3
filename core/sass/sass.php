@@ -1,6 +1,7 @@
 <?php
 
 namespace system\core\sass;
+use system\core\config\config;
 
 abstract class sass
 {
@@ -77,7 +78,7 @@ abstract class sass
 
     public function compile($name = null)
     {
-        $data = config('sass', 'data');
+        $data = config::sass('data');
         if (!isset($this->data[$data])) {
             echo 'Не удалось определить конфигурацию системы, проверьте значение "data" в файле конфигурации .sass.ini' . PHP_EOL . 'Список возможных значений в конфигурации можно посмотреть по команде php e style/info';
             exit();
@@ -117,7 +118,7 @@ abstract class sass
 
     public function dowload($url, $fileName)
     {
-        $dataDir = config('sass', 'data');
+        $dataDir = config::sass('data');
         if (!file_exists(APP . '/cache/sass/')) {
             mkdir(APP . '/cache/sass/', 0755, true);
         }

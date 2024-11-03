@@ -12,4 +12,4 @@ $route  = new route();
 
 $route->autoloadWeb();
 
-$error = (new error())->error404();
+(new route())->controller(error::class, 'error404')->exit();

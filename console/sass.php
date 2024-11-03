@@ -36,9 +36,8 @@ class sass
 
     private function createSysyemSass()
     {
-        if (!file_exists(APP . '/system/sass')) {
-            mkdir(APP . '/system/sass', 0755, true);
-        }
+        $dir = APP . '/system/sass';
+        createDir($dir);
 
         $data = '<?php 
         namespace electronic\sass;
@@ -64,7 +63,7 @@ class sass
                 \'style\', \'bootstrap\',
             ];
         }';
-        file_put_contents(APP . '/system/sass/sass.php', $data);
+        file_put_contents($dir . '/sass.php', $data);
     }
 }
 

@@ -1,7 +1,6 @@
 <?php
 
 use system\core\route\route;
-
 $route = new route();
 
 $route->namespace('system/console');
@@ -26,6 +25,8 @@ $route->console('drop/tables')->controller('database', 'dropTables');
 $route->console('create/config')->controller('createConfig', 'index');
 $route->console('create/config/ini')->controller('createConfigIni', 'index');
 $route->console('clean/config')->controller('clean', 'cleanConfig');
+
+$route->console('symlink')->controller('symlink', 'index');
 $route->console('config')->controller('config', 'actual');
 
 $route->console('create/symlink')->controller('createSymlink', 'index');

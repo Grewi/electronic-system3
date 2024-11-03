@@ -18,7 +18,7 @@ class autoloader
         $this->namespace = $this->namespace($a);
         $this->path = $this->path($a);
         $this->arrayPath = explode('/', $this->path);
-
+        
         if ($this->arrayPath[0] == 'electronic') {
             $this->system();
         } else {
@@ -41,8 +41,8 @@ class autoloader
             $this->includeFile($this->appSystem . '/' . $this->p . '.php');
         }
 
-        if (!file_exists(ROOT . $this->p . '.php') && file_exists(APP . $this->p . '.php')) {
-            $this->includeFile(APP . $this->p . '.php');
+        if (!file_exists(ROOT . $this->p . '.php') && file_exists($this->appSystem . '/' . $this->p . '.php')) {
+            $this->includeFile($this->appSystem . '/' . $this->p . '.php');
         }
     }
 

@@ -164,10 +164,7 @@ class route
     public function controller($class, $method): route
     {
         if ($this->get) {
-            $app = app::app();
             $controller = $this->namespace . $class;
-            $_SERVER['routeController'] = $controller;
-
             $reflection = new \ReflectionClass($controller);
 
             $params = $reflection->getMethod($method)->getParameters();
