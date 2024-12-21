@@ -1,5 +1,0 @@
-<?php
-define('APP_NAME', '{app}');
-define('ENTRANSE', 'console');
-define('ARGV', $argv);
-require_once 'consts.php';

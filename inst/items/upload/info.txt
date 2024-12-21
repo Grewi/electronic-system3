@@ -1,1 +1,0 @@
-Загрузка библиотеки verot/class.upload.php

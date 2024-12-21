@@ -16,42 +16,12 @@ if (!function_exists('db')) {
     }
 }
 
-// if (!function_exists('lang')) {
-//     function lang(string $fileName, ... $lex)
-//     {
-//         $lang = lang::{$fileName}(... $lex);
-//         return $lang;
-//     }
-// }
-
-// if (!function_exists('config')) {
-//     function config(string $fileName, string $lex)
-//     {
-//         return config::{$fileName}($lex);
-//     }
-// }
-
 if (!function_exists('user_id')) {
     function user_id()
     {
         return auth::status();
     }
 }
-
-// if (!function_exists('request')) {
-//     function request($param = null, $val = null)
-//     {
-//         if ($param) {
-//             if ($val) {
-//                 return request::connect()->$param->$val;
-//             } else {
-//                 return request::connect()->$param;
-//             }
-//         } else {
-//             return request::connect();
-//         }
-//     }
-// }
 
 if (!function_exists('includeFile')) {
     function includeFile($path)
@@ -102,14 +72,6 @@ if (!function_exists('alert2')) {
     }
 }
 
-// function referal_url(){
-//     $url = $_SERVER['HTTP_REFERER'];
-//     $arrUrl = parse_url($url);
-//     $query = empty($arrUrl['query']) ? '' : '?' . $arrUrl['query'];
-//     $fragment = empty($arrUrl['fragment']) ? '' : '#' . $arrUrl['fragment'];
-//     return  $arrUrl['path'] . $query . $fragment;
-// }
-
 if (!function_exists('referal_url')) {
     function referal_url($lavel = 1)
     {
@@ -154,8 +116,8 @@ if (!function_exists('returnModal')) {
 if (!function_exists('dump')) {
     function dump(...$a)
     {
-        if (\system\core\config\config::globals('dev')) {
-            if (\system\core\config\config::globals('dumpline')) {
+        if (config::globals('dev')) {
+            if (config::globals('dumpline')) {
                 $backtrace = debug_backtrace();
                 echo '<div style="font-size: 12px; padding:3px; background: #fff; font-family: monospace; white-space:nowrap;">
             <span style="color:#900;">' . $backtrace[0]['file'] . '</span>
@@ -173,7 +135,7 @@ if (!function_exists('dd')) {
     function dd(...$a)
     {
         if (config::globals('dev')) {
-            if (\system\core\config\config::globals('dumpline')) {
+            if (config::globals('dumpline')) {
                 $backtrace = debug_backtrace();
                 if (ENTRANSE == 'web') {
                     echo '<div style="font-size: 12px; padding:3px; background: #fff; font-family: monospace; white-space:nowrap;">
@@ -199,21 +161,3 @@ if (!function_exists('localPathFile')) {
         return str_replace(ROOT, '', str_replace('\\', '/', $path));
     }
 }
-
-// if (!function_exists('count_form')) {
-//     function count_form($name, $inc = false)
-//     {
-//         if ($inc) {
-//             $_SESSION['count_form'][$name] = $_SESSION['count_form'][$name] + 1;
-//             $_SESSION['count_form_date'][$name] = time();
-//         }
-//         return (int)$_SESSION['count_form'][$name];
-//     }
-// }
-
-// if (!function_exists('count_form_reset')) {
-//     function count_form_reset($name)
-//     {
-//         unset($_SESSION['count_form'][$name]);
-//     }
-// }

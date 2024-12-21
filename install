@@ -3,6 +3,9 @@
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
 use system\core\app\app;
+use system\core\zip\zip;
+use system\core\files\files;
+
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -13,11 +16,14 @@ define('ITEMS', INST . '/items');
 define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
+
+if(!file_exists(INST)){
+    zip::zipOpen(SYSTEM . '/inst.zip', SYSTEM);
+}
+
+
 $app = app::app();
 functions::parametrs();
-
-// exec('cd ' . ROOT . '/composer && php ' . ROOT . '/composer/composer.phar require phpmailer/phpmailer');
-// exit();
 
 if (empty($app->param)) {
     echo 'Необходимо указать компонент установки.' . PHP_EOL;
@@ -46,3 +52,5 @@ if($app->param == 'all'){
     functions::constantFilesItem();
     new installItem();
 }
+
+files::deleteDir(SYSTEM . '/inst');

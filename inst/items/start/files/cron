@@ -1,5 +1,0 @@
-<?php
-define('ENTRANSE', 'cron');
-define('ARGV', $argv);
-define('APP_NAME', '{app}');
-require_once 'consts.php';

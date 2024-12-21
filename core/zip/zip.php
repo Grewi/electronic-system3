@@ -34,4 +34,16 @@ class zip
         // Zip-архив будет создан только после закрытия объекта
         $zip->close();
     }
+
+    public static function zipOpen($zipFile, $folder)
+    {
+        $zip = new \ZipArchive;
+        $res = $zip->open($zipFile);
+        if ($res === TRUE) {
+            $zip->extractTo($folder);
+            $zip->close();
+        } else {
+            throw new \FileException('Ошибка zip архива');
+        } 
+    }
 }

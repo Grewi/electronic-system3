@@ -35,14 +35,14 @@ class autoloader
 
         if (file_exists(SYSTEM . $this->p . '.php')) {
 
-            if (!file_exists($this->appSystem . '/' . $this->p . '.php')) {
+            if (!file_exists($this->appSystem  . $this->p . '.php')) {
                 $this->createFile();
             }
-            $this->includeFile($this->appSystem . '/' . $this->p . '.php');
+            // $this->includeFile($this->appSystem  . $this->p . '.php');
         }
 
-        if (!file_exists(ROOT . $this->p . '.php') && file_exists($this->appSystem . '/' . $this->p . '.php')) {
-            $this->includeFile($this->appSystem . '/' . $this->p . '.php');
+        if (!file_exists(ROOT . $this->p . '.php') && file_exists($this->appSystem . $this->p . '.php')) {
+            $this->includeFile($this->appSystem . $this->p . '.php');
         }
     }
 
@@ -52,7 +52,7 @@ class autoloader
         $className = $path[count($path) - 1];
         unset($path[0]);
         unset($path[count($path)]);
-        createDir($this->appSystem . $this->p);
+        createDir($this->appSystem . '/'. implode('/', $path));
 
         $class = '<?php
 namespace electronic\\' . implode('\\', $path) . ';

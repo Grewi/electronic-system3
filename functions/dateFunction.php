@@ -40,7 +40,7 @@ if (!function_exists('eDate')) {
     function eDate($date, $mask = 'd.m.Y')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         return $d->format($mask);
     }
 }
@@ -49,7 +49,7 @@ if (!function_exists('eDateLang')) {
     function eDateLang($date, $p = 'r')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         return $d->formatLang($p);
     }
 }
@@ -58,7 +58,7 @@ if (!function_exists('eTime')) {
     function eTime($date, $mask = 'H:i')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         return $d->format($mask);
     }
 }
@@ -67,7 +67,7 @@ if (!function_exists('eDateTime')) {
     function eDateTime($date, $mask = 'd.m.Y h:i')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         return $d->format($mask);
     }
 }
@@ -76,7 +76,7 @@ if (!function_exists('addDay')) {
     function addDay($date, $count = 1, $format = 'Y-m-d')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         $d->addDay($count);
         return $d->format($format);
     }
@@ -86,7 +86,7 @@ if (!function_exists('subDay')) {
     function subDay($date, $count = 1, $format = 'Y-m-d')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         $d->subDay($count);
         return $d->format($format);
     }
@@ -96,7 +96,7 @@ if (!function_exists('addWeek')) {
     function addWeek($date, $count = 1, $format = 'Y-m-d')
     {
         if (!$date) return;
-        $d = \system\core\date\date::create($date);
+        $d = date::create($date);
         $d->addWeek($count);
         return $d->format($format);
     }
