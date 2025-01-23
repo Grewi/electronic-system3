@@ -6,6 +6,7 @@ use system\core\app\app;
 use system\core\zip\zip;
 use system\core\files\files;
 
+$app = app::app();
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -17,23 +18,25 @@ define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
 
-if(!file_exists(INST)){
-    zip::zipOpen(SYSTEM . '/inst.zip', SYSTEM);
-}
-
-
-$app = app::app();
 functions::parametrs();
 
+functions::unpuckItems();
+
 if (empty($app->param)) {
-    echo 'Необходимо указать компонент установки.' . PHP_EOL;
-    echo ('Для установки доступны: ' . PHP_EOL);
+    functions::print('Необходимо указать компонент установки.');
+    functions::print('Для установки доступны: ');
     functions::infoListItem();
-    exit();
+    functions::print('--------------------------------------');
+    functions::print('Также можно использовать параметр all для автоматической установки. ' . PHP_EOL . ' 
+    Для этого необходимо создать и настроить файл install.ini в корне проекта', true);
 }
 
 if($app->param == 'all'){
-    foreach (functions::listItemsForInstall() as $a => $i) {
+    $all = functions::listItemsForInstall();
+    if(count($all) <= 1){
+        functions::print('Нет элементов для установки.', true);
+    }
+    foreach ($all as $a => $i) {
         foreach ($i as $aa => $ii) {
             $app->item->clean();
             $app->item->name = $aa;
@@ -45,6 +48,8 @@ if($app->param == 'all'){
             new installItem();
         }
     }
+}elseif($app->param == 'install.ini'){
+    functions::installIni();
 }else{
     
     $app->item->name = $app->param;
@@ -53,4 +58,4 @@ if($app->param == 'all'){
     new installItem();
 }
 
-files::deleteDir(SYSTEM . '/inst');
+// files::deleteDir(SYSTEM . '/inst');
