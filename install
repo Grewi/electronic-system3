@@ -6,8 +6,6 @@ use system\core\app\app;
 use system\core\zip\zip;
 use system\core\files\files;
 
-$app = app::app();
-
 define('ENTRANSE', 'install');
 define('INDEX', true);
 define('ROOT', str_replace('\\', '/', dirname(__DIR__)));
@@ -17,6 +15,7 @@ define('ITEMS', INST . '/items');
 define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
+$app = app::app();
 
 functions::parametrs();
 

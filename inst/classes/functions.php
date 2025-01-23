@@ -221,16 +221,14 @@ class functions
 
     public static function delItems()
     {
-        // files::deleteDir(INST . '/items');
+        files::deleteDir(INST . '/items');
     }
 
     public static function unpuckItems()
     {
-        if(!file_exists(INST . '/items')){
-            files::createDir(INST . '/items');
+        if(file_exists(INST . '/items')){
+            self::delItems();
         }
-        if(!file_exists(INST)){
-            zip::zipOpen(INST . '/inst.zip', INST);
-        }
+        zip::zipOpen(INST . '/items.zip', INST);
     }    
 }
