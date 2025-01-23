@@ -120,8 +120,6 @@ class functions
     {
         // $app = app::app();
         if (!file_exists(INSTALL_INI)) {
-            self::print('Отсутствует файл install.ini');
-            self::print('Для создания файла можно использовать команду "php system/install install.ini"');
             return [];
         }
         $ini = parse_ini_file(INSTALL_INI, true, INI_SCANNER_TYPED);
@@ -218,7 +216,7 @@ class functions
 
     public static function print(string $text, bool $exit = false): void
     {
-        echo $text . PHP_EOL;
+        echo '---> ' . $text . PHP_EOL;
         if ($exit) {
             self::delItems();
             exit();

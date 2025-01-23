@@ -35,11 +35,17 @@ if (empty($app->param)) {
 }
 
 if($app->param == 'all'){
+    if (!file_exists(INSTALL_INI)) {
+        functions::print('Отсутствует файл install.ini');
+        functions::print('Для создания файла можно использовать команду "php system/install install.ini"', true);
+    }    
+
     $all = functions::listItemsForInstall();
     if(count($all) <= 0){
         functions::print('Нет элементов для установки.', true);
     }
     foreach ($all as $a => $i) {
+
         foreach ($i as $aa => $ii) {
             $app->item->clean();
             $app->item->name = $aa;
@@ -61,4 +67,4 @@ if($app->param == 'all'){
     new installItem();
 }
 
-// files::deleteDir(SYSTEM . '/inst');
+functions::delItems();
