@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 !INDEX ? exit('exit') : true;
 
 spl_autoload_register(function (string $className) {
@@ -18,9 +20,14 @@ class autoloader
         $this->namespace = $this->namespace($a);
         $this->path = $this->path($a);
         $this->arrayPath = explode('/', $this->path);
-        
 
-        $this->includeFile(ROOT . '/' . $this->path . '.php');
+        if (file_exists(ROOT . '/' . $this->path . '.php')) {
+            $this->includeFile(ROOT . '/' . $this->path . '.php');
+        }else{
+            // var_dump($this->lastItemPath($this->path));
+            $this->includeFile(ROOT . '/' . $this->lastItemPath($this->path) . '.php');
+        }
+
     }
 
     private function includeFile($path)
@@ -46,4 +53,16 @@ class autoloader
     {
         return str_replace('\\', '/', $i);
     }
+
+    public function lastItemPath(string $namespace): string
+    {
+        $a = explode('/', APP_NAME);
+        $b = array_pop($a);
+        if(str_starts_with($namespace, $b)){
+            return str_replace($b, APP_NAME, $namespace);
+        }else{
+            return $namespace;
+        }
+    }
+
 }
