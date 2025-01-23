@@ -40,7 +40,7 @@ class functions
                     $app->param = $i;
                 } elseif ($a > 1) {
                     $s = explode('=', $i);
-                    $app->params->{$s[0]} = (count($s) == 1) ? '' : $s[1];
+                    $app->params->{$s[0]} = (count($s) == 1) ? true : $s[1];
                 }
             }
         }
@@ -221,13 +221,33 @@ class functions
 
     public static function delItems()
     {
+        $app = app::app();
+        if($app->params->d === true){
+            return;
+        }
         files::deleteDir(INST . '/items');
     }
 
     public static function unpuckItems()
     {
+        $app = app::app();
+        if($app->params->d === true){
+            return;
+        }
         if(file_exists(INST . '/items')){
-            self::delItems();
+            functions::print('Директория "' . INST . '/items" уже существует');
+            $a = null;
+            while ($a === null) {
+                functions::print("Удалить и продолжить стандартную установку? (yes/no): ");
+                $a = functions::yes(trim(fgets(STDIN)));
+            }
+            if ($a) {
+                self::delItems();
+                functions::print('Директория перезаписана');
+            }else{
+                $app->params->d = true;
+            }
+            
         }
         zip::zipOpen(INST . '/items.zip', INST);
     }    

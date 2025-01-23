@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * Параметры установщика:
+ * Первый параметр указыает на элемент установки
+ * f  Перезаписывать файлы при копировании
+ * d  Режим разработки. Не распаковывает и не удаляет items
+ */
+
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
 use system\core\app\app;
-use system\core\zip\zip;
-use system\core\files\files;
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -18,7 +23,6 @@ require_once SYSTEM . '/system.php';
 $app = app::app();
 
 functions::parametrs();
-
 functions::unpuckItems();
 
 if (empty($app->param)) {
