@@ -11,6 +11,7 @@ use system\core\model\traits\join;
 use system\core\model\traits\pagination;
 use system\core\model\traits\group;
 use system\core\model\traits\sort;
+use system\core\model\traits\filter;
 
 #[\AllowDynamicProperties]
 abstract class model
@@ -24,6 +25,7 @@ abstract class model
     use pagination;
     use group;
     use sort;
+    use filter;
 
     protected $_databaseName = 'database';
     protected $_table = '';
