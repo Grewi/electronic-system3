@@ -98,11 +98,11 @@ class files
                         functions::print('Файл: ' . $f1 . ' отсутствует');
                     } else {
                         if (file_exists($f2)) {
-                            if (!isset($param['-f'])) {
-                                functions::print('Файл: ' . $f2 . ' уже существует');
-                                continue;
-                            } else {
+                            if (($app->params->f === true)) {
                                 functions::print('Файл: ' . $f2 . ' перезаписан');
+                            } else {
+                                functions::print('Файл: ' . $f2 . ' уже существует');
+                                continue;                                
                             }
                         }
                         copy($f1, $f2);

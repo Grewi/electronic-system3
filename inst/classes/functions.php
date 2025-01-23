@@ -90,11 +90,13 @@ class functions
         if (file_exists(INSTALL_JSON)) {
             $data = json_decode(file_get_contents(INSTALL_JSON), true);
         }
-
+        $control = false;
         foreach ($installIni as $a => $i) {
             foreach ($i as $aa => $ii) {
                 if (isset($data[$a]['relations'])) {
                     if (in_array($aa, $data[$a]['relations'])) {
+                        $control = true;
+                        self::print('Элемент ' . $aa . ' уже установлен.');
                         continue;
                     }
                 }
@@ -103,6 +105,10 @@ class functions
                 }
                 $r[$a][$aa] = $ii;
             }
+        }
+        if($control){
+            self::print('Для переустановки уже установленного элемента отредактируйте install.json в корне проекта.');
+            self::print('Для принудительной перезаписи файлов используйте параметр - f');
         }
         return $r;
     }

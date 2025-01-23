@@ -36,7 +36,7 @@ if (empty($app->param)) {
 
 if($app->param == 'all'){
     $all = functions::listItemsForInstall();
-    if(count($all) <= 1){
+    if(count($all) <= 0){
         functions::print('Нет элементов для установки.', true);
     }
     foreach ($all as $a => $i) {
