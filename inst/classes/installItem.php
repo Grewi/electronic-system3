@@ -21,7 +21,7 @@ class installItem
         }
 
         if(!is_string($app->item->params->app) || empty($app->item->params->app)){
-            functions::print('Параметр app не указан, будет применено значение app.');
+            functions::print('Параметр app не указан, будет применено значение "apps/app".');
             $a = null;
             while ($a === null) {
                 functions::print("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
@@ -30,10 +30,14 @@ class installItem
             if (!$a) {
                 functions::print('Установка прервана', true);
             } 
-            $app->item->params->app = 'app';
+            $app->item->params->app = 'apps/app';
         }
-
-        $app->item->params->namespace = str_replace('/', '\\', $app->item->params->app);
+        if($app->params->n === true){
+            $app->item->params->namespace = str_replace('/', '\\', $app->item->params->app);
+        }else{
+            $app->item->params->namespace = functions::lastItemPath($app->item->params->app);
+        }
+        
 
         //Читаем параметры по умолчанию
         if (file_exists($app->item->path->params)) {

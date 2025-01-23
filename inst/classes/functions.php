@@ -254,5 +254,14 @@ class functions
             
         }
         zip::zipOpen(INST . '/items.zip', INST);
-    }    
+    }
+
+    /**
+     * возвращает последний элемент пути
+     */
+    public static function lastItemPath(string $path): string
+    {
+        $a = explode('/',$path);
+        return array_pop($a);
+    }
 }
