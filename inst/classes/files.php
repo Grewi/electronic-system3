@@ -1,6 +1,7 @@
 <?php
 
 namespace system\inst\classes;
+
 use system\core\app\app;
 
 class files
@@ -38,50 +39,19 @@ class files
                     }
 
                     if ($ib[1] == '>') {
-                        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
-                        if (!empty($m)) {
-                            $ri = str_replace($m[0], $m[1], $ib[0]);
-                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
-                            $i = $l . ' = ' . $ri;
-                        } else {
-                            $i = $ib[0] . ' = ' . $ib[0];
-                        }
+                        $i = self::copyFile($ib);
                     }
 
                     if ($ib[1] == 'd') {
-                        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
-                        if (!empty($m)) {
-                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
-                            $i = $l . ' = null';
-                        } else {
-                            $i = $ib[0] . ' = null';
-                        }
+                        $i = self::copyDir($ib);
                     }
 
-                    if($ib[1] == '>>'){
-                        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
-                        if (!empty($m)) {
-                            $ri = str_replace($m[0], $m[1], $ib[0]);
-                            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
-                            $i = $l . ' = ' . $ri;
-                        }
-                        $sd = ITEMS . '/' . $app->item->name . '/files/' . $ri;
-                        $sdFiles = new \RecursiveIteratorIterator(
-                            new \RecursiveDirectoryIterator($sd), \RecursiveIteratorIterator::LEAVES_ONLY
-                        );
-                        $list = '';
-                        foreach($sdFiles as $i){
-                            if($i->isFile()){
-                                $filePath = $i->getRealPath();
-                                $relativePath = substr($filePath, strlen($sd));
-                                $relativePath = str_replace('\\', '/', $relativePath);
-                                $list .= $l . $relativePath . ' = ' . $ri . $relativePath . PHP_EOL;
-                            }
-                        }
-                        $i = $list;
+                    if ($ib[1] == '>>') {
+                        $i = self::copyFiles($ib);
                     }
                 }
             }
+
 
             $ftext = implode(PHP_EOL, $fArray);
             $files = parse_ini_string($ftext, false, INI_SCANNER_TYPED);
@@ -102,12 +72,13 @@ class files
                                 functions::print('Файл: ' . $f2 . ' перезаписан');
                             } else {
                                 functions::print('Файл: ' . $f2 . ' уже существует');
-                                continue;                                
+                                continue;
                             }
                         }
+
                         copy($f1, $f2);
                         $pext = pathinfo($f2);
-                        if ( (isset($pext['extension']) && $pext['extension'] == 'php') || empty($pext['extension']) ) {
+                        if ((isset($pext['extension']) && $pext['extension'] == 'php') || empty($pext['extension'])) {
                             $content = file_get_contents($f2);
                             foreach ($app->item->params as $aa => $ii) {
                                 preg_match_all('/\{\s*(' . $aa . ')\s*\}/si', $content, $mm);
@@ -126,6 +97,73 @@ class files
         } else {
             functions::print('Файлов для копирования нет');
         }
+    }
+
+    private static function copyFile(array $ib): string
+    {
+        $app = app::app();
+        if (isset($ib[2])) {
+            preg_match('/\{\s*(.*?)\s*\}/si', $ib[2], $m2);
+            if (!empty($m2)) {
+                $ib[2] = str_replace($m2[0], $app->item->params->{$m2[1]}, $ib[2]);
+            }
+        }
+
+        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+        if (!empty($m)) {
+            $a = str_replace($m[0], $m[1], $ib[0]);
+            $b = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            if (isset($ib[2])) {
+                return $b . ' = ' . $ib[2];
+            } else {
+                return $b . ' = ' . $a;
+            }
+        } else {
+            if (isset($ib[2])) {
+                return $ib[0] . ' = ' . $ib[2];
+            } else {
+                return $ib[0] . ' = ' . $ib[0];
+            }
+        }
+    }
+
+    private static function copyFiles(array $ib): string
+    {
+        $app = app::app();
+        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+        if (!empty($m)) {
+            $ri = str_replace($m[0], $m[1], $ib[0]);
+            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            $i = $l . ' = ' . $ri;
+        }
+        $sd = ITEMS . '/' . $app->item->name . '/files/' . $ri;
+        $sdFiles = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($sd),
+            \RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        $list = '';
+        foreach ($sdFiles as $i) {
+            if ($i->isFile()) {
+                $filePath = $i->getRealPath();
+                $relativePath = substr($filePath, strlen($sd));
+                $relativePath = str_replace('\\', '/', $relativePath);
+                $list .= $l . $relativePath . ' = ' . $ri . $relativePath . PHP_EOL;
+            }
+        }
+        return $list;
+    }
+
+    private static function copyDir(array $ib): string
+    {
+        $app = app::app();
+        preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
+        if (!empty($m)) {
+            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            $i = $l . ' = null';
+        } else {
+            $i = $ib[0] . ' = null';
+        }
+        return $i;
     }
 
     /**
