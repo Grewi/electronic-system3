@@ -22,7 +22,7 @@ class installItem
         }
 
         if(!is_string($app->item->params->app) || empty($app->item->params->app)){
-            text::warn('Параметр app не указан, будет применено значение "apps/app".');
+            text::warn('Параметр app не указан, будет применено значение "app".');
             $a = null;
             while ($a === null) {
                 text::info("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
@@ -31,7 +31,7 @@ class installItem
             if (!$a) {
                 text::danger('Установка прервана', true);
             } 
-            $app->item->params->app = 'apps/app';
+            $app->item->params->app = 'app';
         }
         if($app->params->n === true){
             $app->item->params->namespace = str_replace('/', '\\', $app->item->params->app);

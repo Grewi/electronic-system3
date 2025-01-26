@@ -145,7 +145,7 @@ class text
     
     private static function pre()
     {
-        return self::color('->  ', 'Green');
+        return self::color(" ▶ ", 'Green');
     }
 
 }

@@ -23,9 +23,13 @@ class autoloader
 
         if (file_exists(ROOT . '/' . $this->path . '.php')) {
             $this->includeFile(ROOT . '/' . $this->path . '.php');
+        }elseif(file_exists(ROOT . '/install.json')){
+            $data = array_keys(json_decode(file_get_contents(ROOT . '/install.json'), true));
+            if(in_array($this->arrayPath[0], $data)){
+                $this->includeFile(ROOT . '/apps/' . $this->path . '.php');
+            }
         }else{
-            // var_dump($this->lastItemPath($this->path));
-            $this->includeFile(ROOT . '/' . $this->lastItemPath($this->path) . '.php');
+            throw new \FileException('Файл ' . $a . ' не найден!');
         }
 
     }
