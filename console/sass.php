@@ -1,18 +1,19 @@
 <?php
 namespace system\console;
 
+use system\core\text\text;
+
 class sass
 {
     private function start()
     {
         $fileSass = APP . '/system/sass/sass.php';
-        $classSass = '\\electronic\\sass\\sass';
+        $classSass = '\\' . APP_NAME . '\system\\sass\\sass';
         if(!file_exists($fileSass)){
             $this->createSysyemSass();
-            echo 'Создан файл ' . $fileSass . PHP_EOL . 
-            'Для компиляции стилей необходимо его заполнить' . PHP_EOL . 
-            'http://grewi.ru/blogs/27-kompilyaciya-css-faylov' . PHP_EOL;
-            exit();
+            text::warn('Создан файл ' . $fileSass); 
+            text::warn('Для компиляции стилей необходимо его заполнить');
+            text::info('http://grewi.ru/blogs/27-kompilyaciya-css-faylov', true);
         }
         return new $classSass();
     }

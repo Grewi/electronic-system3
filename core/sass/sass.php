@@ -2,6 +2,7 @@
 
 namespace system\core\sass;
 use system\core\config\config;
+use system\core\text\text;
 
 abstract class sass
 {
@@ -80,8 +81,9 @@ abstract class sass
     {
         $data = config::sass('data');
         if (!isset($this->data[$data])) {
-            echo 'Не удалось определить конфигурацию системы, проверьте значение "data" в файле конфигурации .sass.ini' . PHP_EOL . 'Список возможных значений в конфигурации можно посмотреть по команде php e style/info' . PHP_EOL;
-            exit();
+            text::danger('Не удалось определить конфигурацию системы');
+            text::warn('Проверьте значение "data" в файле конфигурации .sass.ini');
+            text::warn('Список возможных значений в конфигурации можно посмотреть по команде php "e/' . APP_NAME . ' style/info"', true);;
         }
 
         $fileData = APP . '/cache/sass/' . $this->data[$data];
@@ -98,9 +100,9 @@ abstract class sass
                 exec($fileData . ' ' . $input . ' ' . $output . ' --style compressed');
             }
 
-            echo $a . ' compile ' .  PHP_EOL;
+            text::success($a . ' compile ');
         }
-        echo 'Процесс завершён' . PHP_EOL;
+        text::success('Процесс завершён');
     }
 
     private function slash($str)
@@ -111,9 +113,12 @@ abstract class sass
 
     public function info()
     {
+
         foreach ($this->data as $a => $i) {
-            echo $a . PHP_EOL;
+            text::primary($a);
         }
+        text::warn('Выбранное значение необходимо указать в файле "apps/' . APP_NAME . '/configs/.sass.ini"');
+        text::warn('Например: data=linux-x64');        
     }
 
     public function dowload($url, $fileName)
@@ -133,8 +138,7 @@ abstract class sass
         fclose($fp);
 
         if ($code != 200) {
-            echo 'Не удалось получить файл' . PHP_EOL;
-            exit();
+            text::danger('Не удалось получить файл', true);
         }
 
         $pathinfo = pathinfo($fileName);
@@ -165,8 +169,7 @@ abstract class sass
                 $zip->extractTo(APP . '/cache/sass/' . $dataDir);
                 $zip->close();
             } else {
-                echo 'Не удалось обработать данные.' . PHP_EOL;
-                exit();
+                text::danger('Не удалось обработать данные.', true);
             }
 
             if(file_exists(APP . '/cache/sass/' . $fileName)){
