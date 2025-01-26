@@ -11,6 +11,7 @@
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
 use system\core\app\app;
+use system\inst\classes\text;
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -27,23 +28,23 @@ functions::parametrs();
 functions::unpuckItems();
 
 if (empty($app->param)) {
-    functions::print('Необходимо указать компонент установки.');
-    functions::print('Для установки доступны: ');
+    text::danger('Необходимо указать компонент установки.');
+    text::print('Для установки доступны: ');
     functions::infoListItem();
-    functions::print('--------------------------------------');
-    functions::print('Также можно использовать параметр all для автоматической установки. ' . PHP_EOL . ' 
+    text::print('--------------------------------------');
+    text::print('Также можно использовать параметр ' . text::color('all', 'Yellow')  . ' для автоматической установки. ' . PHP_EOL . ' 
     Для этого необходимо создать и настроить файл install.ini в корне проекта', true);
 }
 
 if($app->param == 'all'){
     if (!file_exists(INSTALL_INI)) {
-        functions::print('Отсутствует файл install.ini');
-        functions::print('Для создания файла можно использовать команду "php system/install install.ini"', true);
+        text::danger('Отсутствует файл install.ini');
+        text::print('Для создания файла можно использовать команду "php system/install install.ini"', true);
     }    
 
     $all = functions::listItemsForInstall();
     if(count($all) <= 0){
-        functions::print('Нет элементов для установки.', true);
+        text::danger('Нет элементов для установки.', true);
     }
     foreach ($all as $a => $i) {
 

@@ -2,6 +2,7 @@
 
 namespace system\inst\classes;
 
+use system\inst\classes\text;
 use system\inst\classes\connectDb;
 use system\core\app\app;
 
@@ -55,14 +56,14 @@ class database
         if (file_exists($filesPath)) {
 
             if (!$dbType) {
-                functions::print('Недостаточно данных для подключения к базе данных');
+                text::print('Недостаточно данных для подключения к базе данных');
                 $a = null;
                 while ($a === null) {
-                    functions::print('Продолжить установку? (yes/no): ');
+                    text::print('Продолжить установку? (yes/no): ');
                     $a = functions::yes(trim(fgets(STDIN)));
                 }
                 if (!$a) {
-                    functions::print('Установка прервана', true);
+                    text::print('Установка прервана', true);
                 }
             }
 
@@ -86,8 +87,8 @@ class database
                 }
                 $db->query($sql);
             } catch (\Exception $e) {
-                functions::print('Ошибка загрузки в базу данных');
-                functions::print($e->getMessage());
+                text::danger('Ошибка загрузки в базу данных');
+                text::print($e->getMessage());
             }
 
         }

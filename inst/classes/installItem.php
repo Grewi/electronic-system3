@@ -1,6 +1,7 @@
 <?php
 namespace system\inst\classes;
 
+use system\inst\classes\text;
 use system\inst\classes\files;
 use system\inst\classes\database;
 use system\inst\classes\functions;
@@ -14,21 +15,21 @@ class installItem
         $app = app::app();
         if (!is_object($app->params->help)) {
             if (file_exists($app->item->path->help)) {
-                functions::print(file_get_contents($app->item->path->help), true);
+                text::print(file_get_contents($app->item->path->help), true);
             } else {
-                functions::print('Справочная информация не обнаружена.', true);
+                text::warn('Справочная информация не обнаружена.', true);
             }
         }
 
         if(!is_string($app->item->params->app) || empty($app->item->params->app)){
-            functions::print('Параметр app не указан, будет применено значение "apps/app".');
+            text::warn('Параметр app не указан, будет применено значение "apps/app".');
             $a = null;
             while ($a === null) {
-                functions::print("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
+                text::info("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                functions::print('Установка прервана', true);
+                text::danger('Установка прервана', true);
             } 
             $app->item->params->app = 'apps/app';
         }
@@ -71,29 +72,29 @@ class installItem
 
 
         if (!functions::complectParams()) {
-            functions::print('К некоторым параметрам будут применены значения по умолчанию');
+            text::warn('К некоторым параметрам будут применены значения по умолчанию');
             $a = null;
             while ($a === null) {
-                functions::print("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
+                text::info("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                functions::print('Установка прервана', true);
+                text::danger('Установка прервана', true);
             }            
         }
 
         if(!functions::checkRelation()){
             if(file_exists($app->item->path->relations)){
                 $rel = parse_ini_file($app->item->path->relations);
-                functions::print('Для продолжения требуется установить: ' . $rel['items']);
+                text::warn('Для продолжения требуется установить: ' . $rel['items']);
             }
             $a = null;
             while ($a === null) {
-                functions::print("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
+                text::info("Продолжить установку компонента " . $app->item->name . "? (yes/no): ");
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                functions::print('Установка прервана', true);
+                text::danger('Установка прервана', true);
             }
         } 
 
@@ -126,7 +127,7 @@ class installItem
         if($itemIndex){
             $itemIndex->finish();
         }
-        functions::print('Установка компонента '. $app->item->name . ' завершена');
+        text::success('Установка компонента '. $app->item->name . ' завершена');
     }
 
     private function checkRelation($p)
@@ -134,15 +135,15 @@ class installItem
         $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
         if(file_exists($relPath)){
             $rel = parse_ini_file($relPath);
-            functions::print('Для продолжения требуется установить: ' . $rel['items']);
+            text::warn('Для продолжения требуется установить: ' . $rel['items']);
         }
         $a = null;
         while ($a === null) {
-            functions::print("Продолжить установку? (yes/no): ");
+            text::info("Продолжить установку? (yes/no): ");
             $a = functions::yes(trim(fgets(STDIN)));
         }
         if (!$a) {
-            functions::print('Установка прервана', true);
+            text::danger('Установка прервана', true);
         }
     }
 }

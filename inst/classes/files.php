@@ -2,6 +2,7 @@
 
 namespace system\inst\classes;
 
+use system\inst\classes\text;
 use system\core\app\app;
 
 class files
@@ -24,8 +25,8 @@ class files
             }
             if (!empty($t)) {
                 $t = array_unique($t);
-                functions::print('Отсутствует параметр(ы): ' . implode(', ', $t));
-                functions::print('Установка прервана', true);
+                text::warn('Отсутствует параметр(ы): ' . implode(', ', $t));
+                text::danger('Установка прервана', true);
             }
 
             $fArray = explode(PHP_EOL, $ftext);
@@ -65,13 +66,13 @@ class files
                     array_pop($ff);
                     self::createDir(implode('/', $ff));
                     if (!file_exists($f1)) {
-                        functions::print('Файл: ' . $f1 . ' отсутствует');
+                        text::print('Файл: ' . $f1 . ' отсутствует');
                     } else {
                         if (file_exists($f2)) {
                             if (($app->params->f === true)) {
-                                functions::print('Файл: ' . $f2 . ' перезаписан');
+                                text::print('Файл: ' . $f2 . ' перезаписан');
                             } else {
-                                functions::print('Файл: ' . $f2 . ' уже существует');
+                                text::print('Файл: ' . $f2 . ' уже существует');
                                 continue;
                             }
                         }
@@ -93,9 +94,9 @@ class files
                     self::createDir($f2);
                 }
             }
-            functions::print('Файлы скопированны');
+            text::success('Файлы скопированны');
         } else {
-            functions::print('Файлов для копирования нет');
+            text::danger('Файлов для копирования нет');
         }
     }
 
