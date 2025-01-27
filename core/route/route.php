@@ -1,18 +1,19 @@
-<?php
-
+<?php 
 namespace system\core\route;
 
 use system\core\app\app;
 
-class route
+class route 
 {
-    protected $namespace = '';
-    protected $get = true;
     protected $url = [];
-    protected $groupName = null;
-    protected $param_regex = '/[^a-zA-Zа-яА-Я0-9-_]/ui';
+    protected $namespace;
+    protected $groupName;
+    protected $get = true;
+    protected $start = false;
+    protected $groupControl = false;
     protected $autoExitGroup = false;
     protected $autoExitController = true;
+    protected $param_regex = '/[^a-zA-Zа-яА-Я0-9-_]/ui';
 
     public function __construct()
     {
@@ -23,263 +24,12 @@ class route
             $url = explode('/', $urls[0]);
             unset($url[0]);
             $this->url = $url;
-            $app->request->type = 'web';
             $app->request->params = $url;
         } elseif (ENTRANSE == 'console') {
             $argv = ARGV;
             unset($argv[0]);
             $this->url = $argv;
-            $app->request->type = 'console';
             $app->request->params = $argv;
-        }
-    }
-
-    public function group(string $name, callable $function): route
-    {
-        $name = $this->slash($name);
-        if (is_null($this->get)) {
-            $this->get = true;
-        }
-
-        if ($name[0] == '/') {
-            $name = substr($name, 1);
-        }
-
-        $this->groupName = $name;
-        $status = true;
-        $nameArr = explode('/', $name);
-
-        foreach ($nameArr as $a => $i) {
-            if (@$this->url[$a + 1] != $i) {
-                $status = false;
-            }
-        }
-
-        if ($status && $this->get) {
-            $function($this);
-            if ($this->autoExitGroup) {
-                exit();
-            }
-        } else {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function namespace(string $namespace): route
-    {
-        $this->get = true;
-        $namespace = str_replace('/', '\\', $namespace);
-        $s = substr($namespace, -1);
-        $s != '\\' ? $namespace = $namespace . '\\' : false;
-        $this->namespace = $namespace;
-        $this->groupName = null;
-        return $this;
-    }
-
-    public function get(string $get = null): route
-    {
-        $get = $this->slash($get);
-        if (is_null($get)) {
-            return $this;
-        }
-        $this->parseUrl($get);
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function post(string $get): route
-    {
-        $get = $this->slash($get);
-        $this->parseUrl($get);
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function put(string $get): route
-    {
-        $get = $this->slash($get);
-        $this->parseUrl($get);
-        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function delete(string $get): route
-    {
-        $get = $this->slash($get);
-        $this->parseUrl($get);
-        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function all(string $get): route
-    {
-        $get = $this->slash($get);
-        $this->parseUrl($get);
-        return $this;
-    }
-
-    public function console(string $get): route
-    {
-
-        if (isset($this->url[1]) && $get == $this->url[1]) {
-            $this->get = true;
-        } else {
-            $this->get = false;
-        }
-        return $this;
-    }
-
-    public function permission(): route
-    {
-        return $this;
-    }
-
-    public function prefix($name): route
-    {
-        if ($this->get) {
-            $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
-            $get = (new $class)->index();
-            if (!is_null($get)) {
-                $this->get = $get;
-            }
-        }
-        return $this;
-    }
-
-    public function filter($name)
-    {
-        $class = '\\' . APP_NAMESPACE . '\\filter\\' . $name;
-        (new $class)->index();
-    }
-
-    public function controller($class, $method): route
-    {
-        if ($this->get) {
-            $controller = $this->namespace . $class;
-            $reflection = new \ReflectionClass($controller);
-
-            $params = $reflection->getMethod($method)->getParameters();
-            $cla = [];
-            foreach ($params AS $param) {
-                $cl = $param->getType()->getName();
-                $nc = new $cl();
-                if(method_exists($nc, 'toController')){
-                    $cla[] = $nc->toController();
-                }else{
-                    $cla[] = $nc;
-                }
-            }
-
-            (new $controller)->$method(... $cla);
-            if ($this->autoExitController) {
-                exit();
-            }
-        }
-        return $this;
-    }
-
-    public function exit(): void
-    {
-        if ($this->get) {
-            exit();
-        }
-        $this->get = true;
-    }
-
-    private function parseUrl(string $get): void
-    {
-        $app = app::app();
-        if ($this->groupName) {
-            if ($get == '/') {
-                $get = substr($get, 1);
-            }
-            $get = '/' . $this->groupName . $get;
-        }
-
-        //Парсинг $get
-        $g = explode('/', $get);
-        unset($g[0]);
-
-        $url = (array) $this->url;
-        $check = true;
-
-        //Если длина url меньше роута без необязательных параметров
-        $gg = $this->delParametr($g);
-        if (count($url) < count($gg)) {
-            $check = false;
-        }
-
-        foreach ($url as $a => $i) {
-
-            //Если на последней итерации пусто. пропускаем
-            if (empty($i) && count($url) == $a) {
-                if ($i != @$g[$a]) {
-                    $check = false;
-                }
-                continue;
-            }
-
-            if (isset($g[$a])) {
-                preg_match('/\{(.*?)\}/si', $g[$a], $param);
-                preg_match('/\{(.*?)\?\}/si', $g[$a], $freeParam);
-
-                //Если сработал необязательный параметр, удаляем обязательный
-                if (isset($freeParam[1])) {
-                    unset($param);
-                }
-
-                //Проверка не обязательного параметра
-                if (isset($freeParam[1])) {
-                    $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
-                    $app->getparams->{$freeParam[1]} = $getReturn;
-                    continue;
-                }
-
-                //Проверка обязательного параметра
-                if (!empty($param) && empty($url[$a])) {
-                    $check = false;
-                    break;
-                } elseif ((isset($param[1]) && !empty($url[$a])) && $check) {
-                    $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
-                    $app->getparams->{$param[1]} = $getReturn;
-                }
-
-                //Проверка элемента url
-                if ($url[$a] != $g[$a] && !isset($param[1]) && !isset($freeParam[1])) {
-                    $check = false;
-                    break;
-                }
-            } else {
-
-                $check = false;
-            }
-        }
-
-        $this->get = $check;
-    }
-
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    private function delParametr(array $param)
-    {
-        preg_match('/\{(.*?)\?\}/si', $param[count($param)], $freeParam);
-        if (isset($freeParam[0])) {
-            unset($param[count($param)]);
-            return $this->delParametr($param);
-        } else {
-            return $param;
         }
     }
 
@@ -327,11 +77,240 @@ class route
         }
     }
 
-    private function slash($str)
+    public function get(string $get = null): route
     {
-        if($str){
-            $str = str_replace('\\', '/', $str);
-            return '/' . trim($str, '/');            
+        $this->startControl();
+        $get = $this->slash($get);
+        if (is_null($get)) {
+            return $this;
+        }
+        $this->parseUrl($get);
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            $this->get = false;
+        }
+        return $this;
+    }
+
+    public function post(string $get): route
+    {
+        $this->startControl();
+        $get = $this->slash($get);
+        $this->parseUrl($get);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->get = false;
+        }
+        return $this;
+    }
+
+    public function put(string $get): route
+    {
+        $this->startControl();
+        $get = $this->slash($get);
+        $this->parseUrl($get);
+        if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+            $this->get = false;
+        }
+        return $this;
+    }
+
+    public function delete(string $get): route
+    {
+        $this->startControl();
+        $get = $this->slash($get);
+        $this->parseUrl($get);
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            $this->get = false;
+        }
+        return $this;
+    }
+
+    public function all(string $get): route
+    {
+        $this->startControl();
+        $get = $this->slash($get);
+        $this->parseUrl($get);
+        return $this;
+    }
+
+    public function group(string $name, callable $function, string $prefix = null): void
+    {
+        $this->groupControl = true;
+        $name = $this->slash($name);
+        $this->startControl();
+        if ($name[0] == '/') {
+            $name = substr($name, 1);
+        }
+
+        $this->groupName = $name;
+        $status = true;
+        $nameArr = explode('/', $name);
+
+        foreach ($nameArr as $a => $i) {
+            if (@$this->url[$a + 1] != $i) {
+                $status = false;
+            }
+        }
+
+        if ($status && $this->get) {
+            if($prefix){
+                $this->prefix($prefix);
+            }
+            $function($this);
+            if ($this->autoExitGroup) {
+                exit();
+            }
+        } 
+
+        $this->get = true;
+        $this->start = false;
+        $this->groupControl = false;
+    }
+
+    public function prefix($name): route
+    {
+        $this->startControl();
+        if ($this->get) {
+            $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
+            $get = (new $class)->index();
+            if (!is_null($get)) {
+                $this->get = $get;
+            }
+        }
+        return $this;
+    }
+
+    public function console(string $get): route
+    {
+        $this->startControl();
+        if (isset($this->url[1]) && $get == $this->url[1]) {
+            $this->get = true;
+        } else {
+            $this->get = false;
+        }
+        return $this;
+    }
+
+    public function controller($class, $method): void
+    {
+        if ($this->get) {
+            $controller = $this->namespace . $class;
+            $reflection = new \ReflectionClass($controller);
+
+            $params = $reflection->getMethod($method)->getParameters();
+            $cla = [];
+            foreach ($params AS $param) {
+                $cl = $param->getType()->getName();
+                $nc = new $cl();
+                if(method_exists($nc, 'toController')){
+                    $cla[] = $nc->toController();
+                }else{
+                    $cla[] = $nc;
+                }
+            }
+
+            (new $controller)->$method(... $cla);
+            if ($this->autoExitController) {
+                exit();
+            }
+        }
+        if($this->groupControl){
+
+        }
+        $this->get = false;
+        $this->start = false;
+    }
+
+    private function parseUrl(string $get): void
+    {
+        $app = app::app();
+        if ($this->groupName) {
+            if ($get == '/') {
+                $get = substr($get, 1);
+            }
+            $get = '/' . $this->groupName . $get;
+        }
+
+        //Парсинг $get
+        $g = explode('/', $get);
+        unset($g[0]);
+
+        $url = (array) $this->url;
+        $check = true;
+
+        //Если длина url меньше роута без необязательных параметров
+        $gg = $this->delParametr($g);
+        if (count($url) < count($gg)) {
+            $check = false;
+        }
+
+        foreach ($url as $a => $i) {
+            //Если на последней итерации пусто. пропускаем
+            if (empty($i) && count($url) == $a) {
+                if ($i != @$g[$a]) {
+                    $check = false;
+                }
+                continue;
+            }
+
+            if (isset($g[$a])) {
+                preg_match('/\{(.*?)\}/si', $g[$a], $param);
+                preg_match('/\{(.*?)\?\}/si', $g[$a], $freeParam);
+
+                //Если сработал необязательный параметр, удаляем обязательный
+                if (isset($freeParam[1])) {
+                    unset($param);
+                }
+
+                //Проверка не обязательного параметра
+                if (isset($freeParam[1])) {
+                    $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
+                    $app->getparams->{$freeParam[1]} = $getReturn;
+                    continue;
+                }
+
+                //Проверка обязательного параметра
+                if (!empty($param) && empty($url[$a])) {
+                    $check = false;
+                    break;
+                } elseif ((isset($param[1]) && !empty($url[$a])) && $check) {
+                    $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
+                    $app->getparams->{$param[1]} = $getReturn;
+                }
+
+                //Проверка элемента url
+                if ($url[$a] != $g[$a] && !isset($param[1]) && !isset($freeParam[1])) {
+                    $check = false;
+                    break;
+                }
+            } else {
+
+                $check = false;
+            }
+        }
+        $this->get = $check;
+    }
+
+    private function delParametr(array $param)
+    {
+        preg_match('/\{(.*?)\?\}/si', $param[count($param)], $freeParam);
+        if (isset($freeParam[0])) {
+            unset($param[count($param)]);
+            return $this->delParametr($param);
+        } else {
+            return $param;
+        }
+    }
+
+    private function slash(string $str): string
+    {
+        return '/' . trim(str_replace('\\', '/', $str), '/');            
+    }
+
+    private function startControl() : void
+    {
+        if(!$this->start){
+            $this->get = true;
+            $this->start = true;
         }
     }
 }

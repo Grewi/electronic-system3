@@ -83,7 +83,7 @@ abstract class sass
         if (!isset($this->data[$data])) {
             text::danger('Не удалось определить конфигурацию системы');
             text::warn('Проверьте значение "data" в файле конфигурации .sass.ini');
-            text::warn('Список возможных значений в конфигурации можно посмотреть по команде php "e/' . APP_NAME . ' style/info"', true);;
+            text::warn('Список возможных значений в конфигурации можно посмотреть по команде "php e/' . APP_NAME . ' style/info"', true);;
         }
 
         $fileData = APP . '/cache/sass/' . $this->data[$data];
