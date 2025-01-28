@@ -1,7 +1,7 @@
 <?php
 namespace system\core\model\traits;
 
-trait sort
+trait sortGet
 {
     /**
      * Обработка get параметров sort 

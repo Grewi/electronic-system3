@@ -1,9 +1,11 @@
 <?php
 namespace system\core\model\traits;
 
+use system\core\model\classes\bind;
 trait where
 {
     private $whereSeparator;
+    protected bind $_bind;
 
     private function _separatorWhere()
     {
@@ -35,24 +37,24 @@ trait where
     private function where($p1, $p2 = null, $p3 = null)
     {
 
-        $count = $this->_this_where_count++;
+        // $count = $this->_this_where_count++;
         $sep = $this->_separatorWhere();
-        $pp1 = str_replace('.', '_', $p1) . '_' . $count;
+        $pp1 = str_replace('.', '_', $p1) . '_' . $this->_bind->getNumber();
         if (is_null($p2) && is_null($p3)) {
             $this->_where .= $sep . ' `' . $this->_id . '` = :' . $this->_id . ' ';
-            $this->_bind[$this->_id] = $p1;
+            $this->_bind->add($this->_id, $p1);
             $this->_data = array_merge([$this->_id => $p1]);
             $this->_idNumber = $p1;
         } elseif (is_null($p3)) {
             $this->_where .= $sep . ' ' . $this->_wrapperWhere($p1) . ' = :' . $pp1  . ' ';
-            $this->_bind[$pp1] = $p2;
+            $this->_bind->add($pp1, $p2);
             $this->_data = array_merge([$p1 => $p2]);
             if ($p1 == $this->_id) {
                 $this->_idNumber = $p2;
             }
         } else {
             $this->_where .= $sep . ' ' . $this->_wrapperWhere($p1) . ' ' . $p2 . ' :' . $pp1 . ' ';
-            $this->_bind[$pp1] = $p3;
+            $this->_bind->add($pp1, $p3);
             $this->_data = array_merge([$p1 => $p3]);
             if ($p1 == $this->_id) {
                 $this->_idNumber = $p3;
@@ -82,9 +84,9 @@ trait where
         $sep = $this->_separatorWhere();
         $arr = [];
         foreach ($arg as $i) {
-            $count = $this->_this_where_count++;
-            $pp1 = str_replace('.', '_', $p1) . '_' . $count;
-            $this->_bind[$pp1] = $i;
+            // $count = $this->_this_where_count++;
+            $pp1 = str_replace('.', '_', $p1) . '_' . $this->_bind->getNumber();
+            $this->_bind->add($pp1, $i);
             $arr[] = ':'.$pp1;
         }
         $str = implode(',', $arr);
@@ -96,14 +98,14 @@ trait where
     {
         $this->_where .= $str;
         foreach ($bind as $key => $i) {
-            $this->_bind[$key] = $i;
+            $this->_bind->add($key, $i);
         }
         return $this;
     }
 
-    private function whereAnd(callable $a)
-    {
-        $new = new \system\core\model\model();
-        return $this;
-    }
+    // private function whereAnd(callable $a)
+    // {
+    //     $new = new \system\core\model\model();
+    //     return $this;
+    // }
 }
