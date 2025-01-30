@@ -53,96 +53,194 @@ class model
         $this->EMD->paginationActive = 0;
     }
 
+    /**
+     * Значение поля SELECT. по умолчанию "*" 
+     * @param string $select
+     * @return model
+     */
     public function select(string $select)
     {
         $this->EMD->select->add($select);
         return $this;
     }
 
+    /**
+     * Значение поля FROM. По умолчанию наименование класса
+     * @param string $from
+     * @return model
+     */
     public function from(string $from): static
     {
         $this->EMD->from->add($from);
         return $this;
     }
 
+    /**
+     * Условие с указанием оператора 
+     * @param string $col Поле таблицы в базе
+     * @param string $operator Оператор для условия (= < <= > >= !=)
+     * @param string|int|float $value Значение поля
+     * @param bool $or Логический оператор с предыдущим блоком where. По умолчанию "AND"
+     * @return model
+     */
     public function whereL(string $col, string $operator, string|int|float $value, bool $or = false): static
     {
         $this->EMD->where->where($col, $operator, $value, $or);
         return $this;
     }
 
+    /**
+     * Короткое условие. В качестве оператора значение "="
+     * @param string $col Поле таблицы в базе
+     * @param string|int|float $value Значение поля
+     * @param bool $or Логический оператор с предыдущим блоком where. По умолчанию "AND"
+     * @return model
+     */
     public function where(string $col, string|int|float $value, bool $or = false): static
     {
         $this->EMD->where->where($col, '=', $value, $or);
         return $this;
     }
 
-    public function whereNull(string $col)
+    /**
+     * Условие соответствия поля значению NULL
+     * @param string $col Поле таблицы в базе
+     * @return model
+     */
+    public function whereNull(string $col):static
     {
         $this->EMD->where->whereNull($col);
         return $this;
     }
 
-    public function whereNotNull(string $col)
+    /**
+     * Условие не соответствия поля значению NULL
+     * @param string $col Поле таблицы в базе
+     * @return model
+     */
+    public function whereNotNull(string $col): static
     {
         $this->EMD->where->whereNotNull($col);
         return $this;
     }
 
-    public function whereIn(string $col, array|object $arg)
+    /**
+     * Условие соответствия поля значениям в массиве 
+     * @param string $col Поле таблицы в базе
+     * @param array|object $arg Список возможных значений
+     * @return model
+     */
+    public function whereIn(string $col, array|object $arg): static
     {
         $this->EMD->where->whereIn($col, $arg);
         return $this;
     }
 
+    /**
+     * Произвольная строка для условия
+     * @param string $str Строка
+     * @param array $bind Данные для биндинга
+     * @return model
+     */
     public function whereStr(string $str, array $bind = [])
     {
         $this->EMD->where->whereStr($str, $bind);
         return $this;
     }
 
+    /**
+     * Значение поля LIMIT
+     * @param int $limit
+     * @return model
+     */
     public function limit(int $limit): static
     {
         $this->EMD->limit->add($limit);
         return $this;
     }
 
+    /**
+     * Сортировка по полю (полям)
+     * @param string $name Поле таблицы в базе
+     * @param string $type Направление сортировки
+     * @return model
+     */
     public function sort(string $name, string $type = 'asc'): static
     {
         $this->EMD->sort->add($name, $type);
         return $this;
     }
 
+    /**
+     * Объединение  INNER
+     * @param string $tableName Наименование таблицы для объединения
+     * @param string $firstTable Поле текущей таблицы для сравненеи
+     * @param string $secondaryTable Поле подключаемой таблицы для сравнения
+     * @return model
+     */
     public function innerJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
-        $this->join($tableName, $firstTable, $secondaryTable, 0);
+        $this->EMD->join->join($tableName, $firstTable, $secondaryTable, 0);
         return $this;
     }
 
+    /**
+     * Объединение  LEFT
+     * @param string $tableName Наименование таблицы для объединения
+     * @param string $firstTable Поле текущей таблицы для сравненеи
+     * @param string $secondaryTable Поле подключаемой таблицы для сравнения
+     * @return model
+     */
     public function leftJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
-        $this->join($tableName, $firstTable, $secondaryTable, 1);
+        $this->EMD->join->join($tableName, $firstTable, $secondaryTable, 1);
         return $this;
     }
 
+        /**
+     * Объединение  RIGHT
+     * @param string $tableName Наименование таблицы для объединения
+     * @param string $firstTable Поле текущей таблицы для сравненеи
+     * @param string $secondaryTable Поле подключаемой таблицы для сравнения
+     * @return model
+     */
     public function rightJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
-        $this->join($tableName, $firstTable, $secondaryTable, 2);
+        $this->EMD->join->join($tableName, $firstTable, $secondaryTable, 2);
         return $this;
     }
 
+    /**
+     * Объединение  FULL
+     * @param string $tableName Наименование таблицы для объединения
+     * @param string $firstTable Поле текущей таблицы для сравненеи
+     * @param string $secondaryTable Поле подключаемой таблицы для сравнения
+     * @return model
+     */
     public function fullJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
-        $this->join($tableName, $firstTable, $secondaryTable, 3);
+        $this->EMD->join->join($tableName, $firstTable, $secondaryTable, 3);
         return $this;
     }
 
+    /**
+     * Объединение  CROSS
+     * @param string $tableName Наименование таблицы для объединения
+     * @param string $firstTable Поле текущей таблицы для сравненеи
+     * @param string $secondaryTable Поле подключаемой таблицы для сравнения
+     * @return model
+     */
     public function crossJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
-        $this->join($tableName, $firstTable, $secondaryTable, 4);
+        $this->EMD->join->join($tableName, $firstTable, $secondaryTable, 4);
         return $this;
     }
 
+    /**
+     * Зоздаёт новую запись в базе данных
+     * @param array $data Данные для записи. Ключи массива должны соответствовать поля в базе
+     * @return model
+     */
     public function insert(array $data): static
     {
         $this->EMD->insert->databaseName($this->EMD->databaseName);
@@ -155,6 +253,11 @@ class model
         return (new $cl)->find($id);
     }
 
+    /**
+     * Изменения в записи. 
+     * @param array $data
+     * @return model
+     */
     public function update(array $data = []): static
     {
         $d = array_merge(get_object_vars($this), $data);
@@ -170,6 +273,11 @@ class model
         return (new $cl)->find($this->id);
     }
 
+    /**
+     * Удаление записи
+     * @param array $data
+     * @return void
+     */
     public function delete(array $data = []): void
     {
         $d = array_merge(get_object_vars($this), $data);
@@ -184,22 +292,40 @@ class model
         $this->EMD->delete->save();
     }
 
+    /**
+     * Массив данных 
+     * @return array
+     */
     public function all(): array
     {
-        return db($this->EMD->databaseName)->fetchAll($this->slectSql(), $this->bind(), get_class($this));
+        $db = database::connect($this->EMD->databaseName);
+        return $db->fetchAll($this->slectSql(), $this->bind(), get_class($this));
     }
 
-    public function get()
+    /**
+     * Единичная запись
+     * @return model
+     */
+    public function get(): static
     {
-        return db($this->EMD->databaseName)->fetch($this->slectSql(), $this->bind(), get_class($this));
+        $db = database::connect($this->EMD->databaseName);
+        return $db->fetch($this->slectSql(), $this->bind(), get_class($this));
     }
 
+    /**
+     * Запись соответствубщая идентификатору
+     * @param int $id
+     */
     public function find(int $id): static
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
     }
 
+    /**
+     * Количество записей
+     * @return int
+     */
     public function count(): int
     {
         $str = 'SELECT COUNT(*) as `count` FROM ' .
@@ -211,6 +337,11 @@ class model
         return (int) db($this->EMD->databaseName)->fetch($str, $this->bind(), get_class($this))->count;
     }
 
+    /**
+     * Сумма 
+     * @param mixed $name Наименование поля для суиммирования
+     * @return float
+     */
     public function summ($name): float
     {
         $str = 'SELECT SUM(' . $this->wrap($name) . ') as `summ` FROM ' .
