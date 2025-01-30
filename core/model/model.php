@@ -1,268 +1,251 @@
 <?php
-
 namespace system\core\model;
-
-use system\core\model\traits\insert;
-use system\core\model\traits\update;
-use system\core\model\traits\delete;
-use system\core\model\traits\save;
-
-use system\core\model\traits\pagination;
-use system\core\model\traits\group;
-use system\core\model\traits\sortGet;
-use system\core\model\traits\filter;
-
+use system\core\collection\collection;
+use system\core\database\database;
 use system\core\model\classes\{
-    select, 
-    from,
-    sort,
-    bind,
-    where,
-    limit,
-    join,
+    eSelect, 
+    eFrom, 
+    eSort, 
+    eBind, 
+    eWhere, 
+    eLimit, 
+    eJoin, 
+    eInsert, 
+    eUpdate, 
+    eDelete,
+    eOffset,
+    eGroup,
 };
 
 #[\AllowDynamicProperties]
-abstract class model
+class model
 {
-    use insert;
-    use update;
-    use delete;
-    use save;
-    use pagination;
-    use group;
-    use sortGet;
-    use filter;
-
-    protected $_databaseName = 'database';
-    protected $_table = '';
-    protected $_idNumber = 0;
-    protected $_id = 'id';
-    protected $_paginCount = 20;
-    private select $_select;
-    private from $_from;
-    private where $_where;
-    private bind $_bind;
-    private sort $_sort;
-    private join $_join;
-    private limit $_limit;
-    protected $_limitDirection = 20;
-    protected $_offset = '';
-    
-    protected $_group = '';
-
-    protected $paginationLine = [];
-    protected $paginationPriv = 0;
-    protected $paginationNext = 0;
-    protected $paginationActive = 0;
-
-    protected $_data = [];
+    private collection $EMD;
 
     public function __construct()
     {
-        if (empty($this->_table)) {
-            $c = explode('\\', get_called_class());
-            $this->_table = array_pop($c);
-        }
-        $this->_select = new select();
-        $this->_from = new from();
-        $this->_bind = new bind();
-        $this->_sort = new sort();
-        $this->_limit = new limit();
-        $this->_where = new where($this->_bind);
-        $this->_join = new join();
-        $this->_from->add($this->_table);
-    }
-        
-    private function select(string $select)
-    {
-        $this->_select->add($select);
-        return $this;
-    }    
-
-    private function from(string $from): static
-    {
-        $this->_from->add($from);
-        return $this;
-    }
-
-    private function whereL(string $col, string $operator, string|int|float $value, bool $or = false): static
-    {
-        $this->_where->where($col, $operator, $value, $or);
-        return $this;
+        $this->EMD = new collection;
+        $this->EMD->databaseName = 'database';
+        $this->EMD->select = new eSelect;
+        $this->EMD->from   = new eFrom;
+        $this->EMD->sort   = new eSort;
+        $this->EMD->bind   = new eBind;
+        $this->EMD->where  = new eWhere;
+        $this->EMD->limit  = new eLimit;
+        $this->EMD->join   = new eJoin;
+        $this->EMD->insert = new eInsert;
+        $this->EMD->update = new eUpdate;
+        $this->EMD->delete = new eDelete;
+        $this->EMD->offset = new eOffset;
+        $this->EMD->group  = new eGroup;
+        $c = explode('\\', get_called_class());
+        $this->EMD->from->add(array_pop($c));
+        $this->EMD->id = 'id';
+        $this->EMD->paginCount = 20;
+        $this->EMD->limitDirection = 20;
+        $this->EMD->paginationLine = [];
+        $this->EMD->paginationPriv = 0;
+        $this->EMD->paginationNext = 0;
+        $this->EMD->paginationActive = 0;
     }
 
-    private function where(string $col, string|int|float $value, bool $or = false): static
+    public function select(string $select)
     {
-        $this->_where->where($col, '=', $value, $or);
+        $this->EMD->select->add($select);
         return $this;
     }
 
-    private function whereNull(string $col)
+    public function from(string $from): static
     {
-        $this->_where->whereNull($col);
+        $this->EMD->from->add($from);
         return $this;
     }
 
-    private function whereNotNull(string $col)
+    public function whereL(string $col, string $operator, string|int|float $value, bool $or = false): static
     {
-        $this->_where->whereNotNull($col);
+        $this->EMD->where->where($col, $operator, $value, $or);
         return $this;
     }
 
-    private function whereIn(string $col, array|object $arg)
+    public function where(string $col, string|int|float $value, bool $or = false): static
     {
-        $this->_where->whereIn( $col,  $arg);
+        $this->EMD->where->where($col, '=', $value, $or);
         return $this;
     }
 
-    private function whereStr(string $str, array $bind = [])
+    public function whereNull(string $col)
     {
-        $this->_where->whereStr( $str,  $bind);
-        return $this;
-    } 
-
-    private function limit(int $limit): static
-    {
-        $this->_limit->add($limit);
+        $this->EMD->where->whereNull($col);
         return $this;
     }
 
-    private function sort(string $name, string $type = 'asc'): static
+    public function whereNotNull(string $col)
     {
-        $this->_sort->add($name, $type);
+        $this->EMD->where->whereNotNull($col);
         return $this;
     }
 
-    private function innerJoin(string $tableName, string $firstTable, string $secondaryTable):static
+    public function whereIn(string $col, array|object $arg)
+    {
+        $this->EMD->where->whereIn($col, $arg);
+        return $this;
+    }
+
+    public function whereStr(string $str, array $bind = [])
+    {
+        $this->EMD->where->whereStr($str, $bind);
+        return $this;
+    }
+
+    public function limit(int $limit): static
+    {
+        $this->EMD->limit->add($limit);
+        return $this;
+    }
+
+    public function sort(string $name, string $type = 'asc'): static
+    {
+        $this->EMD->sort->add($name, $type);
+        return $this;
+    }
+
+    public function innerJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
         $this->join($tableName, $firstTable, $secondaryTable, 0);
         return $this;
-    }    
+    }
 
-    private function leftJoin(string $tableName, string $firstTable, string $secondaryTable):static
+    public function leftJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
         $this->join($tableName, $firstTable, $secondaryTable, 1);
         return $this;
     }
 
-    private function rightJoin(string $tableName, string $firstTable, string $secondaryTable):static
+    public function rightJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
         $this->join($tableName, $firstTable, $secondaryTable, 2);
         return $this;
     }
 
-    private function fullJoin(string $tableName, string $firstTable, string $secondaryTable):static
+    public function fullJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
         $this->join($tableName, $firstTable, $secondaryTable, 3);
         return $this;
     }
 
-    private function crossJoin(string $tableName, string $firstTable, string $secondaryTable):static
+    public function crossJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
         $this->join($tableName, $firstTable, $secondaryTable, 4);
         return $this;
-    }    
-
-    private function count(): string
-    {
-        $str = 'SELECT COUNT(*) as count FROM ' .
-            $this->_from . ' ' .
-            $this->_leftJoin . ' ' .
-            $this->_where . ' ' .
-            $this->_group;
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        return db($this->_databaseName)->fetch($str, $this->_bind->get(), get_class($this))->count;
     }
 
-    private function summ($name): float
+    public function insert(array $data): static
     {
-        $str = 'SELECT SUM(`' . $name . '`) as `summ` FROM ' .
-            $this->_from . ' ' .
-            $this->_leftJoin . ' ' .
-            $this->_where . ' ' .
-            $this->_group;
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        return (int) db($this->_databaseName)->fetch($str, $this->_bind->get(), get_class($this))->summ;
+        $this->EMD->insert->databaseName($this->EMD->databaseName);
+        $this->EMD->insert->table($this->EMD->from->get());
+        $this->EMD->insert->bind($this->bind());
+        $this->EMD->insert->id($this->EMD->id);
+        $this->EMD->insert->data($data);
+        $id = $this->EMD->insert->save();
+        $cl = $this::class;
+        return (new $cl)->find($id);
     }
 
-    private function all(): array
+    public function update(array $data = []): static
     {
-        $str = 'SELECT ' . $this->_select . ' ' . ' FROM ' .
-            $this->_from . ' ' .
-            $this->_leftJoin . ' ' .
-            $this->_where . ' ' .
-            $this->_group . ' ' .
-            $this->_sort . ' ' .
-            $this->_limit . ' ' .
-            $this->_offset;
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        return db($this->_databaseName)->fetchAll($str, $this->_bind->get(), get_class($this));
+        $d = array_merge(get_object_vars($this), $data);
+        $this->where($this->EMD->id, $d[$this->EMD->id]);
+        $this->EMD->update->where($this->EMD->where->get());  
+        $this->EMD->update->databaseName($this->EMD->databaseName);
+        $this->EMD->update->table($this->EMD->from->get());
+        $this->EMD->update->bind($this->bind());
+        $this->EMD->update->id($this->EMD->id);
+        $this->EMD->update->data($d);
+        $this->EMD->update->save();
+        $cl = $this::class;
+        return (new $cl)->find($this->id);
     }
 
-    private function get()
+    public function delete(array $data = []): void
     {
-        $str = 'SELECT ' . $this->_select . ' ' . ' FROM ' .
-            $this->_from . ' ' .
-            $this->_leftJoin . ' ' .
-            $this->_where . ' ' .
-            $this->_group . ' ' .
-            $this->_sort . ' ' .
-            $this->_limit . ' ' .
-            $this->_offset;
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        return db($this->_databaseName)->fetch($str, $this->_bind->get(), get_class($this));
-    }
-
-    private function sql($format = true, $exit = false): void
-    {
-        $str = 'SELECT ' . $this->_select . ' ' . ' FROM ' .
-            $this->_from . ' ' .
-            $this->_leftJoin . ' ' .
-            $this->_where . ' ' .
-            $this->_group . ' ' .
-            $this->_sort . ' ' .
-            $this->_limit . ' ' .
-            $this->_offset;
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        if($format){
-            dump($this->_bind->get());
-            dump($str);                 
-        }else{
-            print_r($this->_bind->get()) . PHP_EOL;
-            print('<br><br>') . PHP_EOL;
-            print_r($str) . PHP_EOL;       
+        $d = array_merge(get_object_vars($this), $data);
+        if(isset($this->id)){
+            $this->where($this->EMD->id, $d[$this->EMD->id]);
         }
-        if($exit){
+        $this->EMD->delete->where($this->EMD->where->get());  
+        $this->EMD->delete->databaseName($this->EMD->databaseName);
+        $this->EMD->delete->table($this->EMD->from->get());
+        $this->EMD->delete->id($this->EMD->id);
+        $this->EMD->delete->data($this->bind());
+        $this->EMD->delete->save();
+    }
+
+    public function all(): array
+    {
+        return db($this->EMD->databaseName)->fetchAll($this->slectSql(), $this->bind(), get_class($this));
+    }
+
+    public function get()
+    {
+        return db($this->EMD->databaseName)->fetch($this->slectSql(), $this->bind(), get_class($this));
+    }
+
+    public function find(int $id): static
+    {
+        $db = database::connect($this->EMD->databaseName);
+        return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
+    }
+
+    public function sqlPrint($format = true, $exit = false): void
+    {
+        if ($format) {
+            dump($this->slectSql());
+        } else {
+            print_r($this->slectSql()) . PHP_EOL;
+        }
+        if ($exit) {
             exit();
         }
     }
 
-    private function find($id = null)
+    public function bindPrint($format = true, $exit = false): void
     {
-        if (!$id) {
-            return null;
+        if ($format) {
+            dump($this->bind());
+        } else {
+            print_r($this->bind()) . PHP_EOL;
         }
-        $result = db($this->_databaseName)->fetch('SELECT * FROM ' . $this->_table . ' WHERE `' . $this->_id . '` = :' . $this->_id . ' ', [$this->_id => $id], get_class($this));
-        return $result ? $result : null;
-    }
-
-    public static function __callStatic(string $method, array $parameters)
-    {
-        if (method_exists((new static), $method)) {
-            return (new static)->$method(...$parameters);
+        if ($exit) {
+            exit();
         }
     }
 
-    public function __call(string $method, array $param)
+    private function slectSql(): string
     {
-        if (method_exists($this, $method)) {
-            return $this->$method(...$param);
-        }
+        $a = 'SELECT ' . $this->EMD->select->get() . ' ' . ' FROM ' .
+        $this->EMD->from->get() . ' ' .
+        $this->EMD->join->get() . ' ' .
+        $this->EMD->where->get() . ' ' .
+        $this->EMD->group->get() . ' ' .
+        $this->EMD->sort->get() . ' ' .
+        $this->EMD->limit->get() . ' ' .
+        $this->EMD->offset->get();
+        return preg_replace('/\s{2,}/', ' ', $a);
     }
 
-    public function __get($property)
+    private function bind(): array
     {
-        return null;
+        return array_merge($this->EMD->where->bind->get());
+    }
+
+    public function __debugInfo(): array
+    {
+        $methods = [];
+        $reflect = new \ReflectionObject($this);
+        $props   = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
+        foreach ($props as $prop) {
+            $methods[$prop->getName()] = $this->{$prop->getName()};
+        }
+        return $methods;
     }
 }

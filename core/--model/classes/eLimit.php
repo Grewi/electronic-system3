@@ -1,7 +1,7 @@
 <?php
 namespace system\core\model\classes;
 
-class limit 
+class eLimit 
 {
     private string $limit;
     public function add(int $limit): void

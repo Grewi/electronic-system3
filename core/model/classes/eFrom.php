@@ -1,10 +1,9 @@
 <?php
 
 namespace system\core\model\classes;
-
 use system\core\model\traits\wrap;
 
-class from 
+class eFrom 
 {
     private string $from;
 

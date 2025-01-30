@@ -2,7 +2,7 @@
 
 namespace system\core\model\classes;
 
-class bind
+class eBind
 {
     private $bind = [];
 

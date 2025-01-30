@@ -1,20 +1,20 @@
 <?php
 
 namespace system\core\model\classes;
-
+use system\core\model\classes\eBind;
 use system\core\model\traits\wrap;
 
-class where
+class eWhere
 {
     private $whereSeparator;
     private $where;
-    private bind $bind;
+    public eBind $bind;
 
     use wrap;
 
-    public function __construct(bind &$bind)
+    public function __construct()
     {
-        $this->bind = $bind;
+        $this->bind = new eBind;
     }
 
     private function separatorWhere()

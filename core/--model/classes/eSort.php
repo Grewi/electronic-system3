@@ -3,7 +3,7 @@ namespace system\core\model\classes;
 
 use system\core\model\traits\wrap;
 
-class sort
+class eSort
 {
     private $sort = [];
 

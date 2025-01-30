@@ -2,7 +2,7 @@
 
 namespace system\core\model\classes;
 
-class select 
+class eSelect 
 {
     private string $select;
     private string $default = '*';

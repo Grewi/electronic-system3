@@ -4,7 +4,7 @@ namespace system\core\model\classes;
 
 use system\core\model\traits\wrap;
 
-class join 
+class eJoin 
 {
     private array $join;
     private $type = ['INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS'];
