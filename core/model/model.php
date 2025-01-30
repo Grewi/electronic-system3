@@ -1,7 +1,9 @@
 <?php
 namespace system\core\model;
-use system\core\collection\collection;
+
 use system\core\database\database;
+use system\core\model\traits\wrap;
+use system\core\collection\collection;
 use system\core\model\classes\{
     eSelect, 
     eFrom, 
@@ -21,6 +23,8 @@ use system\core\model\classes\{
 class model
 {
     private collection $EMD;
+
+    use wrap;
 
     public function __construct()
     {
@@ -194,6 +198,28 @@ class model
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
+    }
+
+    public function count(): int
+    {
+        $str = 'SELECT COUNT(*) as `count` FROM ' .
+            $this->EMD->from->get() . ' ' .
+            $this->EMD->join->get() . ' ' .
+            $this->EMD->where->get() . ' ' .
+            $this->EMD->group->get();
+        $str = preg_replace('/\s{2,}/', ' ', $str);
+        return (int) db($this->EMD->databaseName)->fetch($str, $this->bind(), get_class($this))->count;
+    }
+
+    public function summ($name): float
+    {
+        $str = 'SELECT SUM(' . $this->wrap($name) . ') as `summ` FROM ' .
+            $this->EMD->from->get() . ' ' .
+            $this->EMD->join->get() . ' ' .
+            $this->EMD->where->get() . ' ' .
+            $this->EMD->group->get();
+        $str = preg_replace('/\s{2,}/', ' ', $str);
+        return (float) db($this->EMD->databaseName)->fetch($str, $this->bind(), get_class($this))->summ;
     }
 
     public function sqlPrint($format = true, $exit = false): void
