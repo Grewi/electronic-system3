@@ -538,12 +538,12 @@ class model
 
     public function __debugInfo(): array
     {
-        $methods = [];
+        $p = [];
         $reflect = new \ReflectionObject($this);
         $props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
         foreach ($props as $prop) {
-            $methods[$prop->getName()] = $this->{$prop->getName()};
+            $p[$prop->getName()] = $this->{$prop->getName()};
         }
-        return $methods;
+        return $p;
     }
 }
