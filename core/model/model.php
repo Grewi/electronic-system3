@@ -17,6 +17,7 @@ use system\core\model\classes\{
     eDelete,
     eOffset,
     eGroup,
+    ePagination,
 };
 
 #[\AllowDynamicProperties]
@@ -37,20 +38,15 @@ class model
         $this->EMD->where  = new eWhere;
         $this->EMD->limit  = new eLimit;
         $this->EMD->join   = new eJoin;
+        $this->EMD->group  = new eGroup;
         $this->EMD->insert = new eInsert;
         $this->EMD->update = new eUpdate;
         $this->EMD->delete = new eDelete;
         $this->EMD->offset = new eOffset;
-        $this->EMD->group  = new eGroup;
+        $this->EMD->pagination = new ePagination;
         $c = explode('\\', get_called_class());
         $this->EMD->from->add(array_pop($c));
         $this->EMD->id = 'id';
-        $this->EMD->paginCount = 20;
-        $this->EMD->limitDirection = 20;
-        $this->EMD->paginationLine = [];
-        $this->EMD->paginationPriv = 0;
-        $this->EMD->paginationNext = 0;
-        $this->EMD->paginationActive = 0;
     }
 
     /**
@@ -290,6 +286,31 @@ class model
         $this->EMD->delete->id($this->EMD->id);
         $this->EMD->delete->data($this->bind());
         $this->EMD->delete->save();
+    }
+
+    public function pagin(int $limit = null): static
+    {
+        $this->EMD->pagination->str();
+        if ($limit) {
+            $this->EMD->pagination->setLimit($limit);
+        }
+        $this->EMD->offset->add($this->EMD->pagination->calcOffset());
+        $this->EMD->limit->add($this->EMD->pagination->getLimit());
+        $this->EMD->pagination->setCount($this->count());
+        $this->EMD->pagination->pagin();
+        return $this;
+    }
+
+    public function pagination(string $url = null): array
+    {
+        return [
+            'lines'  => $this->EMD->pagination->getLines(),
+            'priv'   => $this->EMD->pagination->getPriv(),
+            'next'   => $this->EMD->pagination->getNext(),
+            'active' => $this->EMD->pagination->getActive(),
+            'pages'  => $this->EMD->pagination->countPages(),
+            'url'    => $url,
+        ];
     }
 
     /**
