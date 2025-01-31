@@ -64,6 +64,24 @@ class eWhere
         $this->where .= $sep . ' ' . $this->wrap($p1) . ' IN (' . $str . ')';
     }
 
+    public function whereLike(string $col, string $str): void
+    {
+        $sep = $this->separatorWhere();
+        $this->where .= $sep . ' ' . $this->wrap($col) . ' LIKE "%' . $str . '%" ';
+    }
+
+    public function whereLikeStart(string $col, string $str): void
+    {
+        $sep = $this->separatorWhere();
+        $this->where .= $sep . ' ' . $this->wrap($col) . ' LIKE "%' . $str . '" ';
+    }
+
+    public function whereLikeEnd(string $col, string $str): void
+    {
+        $sep = $this->separatorWhere();
+        $this->where .= $sep . ' ' . $this->wrap($col) . ' LIKE "' . $str . '%" ';
+    }
+
     public function whereStr(string $str, array $bind): void
     {
         $sep = $this->separatorWhere();

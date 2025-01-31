@@ -5,15 +5,15 @@ use system\core\database\database;
 use system\core\model\traits\wrap;
 use system\core\collection\collection;
 use system\core\model\classes\{
-    eSelect, 
-    eFrom, 
-    eSort, 
-    eBind, 
-    eWhere, 
-    eLimit, 
-    eJoin, 
-    eInsert, 
-    eUpdate, 
+    eSelect,
+    eFrom,
+    eSort,
+    eBind,
+    eWhere,
+    eLimit,
+    eJoin,
+    eInsert,
+    eUpdate,
     eDelete,
     eOffset,
     eGroup,
@@ -32,13 +32,13 @@ class model
         $this->EMD = new collection;
         $this->EMD->databaseName = 'database';
         $this->EMD->select = new eSelect;
-        $this->EMD->from   = new eFrom;
-        $this->EMD->sort   = new eSort;
-        $this->EMD->bind   = new eBind;
-        $this->EMD->where  = new eWhere;
-        $this->EMD->limit  = new eLimit;
-        $this->EMD->join   = new eJoin;
-        $this->EMD->group  = new eGroup;
+        $this->EMD->from = new eFrom;
+        $this->EMD->sort = new eSort;
+        $this->EMD->bind = new eBind;
+        $this->EMD->where = new eWhere;
+        $this->EMD->limit = new eLimit;
+        $this->EMD->join = new eJoin;
+        $this->EMD->group = new eGroup;
         $this->EMD->insert = new eInsert;
         $this->EMD->update = new eUpdate;
         $this->EMD->delete = new eDelete;
@@ -103,7 +103,7 @@ class model
      * @param string $col Поле таблицы в базе
      * @return model
      */
-    public function whereNull(string $col):static
+    public function whereNull(string $col): static
     {
         $this->EMD->where->whereNull($col);
         return $this;
@@ -129,6 +129,42 @@ class model
     public function whereIn(string $col, array|object $arg): static
     {
         $this->EMD->where->whereIn($col, $arg);
+        return $this;
+    }
+
+    /**
+     * Условие соответствия поля значениям в массиве 
+     * @param string $col Поле таблицы в базе
+     * @param array|object $arg Список возможных значений
+     * @return model
+     */
+    public function whereLike(string $col, string $arg): static
+    {
+        $this->EMD->where->whereLike($col, $arg);
+        return $this;
+    }
+
+    /**
+     * Условие соответствия поля значениям в массиве 
+     * @param string $col Поле таблицы в базе
+     * @param array|object $arg Список возможных значений
+     * @return model
+     */
+    public function whereLikeStart(string $col, string $arg): static
+    {
+        $this->EMD->where->whereLikeStart($col, $arg);
+        return $this;
+    }
+
+    /**
+     * Условие соответствия поля значениям в массиве 
+     * @param string $col Поле таблицы в базе
+     * @param array|object $arg Список возможных значений
+     * @return model
+     */
+    public function whereLikeEnd(string $col, string $arg): static
+    {
+        $this->EMD->where->whereLikeEnd($col, $arg);
         return $this;
     }
 
@@ -193,7 +229,7 @@ class model
         return $this;
     }
 
-        /**
+    /**
      * Объединение  RIGHT
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
@@ -258,7 +294,7 @@ class model
     {
         $d = array_merge(get_object_vars($this), $data);
         $this->where($this->EMD->id, $d[$this->EMD->id]);
-        $this->EMD->update->where($this->EMD->where->get());  
+        $this->EMD->update->where($this->EMD->where->get());
         $this->EMD->update->databaseName($this->EMD->databaseName);
         $this->EMD->update->table($this->EMD->from->get());
         $this->EMD->update->bind($this->bind());
@@ -277,10 +313,10 @@ class model
     public function delete(array $data = []): void
     {
         $d = array_merge(get_object_vars($this), $data);
-        if(isset($this->id)){
+        if (isset($this->id)) {
             $this->where($this->EMD->id, $d[$this->EMD->id]);
         }
-        $this->EMD->delete->where($this->EMD->where->get());  
+        $this->EMD->delete->where($this->EMD->where->get());
         $this->EMD->delete->databaseName($this->EMD->databaseName);
         $this->EMD->delete->table($this->EMD->from->get());
         $this->EMD->delete->id($this->EMD->id);
@@ -304,13 +340,97 @@ class model
     public function pagination(string $url = null): array
     {
         return [
-            'lines'  => $this->EMD->pagination->getLines(),
-            'priv'   => $this->EMD->pagination->getPriv(),
-            'next'   => $this->EMD->pagination->getNext(),
+            'lines' => $this->EMD->pagination->getLines(),
+            'priv' => $this->EMD->pagination->getPriv(),
+            'next' => $this->EMD->pagination->getNext(),
             'active' => $this->EMD->pagination->getActive(),
-            'pages'  => $this->EMD->pagination->countPages(),
-            'url'    => $url,
+            'pages' => $this->EMD->pagination->countPages(),
+            'url' => $url,
         ];
+    }
+
+    /**
+     * Обработка get параметров sort 
+     * @param array $listCol - Список колонок по которым допускается сортировка
+     * @param string $defaultSort - стролбец по умолчанию
+     * @param string $defaultDirection - направление по умолчанию
+     * @return mixed
+     */
+    public function sorting(array $listCol = [], $defaultSort = '', $defaultDirection = ''): static
+    {
+        if (!isset($_GET['sort']) || !in_array($_GET['sort'], $listCol)) {
+            if (!empty($defaultSort) && !empty($defaultDirection)) {
+                $this->sort($defaultSort, $defaultDirection);
+            }
+            return $this;
+        }
+        $direction = (isset($_GET['direction']) && $_GET['direction'] == 'desc') ? 'desc' : 'asc';
+        $sort = $_GET['sort'];
+        $this->sort($sort, $direction);
+        return $this;
+    }
+
+    /**
+     * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
+     * @param string $name - наименование get параметра 
+     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @return mixed
+     */
+    protected function filterLike(string $name, string $col = null): static
+    {
+        $col = $col ? $col : $name;
+        if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
+            $this->whereLike($col, $_GET['filter_' . $name]);
+        }
+        return $this;
+    }
+
+    /**
+     * Обработка массива get параметров filter_* Поиск совпадений в нескольких столбцах по запросу
+     * @param string $name - наименование get параметра 
+     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @return static
+     */
+    protected function filterLikeMulty(string $name, array $cols): static
+    {
+        if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
+            $r = ' ' . $this->_separatorWhere() . ' (';
+            $c = 0;
+            foreach ($cols as $col) {
+                ++$c;
+                $col = $col ? $col : $name;
+                $count = $this->_this_where_count++;
+                $colb = str_replace('.', '_', $col) . '_' . $count;
+                $this->_bind[$colb] = $_GET['filter_' . $name];
+                $r .= ' ' . $this->_wrapperWhere($col) . ' LIKE CONCAT("%", :' . $colb . ',"%") ';
+                if ($c < count($cols)) {
+                    $r .= ' OR ';
+                }
+            }
+            $r .= ') ';
+            $this->_where .= $r;
+        }
+        return $this;
+    }
+
+    /**
+     * Обработка get параметров filter_*[min] и filter_*[max] для обработки диапазона параметров
+     * @param string $name - наименование столбца в таблице
+     * @return static
+     */
+    public function filterRange(string $name): static
+    {
+        if (isset($_GET['filter_' . $name])) {
+
+            if (isset($_GET['filter_' . $name]['min']) && !empty($_GET['filter_' . $name]['min'])) {
+                $this->whereL($name, '>=', $_GET['filter_' . $name]['min']);
+            }
+
+            if (isset($_GET['filter_' . $name]['max']) && !empty($_GET['filter_' . $name]['max'])) {
+                $this->whereL($name, '<=', $_GET['filter_' . $name]['max']);
+            }
+        }
+        return $this;
     }
 
     /**
@@ -401,13 +521,13 @@ class model
     private function slectSql(): string
     {
         $a = 'SELECT ' . $this->EMD->select->get() . ' ' . ' FROM ' .
-        $this->EMD->from->get() . ' ' .
-        $this->EMD->join->get() . ' ' .
-        $this->EMD->where->get() . ' ' .
-        $this->EMD->group->get() . ' ' .
-        $this->EMD->sort->get() . ' ' .
-        $this->EMD->limit->get() . ' ' .
-        $this->EMD->offset->get();
+            $this->EMD->from->get() . ' ' .
+            $this->EMD->join->get() . ' ' .
+            $this->EMD->where->get() . ' ' .
+            $this->EMD->group->get() . ' ' .
+            $this->EMD->sort->get() . ' ' .
+            $this->EMD->limit->get() . ' ' .
+            $this->EMD->offset->get();
         return preg_replace('/\s{2,}/', ' ', $a);
     }
 
@@ -420,7 +540,7 @@ class model
     {
         $methods = [];
         $reflect = new \ReflectionObject($this);
-        $props   = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
+        $props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
         foreach ($props as $prop) {
             $methods[$prop->getName()] = $this->{$prop->getName()};
         }
