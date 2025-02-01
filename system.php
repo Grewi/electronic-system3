@@ -7,43 +7,7 @@ if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-if (!defined('ROOT')) {
-    define('ROOT', str_replace('\\', '/', dirname(__DIR__)));
-}
-
-if (!defined('APP_NAME')) {
-    define('APP_NAME', 'app');
-}
-
-if (!defined('APP')) {
-    define('APP', ROOT . '/' . APP_NAME);
-}
-
-if (!defined('APP_NAMESPACE')) {
-    define('APP_NAMESPACE', str_replace('/', '\\', APP_NAME));
-}
-
-if (!defined('SYSTEM_NAME')) {
-    define('SYSTEM_NAME', 'system');
-}
-
-if (!defined('SYSTEM')) {
-    define('SYSTEM', ROOT . '/' . SYSTEM_NAME);
-}
-
-
-
-if (!defined('MIGRATIONS')) {
-    define('MIGRATIONS', ROOT . '/db/migrations');
-}
-
-if (!defined('MODELS')) {
-    define('MODELS', APP . '/db/models');
-}
-
-if (!defined('TIMEZONE')) {
-    define('TIMEZONE', 'UTC');
-}
+require_once __DIR__ . '/consts.php';
 
 date_default_timezone_set(TIMEZONE);
 
@@ -62,13 +26,13 @@ try {
     if (ENTRANSE == 'web') {
         bootstrap::load();
         history::unshift();
-        require_once APP . '/route/web.php';
+        require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {
-        require_once SYSTEM . '/console/console.php';
-        require_once APP . '/route/console.php';
+        require_once ENTRY_POINT_CONSOLE_SYSTEM;
+        require_once ENTRY_POINT_CONSOLE;
         exit('no controller ');
     } elseif (ENTRANSE == 'cron') {
-        require_once APP . '/route/cron.php';
+        require_once ENTRY_POINT_CRON;
     }
 } catch (Throwable $e) {
     exeptionVar::dump($e, $e->getMessage(), 0);
