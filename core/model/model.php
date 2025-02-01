@@ -302,7 +302,7 @@ class model
         $this->EMD->update->data($d);
         $this->EMD->update->save();
         $cl = $this::class;
-        return (new $cl)->find($this->id);
+        return (new $cl)->find($this->{$this->EMD->id});
     }
 
     /**
@@ -376,7 +376,7 @@ class model
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
      * @return mixed
      */
-    protected function filterLike(string $name, string $col = null): static
+    public function filterLike(string $name, string $col = null): static
     {
         $col = $col ? $col : $name;
         if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
@@ -388,27 +388,28 @@ class model
     /**
      * Обработка массива get параметров filter_* Поиск совпадений в нескольких столбцах по запросу
      * @param string $name - наименование get параметра 
-     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @param string $col - Перечисление столбцов для поиска
      * @return static
      */
-    protected function filterLikeMulty(string $name, array $cols): static
+    public function filterLikeMulty(string $name, array $cols): static
     {
         if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
-            $r = ' ' . $this->_separatorWhere() . ' (';
+            $r = ' (';
             $c = 0;
+            $count = 0;
+            $bind = [];
             foreach ($cols as $col) {
                 ++$c;
                 $col = $col ? $col : $name;
-                $count = $this->_this_where_count++;
-                $colb = str_replace('.', '_', $col) . '_' . $count;
-                $this->_bind[$colb] = $_GET['filter_' . $name];
-                $r .= ' ' . $this->_wrapperWhere($col) . ' LIKE CONCAT("%", :' . $colb . ',"%") ';
+                $colb = str_replace('.', '_', $col) . '_f' . ++$count;
+                $bind[$colb] = $_GET['filter_' . $name];
+                $r .= ' ' . $this->wrap($col) . ' LIKE CONCAT("%", :' . $colb . ',"%") ';
                 if ($c < count($cols)) {
                     $r .= ' OR ';
                 }
             }
             $r .= ') ';
-            $this->_where .= $r;
+            $this->whereStr($r, $bind);
         }
         return $this;
     }
@@ -461,6 +462,12 @@ class model
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
+    }
+
+    public function search(string $col, int|float|string $value): static
+    {
+        $db = database::connect($this->EMD->databaseName);
+        return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $col . '` = :' . $col . ' ', [$col => $value], get_class($this));
     }
 
     /**
