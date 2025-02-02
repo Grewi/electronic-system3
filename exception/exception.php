@@ -43,7 +43,10 @@ class exeptionVar
     {
 
         if (ENTRANSE == 'web') {
-            http_response_code(503);
+            if(!headers_sent()){
+                http_response_code(503);
+            }
+            
             if (\system\core\config\config::globals('dev')) {
                 require SYSTEM . '/exception/tempDew.php';
             } else {

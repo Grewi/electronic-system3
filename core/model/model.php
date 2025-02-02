@@ -553,4 +553,16 @@ class model
         }
         return $p;
     }
+
+    public function __get(string $name)
+    {
+        return;
+    }
+
+    public function __set(string $name, mixed $value)
+    {
+        if($name != 'EMD'){
+            $this->{$name} = $value;
+        }
+    }
 }

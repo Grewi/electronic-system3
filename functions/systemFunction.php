@@ -52,19 +52,9 @@ if (!function_exists('copyDir')) {
 }
 
 if (!function_exists('alert')) {
-    function alert($text, $type = null)
-    {
-        $_SESSION['alert'][0] = $text;
-        if ($type) {
-            $_SESSION['alert'][] = $type;
-        }
-    }
-}
-
-if (!function_exists('alert2')) {
     function alert2($text, $type = 'primary', $header = '')
     {
-        $_SESSION['alert2'][] = [
+        $_SESSION['alert'][] = [
             'header' => $header,
             'text' => $text,
             'type' => $type,
