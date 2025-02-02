@@ -1,6 +1,7 @@
 <?php
 
-namespace system\console;
+namespace system\console\controller;
+use system\core\text\text;
 
 class createController
 {
@@ -20,8 +21,9 @@ class createController
     public function index()
     {
         if(!isset(ARGV[2])){
-            echo 'Не указан обязательный параметр' . PHP_EOL;
-            exit();
+            text::danger('Не указан обязательный параметр');
+            text::warn('Необходимо указать путь до контроллера в директории controllers.');
+            text::warn('Например: "index/index" создаст "app/controllers/index/indexController.php"', true);
         }
         $parametr = ARGV[2];
         $this->parametr = $parametr;
@@ -69,25 +71,14 @@ class createController
             if (!file_exists($this->pathDir)) {
                 mkdir($this->pathDir, 0755, true);
             }
-            $layout = "<?php 
-namespace " . $this->namespace . ";
-use " . APP_NAMESPACE . "\controllers\controller;
-use electronic\core\\view\\view;
-use electronic\core\\validate\\validate;
-use system\core\app\app;
-use system\core\lang\lang;
-use system\core\config\config;
-
-class " . $this->className . " extends controller
-{
-    public function index()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "', \$this->data);
-    }
-}
-";
-            file_put_contents($this->path, $layout);
+            $data = [
+                'namespace' => $this->namespace,
+                'APP_NAMESPACE' => APP_NAMESPACE,
+                'className' => $this->className,
+                'parametr' => $this->parametr,
+            ];
+            $this->view(__DIR__ . '/view1', $data, $this->path);
+            text::success('Контроллер создан', true);
         }
     }
 
@@ -296,5 +287,21 @@ class " . $this->className . " extends controller
 
             }
         }
+    }
+
+    /**
+     * Summary of view
+     * @param string $view Путь к шаблону 
+     * @param array $data Массив с данными
+     * @param string $file Путь к новому файлу
+     * @return void
+     */
+    private function view(string $view, array $data, string $file)
+    {
+        $layout = file_get_contents($view);
+        foreach($data as $a => $i){
+            $layout = str_replace('{{' . $a . '}}', $i, $layout);
+        }
+        file_put_contents($file, $layout);
     }
 }

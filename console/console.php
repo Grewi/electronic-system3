@@ -3,7 +3,7 @@
 use system\core\route\route;
 use system\console\updateSystem;
 use system\console\addComplement;
-use system\console\createController;
+use system\console\controller\createController;
 use system\console\createModel;
 use system\console\migrate;
 use system\console\clean;
