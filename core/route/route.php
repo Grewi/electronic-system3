@@ -164,6 +164,7 @@ class route
         $this->get = true;
         $this->start = false;
         $this->groupControl = false;
+        $this->groupName = null;
     }
 
     public function prefix($name): route

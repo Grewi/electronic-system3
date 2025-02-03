@@ -9,9 +9,9 @@ use system\console\database\database;
 use system\console\config\createConfig;
 use system\console\config\createConfigIni;
 use system\console\config\config;
+use system\console\clear\clear;
 
-use system\console\createModel;
-use system\console\clean;
+use system\console\model\createModel;
 use system\console\symlink;
 use system\console\createSymlink;
 use system\console\sass;
@@ -28,8 +28,8 @@ $route->console('create/model')->controller(createModel::class, 'index');
 $route->console('migrate')->controller(migrate::class, 'index');
 $route->console('create/migration')->controller(migrate::class, 'createMigration');
 
-$route->console('clean')->controller(clean::class, 'index');
-$route->console('clean/cache')->controller(clean::class, 'cleanCache');
+$route->console('clean')->controller(clear::class, 'index');
+$route->console('clean/cache')->controller(clear::class, 'cache');
 
 $route->console('create/dump')->controller(database::class, 'createDump');
 $route->console('restore/dump')->controller(database::class, 'restoreDump');
@@ -38,7 +38,7 @@ $route->console('drop/tables')->controller(database::class, 'dropTables');
 //Config
 $route->console('create/config')->controller(createConfig::class, 'index');
 $route->console('create/config/ini')->controller(createConfigIni::class, 'index');
-$route->console('clean/config')->controller(clean::class, 'cleanConfig');
+$route->console('clean/config')->controller(clear::class, 'config');
 
 $route->console('symlink')->controller(symlink::class, 'index');
 $route->console('config')->controller(config::class, 'actual');
