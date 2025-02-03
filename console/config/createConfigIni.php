@@ -1,5 +1,7 @@
 <?php
-namespace system\console;
+namespace system\console\config;
+use system\core\config\config;
+use system\core\text\text;
 
 class createConfigIni
 {
@@ -17,10 +19,9 @@ class createConfigIni
                     continue;
                 }
                 $filename = $info['filename'];
-                // var_dump($filename);
-                \system\core\config\config::createConfig($filename);
+                config::createConfig($filename);
             }
-            echo 'Процесс завершён.' . PHP_EOL;
+            text::primary('Операция завершена', true);
         }
     }
 }

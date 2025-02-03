@@ -4,17 +4,19 @@ use system\core\route\route;
 use system\console\updateSystem;
 use system\console\addComplement;
 use system\console\controller\createController;
+use system\console\database\migrate;
+use system\console\database\database;
+use system\console\config\createConfig;
+use system\console\config\createConfigIni;
+use system\console\config\config;
+
 use system\console\createModel;
-use system\console\migrate;
 use system\console\clean;
-use system\console\database;
-use system\console\createConfig;
-use system\console\createConfigIni;
 use system\console\symlink;
-use system\console\config;
 use system\console\createSymlink;
 use system\console\sass;
 use system\console\help;
+
 $route = new route();
 
 $route->console('update/system')->controller(updateSystem::class, 'index');

@@ -20,52 +20,119 @@ class createController
 
     public function index()
     {
-        if(!isset(ARGV[2])){
-            text::danger('Не указан обязательный параметр');
-            text::warn('Необходимо указать путь до контроллера в директории controllers.');
-            text::warn('Например: "index/index" создаст "app/controllers/index/indexController.php"', true);
+        $ARGV = ARGV;
+        if (is_array($ARGV)) {
+            if (!isset(ARGV[2])) {
+                text::danger('Не указан обязательный параметр');
+                text::warn('Необходимо указать путь до контроллера в директории controllers.');
+                text::warn('Например: "index/index" создаст "app/controllers/index/indexController.php"', true);
+            }
+            $parametr = $ARGV[2];
+        } else {
+            text::danger('Не удалось получить необходимые параметры', true);
         }
-        $parametr = ARGV[2];
+
         $this->parametr = $parametr;
 
         $this->ArrParam = $ArrParam = explode('/', $parametr);
         $this->className = array_pop($ArrParam) . 'Controller';
-        $this->path    = APP . '/controllers/' . $parametr . 'Controller.php';
+        $this->path = APP . '/controllers/' . $parametr . 'Controller.php';
         $this->pathDir = APP . '/controllers/' . implode('/', $ArrParam);
-        $this->route   = APP . '/route/web/00_' . str_replace('/', '_', $parametr) . '.php';
-        $_ArrParam     = array_merge([APP_NAMESPACE, 'controllers'], $ArrParam);
+        $this->route = APP . '/route/web/00_' . str_replace('/', '_', $parametr) . '.php';
+        $_ArrParam = array_merge([APP_NAMESPACE, 'controllers'], $ArrParam);
         $this->namespace = implode('\\', $_ArrParam);
         $v = null;
-        if (!isset(ARGV[3])) {
+        if (!isset($ARGV[3])) {
             $this->saveController();
-        }else{
-            $v = ARGV[3];
+            text::primary('Операция завершена', true);
+        } else {
+            $v = $ARGV[3];
         }
 
         if ($v == 'v') {
             $this->path_v = APP . '/views/' . $parametr . '.php';
             $this->pathDir_v = APP . '/views/' . implode('/', $ArrParam);
-            $this->saveController();
-            $this->save_v();
+            $this->saveControllerV();
+            text::primary('Операция завершена', true);
         }
 
         if ($v == 'crud') {
             $this->pathDir_v = APP . '/views/' . $parametr;
-            $this->path_crud_v[] = APP . '/views/' . $parametr . '/index.php';
-            $this->path_crud_v[] = APP . '/views/' . $parametr . '/create.php';
-            $this->path_crud_v[] = APP . '/views/' . $parametr . '/update.php';
-            $this->path_crud_v[] = APP . '/views/' . $parametr . '/delete.php';
-            $this->crud();
+            $this->crud($parametr);
+            text::primary('Операция завершена', true);
         }
 
         if ($v == 'full') {
-
             $this->full($parametr);
+            text::primary('Операция завершена', true);
         }
     }
 
     private function saveController()
     {
+        if (!file_exists($this->path)) {
+            if (!file_exists($this->pathDir)) {
+                mkdir($this->pathDir, 0755, true);
+            }
+            $data = [
+                'namespace' => $this->namespace,
+                'APP_NAMESPACE' => APP_NAMESPACE,
+                'className' => $this->className,
+                'parametr' => $this->parametr,
+            ];
+            $this->view(__DIR__ . '/view1', $data, $this->path);
+            text::success('Контроллер "' . $this->path . '" создан');
+        } else {
+            text::warn('Файл контроллера уже существует.');
+        }
+    }
+
+    private function saveControllerV()
+    {
+        if (!file_exists($this->path)) {
+            if (!file_exists($this->pathDir)) {
+                mkdir($this->pathDir, 0755, true);
+            }
+            $data = [
+                'namespace' => $this->namespace,
+                'APP_NAMESPACE' => APP_NAMESPACE,
+                'className' => $this->className,
+                'parametr' => $this->parametr,
+            ];
+            $this->view(__DIR__ . '/view1', $data, $this->path);
+            text::success('Контроллер "' . $this->path . '" создан');
+        } else {
+            text::warn('Файл контроллера уже существует.');
+        }
+        if (!file_exists($this->path_v)) {
+            if (!file_exists($this->pathDir_v)) {
+                mkdir($this->pathDir_v, 0755, true);
+            }
+            $this->view(__DIR__ . '/empty', [], $this->path_v);
+            text::success('Шаблон "' . $this->path_v . '" создан');
+        } else {
+            text::warn('Файл шаблона уже существует.');
+        }
+    }
+
+    private function crud($parametr)
+    {
+        // Генерируем шаблоны
+        $arr = ['index', 'create', 'update', 'delete'];
+        foreach ($arr as $i) {
+            $f = APP . '/views/' . $parametr . '/' . $i . '.php';
+            if (!file_exists($f)) {
+                if (!file_exists($this->pathDir_v)) {
+                    mkdir($this->pathDir_v, 0755, true);
+                }
+                $this->view(__DIR__ . '/empty', [], $f);
+                text::success('Шаблон "' . $i . '" создан');
+            } else {
+                text::warn('Файл шаблона "' . $i . '" уже существует.');
+            }
+        }
+
+        //создаём контроллер
         if (!file_exists($this->path)) {
 
             if (!file_exists($this->pathDir)) {
@@ -77,34 +144,28 @@ class createController
                 'className' => $this->className,
                 'parametr' => $this->parametr,
             ];
-            $this->view(__DIR__ . '/view1', $data, $this->path);
-            text::success('Контроллер создан', true);
+            $this->view(__DIR__ . '/view2', $data, $this->path);
+            text::success('Контроллер "' . $this->path . '" создан');
+        } else {
+            text::warn('Файл контроллера уже существует.');
         }
     }
 
-    private function save_v()
+    private function full($parametr)
     {
-        if (!file_exists($this->path_v)) {
-
-            if (!file_exists($this->pathDir_v)) {
-                mkdir($this->pathDir_v, 0755, true);
-            }
-            file_put_contents($this->path_v, '');
-        }
-    }
-
-
-
-    private function crud()
-    {
+        $this->pathDir_v = APP . '/views/' . $parametr;
+        $arr = ['index', 'create', 'update', 'delete'];
         // Генерируем шаблоны
-        foreach ($this->path_crud_v as $i) {
-            if (!file_exists($i)) {
-
+        foreach ($arr as $i) {
+            $f = APP . '/views/' . $parametr . '/' . $i . '.php';
+            if (!file_exists($f)) {
                 if (!file_exists($this->pathDir_v)) {
                     mkdir($this->pathDir_v, 0755, true);
                 }
-                file_put_contents($i, '');
+                $this->view(__DIR__ . '/view3', [], $f);
+                text::success('Шаблон "' . $f . '" создан');
+            }else{
+                text::warn('Файл шаблона "' . $i . '" уже существует.');
             }
         }
 
@@ -114,179 +175,39 @@ class createController
             if (!file_exists($this->pathDir)) {
                 mkdir($this->pathDir, 0755, true);
             }
-            $layout = "<?php 
-namespace " . $this->namespace . ";
-use " . APP_NAMESPACE . "\controllers\controller;
-use electronic\core\\view\\view;
-use electronic\core\\validate\\validate;
-use system\core\app\app;
-use system\core\lang\lang;
-use system\core\config\config;
-
-class " . $this->className . " extends controller
-{
-    public function index()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/index', \$this->data);
-    }
-
-    public function create()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/create', \$this->data);
-    }
-
-    public function update()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/update', \$this->data);
-    }
-
-    public function delete()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/delete', \$this->data);
-    }
-}
-";
-            file_put_contents($this->path, $layout);
-        }
-    }
-
-    private function full($parametr)
-    {
-        $this->pathDir_v = APP . '/views/' . $parametr;
-        $this->path_crud_v[] = APP . '/views/' . $parametr . '/index.php';
-        $this->path_crud_v[] = APP . '/views/' . $parametr . '/create.php';
-        $this->path_crud_v[] = APP . '/views/' . $parametr . '/update.php';
-        $this->path_crud_v[] = APP . '/views/' . $parametr . '/delete.php';
-
-        // Генерируем шаблоны
-        foreach ($this->path_crud_v as $i) {
-            if (!file_exists($i)) {
-
-                if (!file_exists($this->pathDir_v)) {
-                    mkdir($this->pathDir_v, 0755, true);
-                }
-                file_put_contents($i, '<use layout="index" />
-
-<block name="index"></block>');
-
-                //создаём контроллер
-                if (!file_exists($this->path)) {
-
-                    if (!file_exists($this->pathDir)) {
-                        mkdir($this->pathDir, 0755, true);
-                    }
-                    $layout = "<?php 
-namespace " . $this->namespace . ";
-use " . APP_NAMESPACE . "\controllers\controller;
-use electronic\core\\view\\view;
-use electronic\core\\validate\\validate;
-use system\core\app\app;
-use system\core\lang\lang;
-use system\core\config\config;
-
-class " . $this->className . " extends controller
-{
-    public function index()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/index', \$this->data);
-    }
-
-    public function create()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/create', \$this->data);
-    }
-
-    public function createAction()
-    {
-        \$valid = new validate();
-        \$valid->name('csrf')->csrf('');
-
-        if(!\$valid->control()){
-            alert('Ошибка сохранения', 'danger');
-            redirect(referal_url(), \$valid->data(), \$valid->error());
+            $data = [
+                'namespace' => $this->namespace,
+                'APP_NAMESPACE' => APP_NAMESPACE,
+                'className' => $this->className,
+                'parametr' => $this->parametr,
+            ];
+            $this->view(__DIR__ . '/view4', $data, $this->path);
+            text::success('Контроллер "' . $this->path . '" создан');
+        } else {
+            text::warn('Файл контроллера уже существует.');
         }
 
-        //
-
-        alert('Успешно', 'success');
-        redirect(referal_url());
-    }    
-
-    public function update()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/update', \$this->data);
-    }
-
-    public function updateAction()
-    {
-        \$valid = new validate();
-        \$valid->name('csrf')->csrf('');
-
-        if(!\$valid->control()){
-            alert('Ошибка сохранения', 'danger');
-            redirect(referal_url(), \$valid->data(), \$valid->error());
+        if (!file_exists($this->route)) {
+            $arrParam = $this->ArrParam;
+            $lastEl = array_pop($arrParam);
+            $chiftEl = array_shift($arrParam);
+            $r = count($arrParam) > 0 ? '/' . implode('/', $arrParam) : '';
+            //Создаём роут
+            $data = [
+                'namespace' => $this->namespace,
+                'APP_NAMESPACE' => APP_NAMESPACE,
+                'r' => $r,
+                'chiftEl' => $chiftEl,
+                'lastEl' => $lastEl,
+            ];
+            $this->view(__DIR__ . '/view5', $data, $this->route);
+            text::success('Роутер "' . $this->route . '" создан');
+        }else{
+            text::warn('Файл роутера уже существует.');
         }
 
-        //
 
-        alert('Успешно', 'success');
-        redirect(referal_url());
-    }     
 
-    public function delete()
-    {
-        \$this->title('');
-        new view('" . $this->parametr . "/delete', \$this->data);
-    }
-
-    public function deleteAction()
-    {
-        \$valid = new validate();
-        \$valid->name('csrf')->csrf('');
-
-        if(!\$valid->control()){
-            alert('Ошибка сохранения', 'danger');
-            redirect(referal_url(), \$valid->data(), \$valid->error());
-        }
-
-        //
-
-        alert('Успешно', 'success');
-        redirect(referal_url());
-    } 
-}
-";
-                    file_put_contents($this->path, $layout);
-                }
-
-                if($this->route){
-                    $arrParam = $this->ArrParam;
-                    $lastEl = array_pop($arrParam);
-                    $chiftEl = array_shift($arrParam);
-                    $r = count($arrParam) > 0 ?  '/' . implode('/', $arrParam) : '';
-                //Создаём роут
-                $layout = "<?php 
-                \$route->namespace('" . $this->namespace . "')->group('/" . $chiftEl . "', function(\$route){
-                    \$route->get('" . $r . "/')->controller('" . $lastEl . "Controller', 'index');
-                    \$route->get('" . $r . "/create')->controller('" . $lastEl . "Controller', 'create');
-                    \$route->post('" . $r . "/create')->controller('" . $lastEl . "Controller', 'createAction');
-                    \$route->get('" . $r . "/edit/{param_id}')->controller('" . $lastEl . "Controller', 'update');
-                    \$route->post('" . $r . "/edit/{param_id}')->controller('" . $lastEl . "Controller', 'updateAction');
-                    \$route->get('" . $r . "/delete/{param_id}')->controller('" . $lastEl . "Controller', 'delete');
-                    \$route->post('" . $r . "/delete/{param_id}')->controller('" . $lastEl . "Controller', 'deleteAction');
-                });";
-                file_put_contents($this->route, $layout);                    
-                }
-
-            }
-        }
     }
 
     /**
@@ -299,7 +220,7 @@ class " . $this->className . " extends controller
     private function view(string $view, array $data, string $file)
     {
         $layout = file_get_contents($view);
-        foreach($data as $a => $i){
+        foreach ($data as $a => $i) {
             $layout = str_replace('{{' . $a . '}}', $i, $layout);
         }
         file_put_contents($file, $layout);

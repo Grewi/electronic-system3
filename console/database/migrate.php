@@ -1,8 +1,10 @@
 <?php
 
-namespace system\console;
+namespace system\console\database;
 
 use system\core\database\database;
+use system\core\text\text;
+use system\core\config\config;
 
 class migrate
 {
@@ -15,7 +17,7 @@ class migrate
             $start = $db->fetch('SELECT COUNT(*) as count FROM `migrations`', []);
         } catch (\PDOException $e) {
             if (!$start) {
-                if (config('database', 'type') == 'sqlite') {
+                if (config::database('type') == 'sqlite') {
                     $startSql = '
                     CREATE TABLE `migrations` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,18 +46,18 @@ class migrate
                     COMMIT;';
                 }
                 $db->query($startSql, []);
-                echo 'Создана стартовая таблица миграции!' . PHP_EOL;
+                text::warn('Создана стартовая таблица миграции!');
             }
         }
 
         if (!file_exists(MIGRATIONS)) {
             createDir(MIGRATIONS . '/');
-            echo 'Создана директория миграций' . PHP_EOL;
+            text::warn('Создана директория миграций');
         }
         $allFiles = scandir(MIGRATIONS . '/');
 
         if (!is_iterable($allFiles)) {
-            echo 'Миграций нет!' . PHP_EOL;
+            text::warn('Миграций нет!');
             return;
         }
         //Запуск миграции
@@ -73,24 +75,37 @@ class migrate
                     if (!empty($mSql)) {
                         $db->query('INSERT INTO migrations (`name`, `active`) VALUES ("' . $i . '", "' . date('Y-m-d H:i', time()) . '")', []);
                         $db->query($mSql, []);
-                        echo 'Применён ' . $i  . PHP_EOL;
+                        text::success('Применён ' . $i );
                     } else {
-                        echo 'Пустой файл миграции ' . $i  . PHP_EOL;
+                        text::danger('Пустой файл миграции ' . $i);
                     }
                 } catch (\PDOException $e) {
                     echo $e->getMessage()   . PHP_EOL;
                 }
             } else {
-                echo 'Пропущен ' . $i  . PHP_EOL;
+                text::info('Пропущен ' . $i);
             }
         }
+        text::primary('Операция завершена', true);
     }
 
     public function createMigration(): void
     {
-        $parametr = isset(ARGV[2]) ? ARGV[2] : '';
+        $ARGV = ARGV;
+        if (is_array($ARGV)) {
+            if (!isset(ARGV[2])) {
+                text::warn('Имя миграции не указано.');
+                $parametr = '';
+            }else{
+                $parametr = $ARGV[2];
+            }
+        } else {
+            text::danger('Не удалось получить необходимые параметры', true);
+        }
         $s = preg_replace("/[^a-zA-Z0-9\s]/", '_', $parametr);
         $fileName = MIGRATIONS . '/' . date('Y_m_d_U') . '_' . $s . '.sql';
         file_put_contents($fileName, '');
+        text::success('Файл миграции "' . $fileName . '" создан');
+        text::primary('Операция завершена', true);
     }
 }

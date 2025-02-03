@@ -1,9 +1,10 @@
 <?php
 
-namespace system\console;
+namespace system\console\database;
 
 use system\core\config\config;
 use system\core\database\database as db;
+use system\core\text\text;
 use system\core\zip\zip;
 
 class database
@@ -15,13 +16,13 @@ class database
         $dbHost = config::database('host');
         $dbPass = config::database('pass');
         $dbUser = config::database('user');
-        $dumpPath = ROOT . '/app/cache/dump';
+        $dumpPath = APP . '/cache/dump';
         $dumpSql = $dumpPath . '/' . date('Y-m-d', time());
         $fileName = date('Y-m-d__U', time());
         createDir($dumpSql);
         $fileSql = $dumpSql . '/' . $fileName . '.sql';
         // exec('mysqldump --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' --set-charset=utf8mb4 > ' . $fileSql, $output, $status);
-        exec('mysqldump --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' --set-charset=utf8mb4 --result-file=' . $fileSql, $output, $status);
+        exec('mysqldump --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' --result-file=' . $fileSql, $output, $status);
         zip::zip($dumpSql, $dumpPath . '/' . $fileName . '.zip');
         $files = scandir($dumpSql);
         if(is_iterable($files)){
@@ -32,19 +33,30 @@ class database
             }
         }
         rmdir($dumpSql);
-        echo "Процессс завершён \n";
+        text::success('Создан файл "' . $dumpPath . '/' . $fileName . '.zip"');
+        text::primary('Операция завершена', true);
     }
 
     public function restoreDump()
     {
-        $parametr = ARGV[2];
+        $ARGV = ARGV;
+        if (is_array($ARGV)) {
+            if (!isset(ARGV[2])) {
+                text::danger('Не указан обязательный параметр');
+                text::warn('Необходимо указать имя файла дампа (с расширением).');
+                text::warn('Файл должен быть расположен в каталоге "' . APP . '/cache/dump/"', true);
+            }
+            $parametr = $ARGV[2];
+        } else {
+            text::danger('Не удалось получить необходимые параметры', true);
+        }
         $dbName = config::database('name');
         $dbHost = config::database('host');
         $dbPass = config::database('pass');
         $dbUser = config::database('user');
         $dir = APP . '/cache/dump/' . $parametr;
         $print = exec('mysql  --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' < ' . $dir, $output, $status);
-        echo "Процессс завершён \n";
+        text::primary('Операция завершена', true);
     }
 
     public function dropTables()
@@ -56,7 +68,7 @@ class database
             $db->query("DROP TABLE " . $t->TABLE_NAME, []);
         }
         $db->query('SET FOREIGN_KEY_CHECKS = 1;');
-        echo "Процессс завершён \n";
+        text::primary('Операция завершена', true);
     }
 
     private function zip($folder, $zipFile)

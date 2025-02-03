@@ -1,0 +1,83 @@
+<?php 
+namespace {{namespace}};
+use {{APP_NAMESPACE}}\controllers\controller;
+use system\core\view\view;
+use system\core\validate\validate;
+use system\core\app\app;
+use system\core\lang\lang;
+use system\core\config\config;
+
+class {{className}} extends controller
+{
+    public function index()
+    {
+        $this->title('');
+        new view('{{parametr}}/index', $this->data);
+    }
+
+    public function create()
+    {
+        $this->title('');
+        new view('{{parametr}}/create', $this->data);
+    }
+
+    public function createAction()
+    {
+        $valid = new validate();
+        $valid->name('csrf')->csrf('');
+
+        if(!$valid->control()){
+            alert('Ошибка сохранения', 'danger');
+            redirect(referal_url(), $valid->data(), $valid->error());
+        }
+
+        //
+
+        alert('Успешно', 'success');
+        redirect(referal_url());
+    }    
+
+    public function update()
+    {
+        $this->title('');
+        new view('{{parametr}}/update', $this->data);
+    }
+
+    public function updateAction()
+    {
+        $valid = new validate();
+        $valid->name('csrf')->csrf('');
+
+        if(!$valid->control()){
+            alert('Ошибка сохранения', 'danger');
+            redirect(referal_url(), $valid->data(), $valid->error());
+        }
+
+        //
+
+        alert('Успешно', 'success');
+        redirect(referal_url());
+    }     
+
+    public function delete()
+    {
+        $this->title('');
+        new view('{{parametr}}/delete', $this->data);
+    }
+
+    public function deleteAction()
+    {
+        $valid = new validate();
+        $valid->name('csrf')->csrf('');
+
+        if(!$valid->control()){
+            alert('Ошибка сохранения', 'danger');
+            redirect(referal_url(), $valid->data(), $valid->error());
+        }
+
+        //
+
+        alert('Успешно', 'success');
+        redirect(referal_url());
+    } 
+}

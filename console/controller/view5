@@ -1,0 +1,12 @@
+<?php 
+use {{namespace}}\{{lastEl}}Controller;
+
+$route->group('/{{chiftEl}}', function($route){
+    $route->get('{{r}}/')->controller({{lastEl}}Controller::class, 'index');
+    $route->get('{{r}}/create')->controller({{lastEl}}Controller::class, 'create');
+    $route->post('{{r}}/create')->controller({{lastEl}}Controller::class, 'createAction');
+    $route->get('{{r}}/edit/{param_id}')->controller({{lastEl}}Controller::class, 'update');
+    $route->post('{{r}}/edit/{param_id}')->controller({{lastEl}}Controller::class, 'updateAction');
+    $route->get('{{r}}/delete/{param_id}')->controller({{lastEl}}Controller::class, 'delete');
+    $route->post('{{r}}/delete/{param_id}')->controller({{lastEl}}Controller::class, 'deleteAction');
+});
