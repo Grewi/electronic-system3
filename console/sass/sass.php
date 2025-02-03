@@ -9,9 +9,15 @@ class sass
     {
         $fileSass = APP . '/system/sass/sass.php';
         $classSass = '\\' . APP_NAME . '\system\\sass\\sass';
-        if(!file_exists($fileSass)){
-            $this->createSysyemSass();
-            text::warn('Создан файл ' . $fileSass); 
+        if (!file_exists($fileSass)) {
+            // $this->createSysyemSass();
+            $dir = APP . '/system/sass';
+            createDir($dir);
+            $data = [
+                'namespace' => ''
+            ];
+            $this->view(__DIR__ . '/view', $data, $dir . '/sass.php');
+            text::warn('Создан файл ' . $fileSass);
             text::warn('Для компиляции стилей необходимо его заполнить');
             text::info('http://grewi.ru/blogs/27-kompilyaciya-css-faylov', true);
         }
@@ -20,10 +26,10 @@ class sass
     public function compile()
     {
         $sass = $this->start();
-        if(isset(ARGV[2])){
+        if (isset(ARGV[2])) {
             $name = ARGV[2];
             $sass->name($name)->compile();
-        }else{
+        } else {
             $sass->list()->compile();
         }
         exit();
@@ -65,6 +71,22 @@ class sass
             ];
         }';
         file_put_contents($dir . '/sass.php', $data);
+    }
+
+    /**
+     * Summary of view
+     * @param string $view Путь к шаблону 
+     * @param array $data Массив с данными
+     * @param string $file Путь к новому файлу
+     * @return void
+     */
+    private function view(string $view, array $data, string $file)
+    {
+        $layout = file_get_contents($view);
+        foreach ($data as $a => $i) {
+            $layout = str_replace('{{' . $a . '}}', $i, $layout);
+        }
+        file_put_contents($file, $layout);
     }
 }
 

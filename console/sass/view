@@ -1,0 +1,24 @@
+<?php 
+namespace {{namespace}}\sass;
+
+class sass extends \system\core\sass\sass
+{
+    public $mini = false;
+
+    // Путь к scss файлам 'имя' => 'путь'
+    public $input = [
+        'style'     => '/public/style/style.scss',
+        'bootstrap' => '/public/adm/bootstrap.scss',
+    ];
+
+    // Путь к css файлам 'имя' => 'путь'
+    public $output = [
+        'style'     => '/public/style/test.css',
+        'bootstrap' => '/public/adm/bootstrap.css',
+    ];
+
+    // Список имён, которые будут компилироваться в втоматическом режиме php e style
+    public $list = [
+        'style', 'bootstrap',
+    ];
+}

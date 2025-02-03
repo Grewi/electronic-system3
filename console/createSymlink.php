@@ -2,24 +2,29 @@
 
 namespace system\console;
 use system\core\symlink\symlink;
+use system\core\text\text;
 
 class createSymlink
 {
     public function index()
     {
-        $target = ARGV[2];
-        $link = ARGV[3];
-
-        if(empty($target) || empty($link)){
-            echo 'Отсутствуют необходимые значения. 
-            Первым значением необходимо указать существующий источник (директория или файл), 
-            а вторым место, где будет создана ссылка' . PHP_EOL;
+        $ARGV = ARGV;
+        if (is_array($ARGV)) {
+            if (empty($target) || empty($link)) {
+                text::danger('Отсутствуют необходимые значения.');
+                text::warn('Первым значением необходимо указать существующий источник (директория или файл),');
+                text::warn('а вторым место, где будет создана ссылка', true);
+            }
+            $target = $ARGV[2];
+            $link = $ARGV[3];
+        } else {
+            text::danger('Не удалось получить необходимые параметры', true);
         }
 
-        if( (new symlink())->create($target, $link) ){
-            echo 'Выполненно успешно.' . PHP_EOL;
-        }else{
-            echo 'Ошибка выполнения.' . PHP_EOL;
+        if ((new symlink())->create($target, $link)) {
+            text::success('Выполненно успешно.');
+        } else {
+            text::danger('Ошибка выполнения.');
         }
     }
 
