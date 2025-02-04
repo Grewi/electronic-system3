@@ -1,6 +1,6 @@
 <?php
 
-namespace system\console;
+namespace system\console\symlink;
 use system\core\symlink\symlink;
 use system\core\text\text;
 

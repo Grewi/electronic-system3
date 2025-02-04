@@ -1,5 +1,5 @@
 <?php 
-namespace {{namespace}}\sass;
+namespace {{namespace}};
 
 class sass extends \system\core\sass\sass
 {

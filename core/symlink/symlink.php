@@ -1,5 +1,6 @@
 <?php
 namespace system\core\symlink;
+use system\core\text\text;
 
 class symlink
 {
@@ -12,7 +13,11 @@ class symlink
     public function list():void
     {
         foreach($this->list as $i){
-            $this->create( $i['target'], $i['link']);
+            if($this->create( $i['target'], $i['link'])){
+                text::success('ссылка "' . $i['link'] . '" создана');
+            }else{
+                text::danger('Ссылку "' . $i['link'] . '" создать не удалось');
+            }
         }
     }
 
@@ -29,12 +34,12 @@ class symlink
         createDir($linkDir);
 
         if(!file_exists(getcwd() . DIRECTORY_SEPARATOR . $target)){
-            echo 'Файл не найден!' . PHP_EOL;
+            text::danger('Файл "' . $target . '" не найден!');
             return false;
         }
 
         if(file_exists(getcwd() . DIRECTORY_SEPARATOR . $link)){
-            echo 'Файл уже существует' . PHP_EOL;
+            text::danger('Файл "' . $link . '" уже существует');
             return false;            
         }
 
@@ -55,16 +60,15 @@ class symlink
     {
         $file = ROOT . '/.gitignore';
         if(!file_exists($file)){
-            echo 'Файл .gitignore не найден' .PHP_EOL;
+            text::danger('Файл .gitignore не найден');
             return;
         }
         $f = file_get_contents($file);
         if(!strpos($f,$link)){
-            echo 'Ссылка добавлена в файл .gitignore' . PHP_EOL;
+            text::success('Ссылка добавлена в файл .gitignore');
             file_put_contents($file, PHP_EOL . $link, FILE_APPEND);
         }else{
-            echo 'В файле .gitignore уже есть запись о ссылке' . PHP_EOL;
+            text::warn('В файле .gitignore уже есть запись о ссылке');
         }
-        // dd(0);
     }
 }

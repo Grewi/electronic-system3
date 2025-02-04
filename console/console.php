@@ -1,8 +1,6 @@
 <?php
 
 use system\core\route\route;
-use system\console\updateSystem;
-use system\console\addComplement;
 use system\console\controller\createController;
 use system\console\database\migrate;
 use system\console\database\database;
@@ -10,12 +8,14 @@ use system\console\config\createConfig;
 use system\console\config\createConfigIni;
 use system\console\config\config;
 use system\console\clear\clear;
-
+use system\console\symlink\symlink;
+use system\console\symlink\createSymlink;
 use system\console\model\createModel;
-use system\console\symlink;
-use system\console\createSymlink;
-use system\console\sass;
+use system\console\sass\sass;
+
 use system\console\help;
+use system\console\updateSystem;
+use system\console\addComplement;
 
 $route = new route();
 
@@ -41,9 +41,9 @@ $route->console('create/config/ini')->controller(createConfigIni::class, 'index'
 $route->console('clean/config')->controller(clear::class, 'config');
 
 $route->console('symlink')->controller(symlink::class, 'index');
-$route->console('config')->controller(config::class, 'actual');
-
 $route->console('create/symlink')->controller(createSymlink::class, 'index');
+
+$route->console('config')->controller(config::class, 'actual');
 
 $route->console('style')->controller(sass::class, 'compile');
 $route->console('style/info')->controller(sass::class, 'info');
