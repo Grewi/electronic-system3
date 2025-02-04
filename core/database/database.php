@@ -113,6 +113,7 @@ class database
         cacheQuery::addKey($sql, $params);
         if (!cacheQuery::control()) {
             $r = $this->query($sql, $params, $className)->fetch();
+            $r = $r === false ? null : $r;
             cacheQuery::addQuery($r);
             return $r;
         } else {
