@@ -6,15 +6,16 @@ use system\core\model\traits\wrap;
 
 class eJoin 
 {
-    private array $join;
+    private array $join = [];
     private $type = ['INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS'];
 
     use wrap;
 
-    public function join(string $tableName, string $firstTable, string $secondaryTable, int $type): static
+    public function join(string $tableName, string $firstTable, string $secondaryTable, int $type): void
     {
-        $this->join[] = ' ' . $this->join[$type]. ' JOIN ' . $this->wrap($tableName) . ' ON ' . $this->wrap($firstTable) . ' = ' . $this->wrap($secondaryTable) . ' ';
-        return $this;
+        $this->join[] = ' ' . $this->type[$type]. ' JOIN ' . $this->wrap($tableName) . ' ON ' . $this->wrap($firstTable) . ' = ' . $this->wrap($secondaryTable) . ' ';
+        
+        // return $this;
     }
 
         /**

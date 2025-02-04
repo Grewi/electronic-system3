@@ -306,6 +306,15 @@ class model
     }
 
     /**
+     * Summary of save
+     * @return model
+     */
+    public function save(): static
+    {
+        return $this->update();
+    }
+
+    /**
      * Удаление записи
      * @param array $data
      * @return void
@@ -448,7 +457,7 @@ class model
      * Единичная запись
      * @return model
      */
-    public function get(): static
+    public function get()
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch($this->slectSql(), $this->bind(), get_class($this));

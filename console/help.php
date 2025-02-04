@@ -29,7 +29,7 @@ class help
     {
         $strlen = 0;
         foreach($this->arr as $a => $i){
-            $l = mb_strlen($a);
+            $l = strlen($a);
             $strlen = $l > $strlen ? $l : $strlen;
         }
         text::info('Команды доступные из консоли:');

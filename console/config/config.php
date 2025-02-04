@@ -39,7 +39,7 @@ class config
                 text::success('Файл конфигурации ".' . $i . '.ini" создан.');
             }
 
-            $class = '\\app\\configs\\' . $i;
+            $class = '\\' . APP_NAME . '\\configs\\' . $i;
             $configs = new $class();
             $php = $configs->set();
             $result = array_merge($php, $ini);
@@ -48,6 +48,7 @@ class config
 
                 $ini .= $key . ' = ' . $ii . PHP_EOL;
             }
+            
             file_put_contents($this->path . '.' . $i . '.ini', $ini);
         }
     }
