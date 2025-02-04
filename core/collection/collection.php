@@ -11,9 +11,14 @@ class collection
     public function __get($name)
     {
         if(!isset($this->collections[$name])){
-            $this->collections[$name] = new collection();
+            return null;
         }
         return $this->collections[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        $this->collections[$name] = $value;
     }
 
     public function __toString()
