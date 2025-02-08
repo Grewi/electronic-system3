@@ -23,6 +23,9 @@ class view
         $this->viewsDir = APP . '/views';
         $this->validElement = "/^[a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u"; //Допустимые символы в переменных
         $this->countInclude = [];
+        if(!file_exists($this->viewsDir . '/' . $file . '.php')){
+            throw new \TempException('Файл шаблона "/apps/' . APP_NAME . '/views/' . $file . '.php" отсутствует!');
+        }
         if($file){
             $this->out($file, $data);
         }
@@ -106,6 +109,9 @@ class view
         preg_match_all('/\<include \s*file\s*=\s*"(.*?)"\s*\/*\>/si', $content, $matches);
         if ($matches && count($matches[1]) > 0) {
             foreach ($matches[1] as $key => $i) {
+                if(!file_exists($this->viewsDir . '/' . $i . '.php')){
+                    throw new \TempException('Файл шаблона "/apps/' . APP_NAME . '/views/' . $i . '.php" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
+                }
                 $inc = '<?php include \'' . $this->cacheDir . '/' . $i . '.php\' ?>';
                 $content = str_replace($matches[0][$key], $inc, $content);
                 $this->render($i);
@@ -115,6 +121,13 @@ class view
         preg_match_all('/\<include \s*class\s*=\s*"(.*?)"\s* \s*method\s*=\s*"(.*?)" \/*\>/si', $content, $matches);
         if ($matches && count($matches[1]) > 0) {
             foreach ($matches[1] as $key => $i) {
+                if(!class_exists($i, false)){
+                    throw new \TempException('Класс "' . $i . '" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
+                }
+                if(!method_exists($i, $matches[2][$key])){
+                    throw new \TempException('Метод "' . $matches[2][$key] . '" в классе "' . $i . '" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
+                }
+                
                 $inc = '<?php (new ' . $i . '())->' . $matches[2][$key] . '() ?>';
                 $content = str_replace($matches[0][$key], $inc, $content);
             }
@@ -127,7 +140,7 @@ class view
         if (file_exists($path)) {
             $temp = file_get_contents($path);
         } else {
-            throw new \TempException('Файл ' . $path . ' не найден!');
+            throw new \TempException('Файл "' . $path . '" не найден!');
         }
         return $temp;
     }
@@ -239,7 +252,7 @@ class view
         $result = [];
         foreach ($m[0] as $key => $i) {
             if ((!preg_match($this->validElement, $m[1][$key], $resut) || !preg_match($this->validElement, $m[2][$key], $resut)) && $valid) {
-                throw new \TempException('Недопустимое имя переменной в цикле ' . $parametrs . ' в шаблоне "' . $this->file . '"!');
+                throw new \TempException('Недопустимое имя переменной в цикле "' . $parametrs . '" в шаблоне "' . $this->file . '"!');
                 // continue;
             }
             $result[mb_strtolower($m[1][$key])] = $m[2][$key];

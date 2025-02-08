@@ -140,9 +140,8 @@
                                                 <?php foreach($i as $aa => $ii):?>
                                                     <div><?=$aa?> - <?=gettype($ii)?></div>
                                                 <?php endforeach; ?>
-                                                <?php //var_dump($i) ?>
                                             <?php else: ?>
-                                                <?= $i ?>
+                                                <?=  mb_strimwidth(htmlspecialchars($i), 0, 100, "..."); ?>
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
