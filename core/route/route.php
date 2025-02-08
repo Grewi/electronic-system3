@@ -167,12 +167,40 @@ class route
         $this->groupName = null;
     }
 
-    public function prefix($name): route
+    // public function prefix($name): route
+    // {
+    //     $this->startControl();
+    //     if ($this->get) {
+    //         $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
+    //         $get = (new $class)->index();
+    //         if (!is_null($get)) {
+    //             $this->get = $get;
+    //         }
+    //     }
+    //     return $this;
+    // }
+
+    /**
+     * interim
+     */
+    public function prefix($class, $method = 'index'): route
     {
         $this->startControl();
         if ($this->get) {
-            $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
-            $get = (new $class)->index();
+            $reflection = new \ReflectionClass($class);
+
+            $params = $reflection->getMethod($method)->getParameters();
+            $cla = [];
+            foreach ($params AS $param) {
+                $cl = $param->getType()->getName();
+                $nc = new $cl();
+                if(method_exists($nc, 'toController')){
+                    $cla[] = $nc->toController();
+                }else{
+                    $cla[] = $nc;
+                }
+            }            
+            $get = (new $class)->{$method}(...$cla);
             if (!is_null($get)) {
                 $this->get = $get;
             }

@@ -4,20 +4,58 @@
 <head>
     <meta charset="utf-8" />
     <title>503 Service Unavailable</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-dark mt-3" role="alert">
-                    <div><strong>503 Service Unavailable</strong></div>
-                    Произошла непредвиденная ошибка в работе сайта.
+    <style>
+        body {
+            background: #333;
+        }
+
+        .wp {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bl {
+            background: #444;
+            padding: 20px;
+            border: #777 solid 1px;
+            border-radius: 10px;
+            font-family: monospace;
+            color: #00ed35;
+        }
+
+        .t {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .d {
+            color: #ccc;
+            margin-top: 5px;
+        }
+        hr {
+            border: 1px solid #333;
+        }
+    </style>
+    <div class="wp">
+        <div class="bl">
+            <div class="">
+                <div class="" role="alert">
+                    <div class="t"><strong>|> 503 Service Unavailable</strong></div>
+                    <hr>
+                    <div>Произошла непредвиденная ошибка в работе сайта.</div>
+                    <div class="d">Попробуйте перейти на другую страницу или зайти позже.</div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>

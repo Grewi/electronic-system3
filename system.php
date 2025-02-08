@@ -1,7 +1,9 @@
-<?php
+<?php 
 use system\core\history\history;
 use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
+
+ob_start();
 
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
@@ -34,6 +36,7 @@ try {
     } elseif (ENTRANSE == 'cron') {
         require_once ENTRY_POINT_CRON;
     }
+
 } catch (Throwable $e) {
     exeptionVar::dump($e, $e->getMessage(), 0);
     exit();

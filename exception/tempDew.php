@@ -4,59 +4,157 @@
 <head>
     <meta charset="utf-8" />
     <title>503 Service Unavailable</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-danger mt-3" role="alert">
-                    <div><?= localPathFile($message) ?></div>
-                    <div>
-                        <?= localPathFile($exeption->getFile()) ?>
-                        <strong><?= $exeption->getLine() ?></strong>
-                    </div>
+    <style>
+        body {
+            background: #333;
+            font-family: monospace;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .bl {
+            background: #444;
+            padding: 20px;
+            border: #777 solid 1px;
+            border-radius: 10px;
+            color: #00ed35;
+            margin-bottom: 25px;
+        }
+
+        .t {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .bl2 {
+
+        }
+
+        .table {
+            background: #444;
+            border: #777 solid 1px;
+            border-radius: 10px;
+            color: #00ed35;
+            margin-bottom: 25px;            
+            width: 100%;
+            border-spacing: 0;
+            padding-bottom: 10px;
+        }
+
+        .table thead tr th {
+            background: #222;
+            padding: 10px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .table tbody tr td {
+            padding: 10px;
+            transition: 0.5s;
+        }
+
+        .table tbody tr {
+            transition: 0.5s;
+        }
+
+        /* Нечетные строки */
+        .table tbody tr:nth-child(odd) {
+            background: #444;
+        }
+
+        /* Четные строки */
+        .table tbody tr:nth-child(even) {
+            background: #333;
+        }
+
+        .table tbody tr:hover {
+            background: #242424;
+            color:#fff
+        }
+
+        .electronic {
+            font-size: 1.2em;
+            color:#00ed35;
+            text-align: center;
+        }
+        .electronic a {
+            color:#00ed35;
+            text-decoration: none;
+            transition: 0.5s;
+            padding: 5px;
+            border: 1px solid transparent;
+        }
+        .electronic a:hover {
+            border: 1px solid #444;
+            background: #222;
+        }
+        .brl {
+            border-radius: 10px 0 0 0 ;
+        }
+        .brr {
+            border-radius: 0 10px 0 0 ;
+        }
+    </style>
+    <div class="container">
+
+        <div class="bl">
+            <div class="" role="alert">
+                <div class="t"><?= localPathFile($message) ?></div>
+                <div>
+                    <?= localPathFile($exeption->getFile()) ?>
+                    <strong><?= $exeption->getLine() ?></strong>
                 </div>
             </div>
-            <div class="col-12">
-                <table class="table table-striped mt-3">
-                    <thead>
-                        <tr class="table-secondary">
-                            <th>№</th>
-                            <th scope="col">file</th>
-                            <th scope="col">class</th>
-                            <th scope="col">type</th>
-                            <th scope="col">function</th>
-                            <th scope="col">line</th>
-                            <th scope="col">arg</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        </div>
 
-                        <?php foreach ($exeption->getTrace() as $a => $e) : ?>
-                            <tr>
-                                <td class="text-muted"><?=$a + 1?></td>
-                                <td class="text-primary-emphasis"><?= localPathFile($e['file']) ?></td>
-                                <td class="fst-italic text-success"><?= isset($e['class']) ? $e['class'] : '' ?></td>
-                                <td><?= isset($e['type']) ? $e['type'] : '' ?></td>
-                                <td class="fst-italic text-danger"><?= isset($e['function']) ? $e['function'] : '' ?></td>
-                                <td class="fw-bold"><?= isset($e['line']) ? $e['line'] : '' ?></td>
-                                <td>
-                                    <?php if(isset($e['args'])):?>
-                                        <?php foreach($e['args'] as $i) : ?>
-                                            <div class="text-muted" style="font-size:0.7em;">
-                                                <?=$i?>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+            <table class="table">
+                <thead>
+                    <tr class="table-secondary">
+                        <th class="brl">№</th>
+                        <th scope="col">file</th>
+                        <th scope="col">line</th>
+                        <th scope="col">class</th>
+                        <th scope="col">function</th>
+                        <th class="brr" scope="col">arg</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <?php foreach ($exeption->getTrace() as $a => $e): ?>
+                        <tr>
+                            <td class="text-muted"><?= $a + 1 ?></td>
+                            <td class="text-primary-emphasis"><?= localPathFile($e['file']) ?></td>
+                            <td class="fw-bold"><?= isset($e['line']) ? $e['line'] : '' ?></td>
+                            <td class="fst-italic text-success"><?= isset($e['class']) ? $e['class'] : '' ?></td>
+                            <td class="fst-italic text-danger"><?= isset($e['function']) ? $e['function'] : '' ?></td>
+                            <td>
+                                <?php if (isset($e['args'])): ?>
+                                    <?php foreach ($e['args'] as $i): ?>
+                                        <div class="text-muted">
+                                            <?php if (is_array($i)): ?>
+                                                <?php foreach($i as $aa => $ii):?>
+                                                    <div><?=$aa?> - <?=gettype($ii)?></div>
+                                                <?php endforeach; ?>
+                                                <?php //var_dump($i) ?>
+                                            <?php else: ?>
+                                                <?= $i ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+        <div class="electronic">
+            <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
         </div>
     </div>
 </body>

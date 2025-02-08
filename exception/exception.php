@@ -1,6 +1,5 @@
 <?php
-
-declare(strict_types=1);
+use \system\core\config\config;
 
 class FileException extends Exception
 {
@@ -41,16 +40,21 @@ class exeptionVar
 {
     public static function dump($exeption, $message, $code)
     {
-
+        ob_end_clean();
         if (ENTRANSE == 'web') {
             if(!headers_sent()){
                 http_response_code(503);
             }
             
-            if (\system\core\config\config::globals('dev')) {
+            if (config::globals('dev')) {
                 require SYSTEM . '/exception/tempDew.php';
             } else {
-                require SYSTEM . '/exception/tempProd.php';
+                if(file_exists(APP . '/views/error/exception.html')){
+                    $f = file_get_contents(APP . '/views/error/exception.html');
+                    echo $f;
+                }else{
+                    require SYSTEM . '/exception/tempProd.php';
+                }
             }
         } else {
             require SYSTEM . '/exception/tempConsole.php';
@@ -58,3 +62,9 @@ class exeptionVar
         exit();
     }
 }
+
+function myShutdown()
+{
+    exit();
+}
+register_shutdown_function('myShutdown');

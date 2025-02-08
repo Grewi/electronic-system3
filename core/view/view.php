@@ -160,7 +160,7 @@ class view
             $aa = array_shift($a);
             $html = 'layout/' . $aa;
             if ($matches) {
-                $layout = $this->getFile($this->viewsDir . '/' . $html . '.php', $html);
+                $layout = $this->getFile($this->viewsDir . '/' . $html . '.php');
                 preg_match_all('/\<block\s*name=\"(.*?)\"\s*\/*>/si', $layout, $matches2);
                 foreach ($matches2[1] as $a => $i) {
                     preg_match('/\<block\s*name=\"' . $i . '\"\s*\>(.*?)\<\/block\s*>/si', $content, $m);
@@ -240,7 +240,7 @@ class view
         foreach ($m[0] as $key => $i) {
             if ((!preg_match($this->validElement, $m[1][$key], $resut) || !preg_match($this->validElement, $m[2][$key], $resut)) && $valid) {
                 throw new \TempException('Недопустимое имя переменной в цикле ' . $parametrs . ' в шаблоне "' . $this->file . '"!');
-                continue;
+                // continue;
             }
             $result[mb_strtolower($m[1][$key])] = $m[2][$key];
         }
