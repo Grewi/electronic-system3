@@ -1,25 +1,23 @@
 <?php
-
 namespace system\inst\classes;
-
 use system\inst\classes\text;
-use system\core\app\app;
+use system\inst\classes\install;
+use system\inst\classes\item;
 
 class files
 {
     static $permissions = 0755;
 
-    public static function copy()
+    public static function copy(install &$install, item &$item)
     {
-        $app = app::app();
         //Читаем список файлов
-        if (file_exists($app->item->path->files)) {
-            $ftext = file_get_contents($app->item->path->files);
+        if (file_exists($item->pathFiles)) {
+            $ftext = file_get_contents($item->pathFiles);
             preg_match_all('/\{\s*(.*?)\s*\}/si', $ftext, $matches);
             $t = [];
 
             foreach ($matches[1] as $a => $i) {
-                if (empty($app->item->params->{$i})) {
+                if (empty($item->params[$i])) {
                     $t[] = $i;
                 }
             }
@@ -40,15 +38,15 @@ class files
                     }
 
                     if ($ib[1] == '>') {
-                        $i = self::copyFile($ib);
+                        $i = self::copyFile($item,$ib);
                     }
 
                     if ($ib[1] == 'd') {
-                        $i = self::copyDir($ib);
+                        $i = self::copyDir($item,$ib);
                     }
 
                     if ($ib[1] == '>>') {
-                        $i = self::copyFiles($ib);
+                        $i = self::copyFiles($item, $ib);
                     }
                 }
             }
@@ -58,7 +56,7 @@ class files
             $files = parse_ini_string($ftext, false, INI_SCANNER_TYPED);
 
             foreach ($files as $a => $i) {
-                $f1 = ITEMS . '/' . $app->item->name . '/files/' . $i;
+                $f1 = ITEMS . '/' . $item->name . '/files/' . $i;
                 $f2 = ROOT . '/' . $a;
 
                 if (!is_null($i)) {
@@ -69,7 +67,7 @@ class files
                         text::print('Файл: ' . $f1 . ' отсутствует');
                     } else {
                         if (file_exists($f2)) {
-                            if (($app->params->f === true)) {
+                            if (($install->getParams('f') === true)) {
                                 text::print('Файл: ' . $f2 . ' перезаписан');
                             } else {
                                 text::print('Файл: ' . $f2 . ' уже существует');
@@ -81,10 +79,10 @@ class files
                         $pext = pathinfo($f2);
                         if ((isset($pext['extension']) && $pext['extension'] == 'php') || empty($pext['extension'])) {
                             $content = file_get_contents($f2);
-                            foreach ($app->item->params as $aa => $ii) {
+                            foreach ($item->params as $aa => $ii) {
                                 preg_match_all('/\{\s*(' . $aa . ')\s*\}/si', $content, $mm);
                                 foreach ($mm[1] as $aaa => $iii) {
-                                    $content = str_replace($mm[0][$aaa], $app->item->params->{$iii}, $content);
+                                    $content = str_replace($mm[0][$aaa], $item->params[$iii], $content);
                                 }
                             }
                             file_put_contents($f2, $content);
@@ -100,20 +98,19 @@ class files
         }
     }
 
-    private static function copyFile(array $ib): string
+    private static function copyFile(item &$item, array $ib): string
     {
-        $app = app::app();
         if (isset($ib[2])) {
             preg_match('/\{\s*(.*?)\s*\}/si', $ib[2], $m2);
             if (!empty($m2)) {
-                $ib[2] = str_replace($m2[0], $app->item->params->{$m2[1]}, $ib[2]);
+                $ib[2] = str_replace($m2[0], $item->params[$m2[1]], $ib[2]);
             }
         }
 
         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
         if (!empty($m)) {
             $a = str_replace($m[0], $m[1], $ib[0]);
-            $b = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            $b = str_replace($m[0], $item->params[$m[1]], $ib[0]);
             if (isset($ib[2])) {
                 return $b . ' = ' . $ib[2];
             } else {
@@ -128,16 +125,15 @@ class files
         }
     }
 
-    private static function copyFiles(array $ib): string
+    private static function copyFiles(item &$item, array $ib): string
     {
-        $app = app::app();
         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
         if (!empty($m)) {
             $ri = str_replace($m[0], $m[1], $ib[0]);
-            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            $l = str_replace($m[0], $item->params[$m[1]], $ib[0]);
             $i = $l . ' = ' . $ri;
         }
-        $sd = ITEMS . '/' . $app->item->name . '/files/' . $ri;
+        $sd = ITEMS . '/' . $item->name . '/files/' . $ri;
         $sdFiles = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($sd),
             \RecursiveIteratorIterator::LEAVES_ONLY
@@ -154,12 +150,11 @@ class files
         return $list;
     }
 
-    private static function copyDir(array $ib): string
+    private static function copyDir(item &$item, array $ib): string
     {
-        $app = app::app();
         preg_match('/\{\s*(.*?)\s*\}/si', $ib[0], $m);
         if (!empty($m)) {
-            $l = str_replace($m[0], $app->item->params->{$m[1]}, $ib[0]);
+            $l = str_replace($m[0], $item->params[$m[1]], $ib[0]);
             $i = $l . ' = null';
         } else {
             $i = $ib[0] . ' = null';

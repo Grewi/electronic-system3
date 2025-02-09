@@ -10,8 +10,10 @@
 
 use system\inst\classes\installItem;
 use system\inst\classes\functions;
-use system\core\app\app;
 use system\inst\classes\text;
+
+use system\inst\classes\install;
+use system\inst\classes\item;
 
 define('ENTRANSE', 'install');
 define('INDEX', true);
@@ -22,13 +24,16 @@ define('ITEMS', INST . '/items');
 define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
-$app = app::app();
+// ob_end_clean();
 
-functions::parametrs();
-functions::unpuckItems();
+$install = new install();
 
-if (empty($app->param)) {
-    text::danger('Необходимо указать компонент установки.');
+text::install($install);
+functions::parametrs($install);
+functions::unpuckItems($install);
+
+if (empty($install->param)) {
+    text::danger( 'Необходимо указать компонент установки.');
     text::print('Для установки доступны: ');
     functions::infoListItem();
     text::print('--------------------------------------');
@@ -36,37 +41,37 @@ if (empty($app->param)) {
     Для этого необходимо создать и настроить файл install.ini в корне проекта', true);
 }
 
-if($app->param == 'all'){
+if($install->param == 'all'){
     if (!file_exists(INSTALL_INI)) {
         text::danger('Отсутствует файл install.ini');
         text::print('Для создания файла можно использовать команду "php system/install install.ini"', true);
     }    
-
-    $all = functions::listItemsForInstall();
+    $all = functions::listItemsForInstall($install);
     if(count($all) <= 0){
         text::danger('Нет элементов для установки.', true);
-    }
+    }  
     foreach ($all as $a => $i) {
-
         foreach ($i as $aa => $ii) {
-            $app->item->clean();
-            $app->item->name = $aa;
-            functions::constantFilesItem();
-            $app->item->params->app = $a;
+            $item = new item($install->param);
+            $item->name = $aa;
+            $item->app = $a;
+            $item->params['app'] = $a;
+            functions::constantFilesItem($item);
             foreach($ii as $aaa => $iii){
-                $app->item->params->{$aaa} = $iii;
+                $item->params[$aaa] = $iii;
             }
-            new installItem();
+            new installItem($install, $item);
         }
     }
-}elseif($app->param == 'install.ini'){
-    functions::installIni();
+}elseif($install->param == 'install.ini'){
+    functions::installIni($install);
 }else{
-    
-    $app->item->name = $app->param;
-    $app->item->params->app = $app->params->app;
-    functions::constantFilesItem();
-    new installItem();
+
+    $item = new item($install->param);
+    $item->app = $install->params['app'];
+    $item->params = $install->params;
+    functions::constantFilesItem($item);
+    new installItem($install, $item);
 }
 
-functions::delItems();
+functions::delItems($install);

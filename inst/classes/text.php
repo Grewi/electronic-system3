@@ -1,8 +1,12 @@
 <?php
 namespace system\inst\classes;
 use system\inst\classes\functions;
+use system\inst\classes\install;
 class text
 {
+    private static $singleton = null;
+
+    private $install;
     const color = [
         'Black' => "\033[0;30m",        # Black
         'Red' => "\033[0;31m",          # Red
@@ -74,66 +78,78 @@ class text
         'On_IWhite' => "\033[0;107m",  # White
     ];
 
-    public static function color(string $text, string $color)
+    private function __construct()
+    {
+
+    }
+
+    private function install(install $install)
+    {
+        $this->install = $install;
+    }
+
+    private function color(string $text, string $color)
     {
         return self::color[$color] . $text . "\033[0m";
     }
 
-    public static function print(string $text, bool $exit = false): void
+
+
+    private function print(string $text, bool $exit = false): void
     {
         echo self::pre() . $text . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install);
             exit();
         }
     }
 
-    public static function warn($text, $exit = false)
+    private function warn($text, $exit = false)
     {
         echo self::pre() . self::color($text, 'Yellow') . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install);
             exit();
         }
     }
 
-    public static function danger($text, $exit = false)
+    private function danger($text, $exit = false)
     {
         echo self::pre() . self::color($text, 'Red') . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install);
             exit();
         }
     }
 
-    public static function success($text, $exit = false)
+    private function success($text, $exit = false)
     {
         echo self::pre() . self::color($text, 'Green') . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install);
             exit();
         }
     }
 
-    public static function primary($text, $exit = false)
+    private function primary($text, $exit = false)
     {
         echo self::pre() . self::color($text, 'Cyan') . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install);
             exit();
         }
     }    
 
-    public static function info($text, $exit = false)
+    private function info($text, $exit = false)
     {
         echo self::pre() . self::color($text, 'Purple') . PHP_EOL;
         if ($exit) {
-            functions::delItems();
+            functions::delItems($this->install );
             exit();
         }
     }
 
-    public static function i($text)
+    private function i($text)
     {
         if(time() % 2 == 0){
             echo self::pre() . self::color($text, 'On_Black') . " " . time() . " \r";
@@ -143,9 +159,17 @@ class text
         
     }
     
-    private static function pre()
+    private function pre()
     {
         return self::color(" ▶ ", 'Green');
+    }
+
+    public static function __callStatic($method, $args)
+    {
+        if(!self::$singleton){
+            self::$singleton = new self;
+        }
+        self::$singleton->$method(...$args);
     }
 
 }

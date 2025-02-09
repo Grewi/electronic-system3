@@ -1,9 +1,7 @@
 <?php
-
 namespace system\inst\classes;
-
+use system\inst\classes\install;
 use system\inst\classes\text;
-use system\core\app\app;
 use system\core\files\files;
 use system\core\zip\zip;
 
@@ -15,33 +13,30 @@ class functions
         return in_array(mb_strtolower($request), $ok) ? true : false;
     }
 
-    public static function constantFilesItem(): void
+    public static function constantFilesItem(item &$item): void
     {
-        $app = app::app();
-        $app->item->path->files = ITEMS . '/' . $app->item->name . '/files.ini';
-        $app->item->path->help = ITEMS . '/' . $app->item->name . '/help.txt';
-        $app->item->path->info = ITEMS . '/' . $app->item->name . '/info.txt';
-        $app->item->path->params = ITEMS . '/' . $app->item->name . '/params.ini';
-        $app->item->path->relations = ITEMS . '/' . $app->item->name . '/relations.ini';
-        $app->item->path->index = ITEMS . '/' . $app->item->name . '/index.php';
-        $app->item->path->class = 'system\\inst\\items\\' . $app->item->name . '\\index';
+        $item->pathFiles = ITEMS . '/' . $item->name . '/files.ini';
+        $item->pathHelp = ITEMS . '/' . $item->name . '/help.txt';
+        $item->pathInfo = ITEMS . '/' . $item->name . '/info.txt';
+        $item->pathParams = ITEMS . '/' . $item->name . '/params.ini';
+        $item->pathRelations = ITEMS . '/' . $item->name . '/relations.ini';
+        $item->pathIndex = ITEMS . '/' . $item->name . '/index.php';
+        $item->pathClass = 'system\\inst\\items\\' . $item->name . '\\index';
     }
 
     /**
      * Определяет параметры запроса
      */
-    public static function parametrs(): void
+    public static function parametrs(install &$install): void
     {
         global $argv;
-
-        $app = app::app();
         if ($argv) {
             foreach ($argv as $a => $i) {
                 if ($a == 1) {
-                    $app->param = $i;
+                    $install->param = $i;
                 } elseif ($a > 1) {
                     $s = explode('=', $i);
-                    $app->params->{$s[0]} = (count($s) == 1) ? true : $s[1];
+                    $install->params[$s[0]] = (count($s) == 1) ? true : $s[1];
                 }
             }
         }
@@ -55,7 +50,7 @@ class functions
         foreach (self::listItems() as $i) {
             $item = ITEMS . '/' . $i;
             if (file_exists($item . '/info.txt')) {
-                text::print('    ' . text::color($i, 'Yellow') . ': ' . file_get_contents($item . '/info.txt'));
+                text::print('    ' . text::color( $i, 'Yellow') . ': ' . file_get_contents($item . '/info.txt'));
             } else {
                 text::print($i);
             }
@@ -83,7 +78,7 @@ class functions
     /**
      * Список доступных к установке компонентов
      */
-    public static function listItemsForInstall(): array
+    public static function listItemsForInstall(install &$install): array
     {
         $installIni = functions::parseInstallIni();
         $data = [];
@@ -119,7 +114,6 @@ class functions
      */
     public static function parseInstallIni(): array
     {
-        // $app = app::app();
         if (!file_exists(INSTALL_INI)) {
             return [];
         }
@@ -150,15 +144,14 @@ class functions
     /**
      * Проверяет наличие необходимых параметров
      */
-    public static function complectParams(): bool
+    public static function complectParams(item &$item): bool
     {
-        $app = app::app();
         $installIni = self::parseInstallIni();
         $r = true;
-        if (file_exists($app->item->path->params)) {
-            $c = parse_ini_file($app->item->path->params);
+        if (file_exists($item->pathParams)) {
+            $c = parse_ini_file($item->pathParams);
             foreach ($c as $j => $i) {
-                $r = $r && (!empty($app->item->params->{$j}) || isset($installIni[$app->item->params->app][$app->item->name][$j])) ? true : false;
+                $r = $r && (!empty($item->params[$j]) || isset($installIni[$item->app][$item->name][$j])) ? true : false;
             }
         }
         return $r;
@@ -167,19 +160,18 @@ class functions
     /**
      * Проверяет наличие записи о компоненте в файле install.json
      */
-    public static function checkRelation(): bool
+    public static function checkRelation(item &$item): bool
     {
-        $app = app::app();
         $data = [];
         if (file_exists(INSTALL_JSON)) {
             $data = json_decode(file_get_contents(INSTALL_JSON), true);
         }
 
-        if (file_exists($app->item->path->relations)) {
-            $rel = parse_ini_file($app->item->path->relations);
+        if (file_exists($item->pathRelations)) {
+            $rel = parse_ini_file($item->pathRelations);
             $r = isset($rel['items']) ? explode(',', $rel['items']) : [];
 
-            $rr = isset($data[(string)$app->item->params->app]['relations']) ? $data[$app->item->params->app]['relations'] : [];
+            $rr = isset($data[(string)$item->app]['relations']) ? $data[$item->app]['relations'] : [];
             $res = true;
             foreach ($r as $i) {
                 $res = in_array(trim($i), $rr) && $res ? true : false;
@@ -192,20 +184,19 @@ class functions
     /**
      * Добавляет имя компонента в файл install.json
      */
-    public static function addNameRelation(): void
+    public static function addNameRelation(item &$item): void
     {
-        $app = app::app();
         if (file_exists(INSTALL_JSON)) {
             $data = json_decode(file_get_contents(INSTALL_JSON), true);
         } else {
             $data = [];
         }
-        $data[$app->item->params->app]['relations'][] = $app->item->name;
-        $data[$app->item->params->app]['relations'] = array_unique($data[$app->item->params->app]['relations']);
+        $data[$item->app]['relations'][] = $item->name;
+        $data[$item->app]['relations'] = array_unique($data[$item->app]['relations']);
         file_put_contents(INSTALL_JSON, json_encode($data));
     }
 
-    public static function installIni(): void
+    public static function installIni(install &$install): void
     {
         if (file_exists(ROOT . '/install.ini')) {
             text::print('Файл install.ini уже существует', true);
@@ -216,28 +207,17 @@ class functions
         text::warn('Файл содержит шаблонные данные. Проверьте и отредактируйте его', true);
     }
 
-    // public static function print(string $text, bool $exit = false): void
-    // {
-    //     echo text::color('---> ', 'Green') . $text . PHP_EOL;
-    //     if ($exit) {
-    //         self::delItems();
-    //         exit();
-    //     }
-    // }
-
-    public static function delItems()
+    public static function delItems(install &$install)
     {
-        $app = app::app();
-        if($app->params->d === true){
+        if($install->getParams('d') === true){
             return;
         }
         files::deleteDir(INST . '/items');
     }
 
-    public static function unpuckItems()
+    public static function unpuckItems(install &$install)
     {
-        $app = app::app();
-        if($app->params->d === true){
+        if($install->getParams('d') === true){
             return;
         }
         if(file_exists(INST . '/items')){
@@ -248,10 +228,10 @@ class functions
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if ($a) {
-                self::delItems();
-                text::print('Директория перезаписана');
+                self::delItems($install);
+                text::print( 'Директория перезаписана');
             }else{
-                $app->params->d = true;
+                $install->setParams('d', true);
             }
             
         }

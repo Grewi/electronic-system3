@@ -6,12 +6,12 @@ namespace system\core\collection;
 class collection 
 {
 
-    private $collections;
+    private $collections = [];
 
     public function __get($name)
     {
         if(!isset($this->collections[$name])){
-            return null;
+            $this->collections[$name] = new collection();
         }
         return $this->collections[$name];
     }
@@ -29,5 +29,10 @@ class collection
     public function clean() : void
     {
         $this->collections = [];
+    }
+
+    public function __debugInfo(): array
+    {
+        return $this->collections;
     }
 } 
