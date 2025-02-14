@@ -128,7 +128,11 @@
                     <?php foreach ($exeption->getTrace() as $a => $e): ?>
                         <tr>
                             <td class="text-muted"><?= $a + 1 ?></td>
-                            <td class="text-primary-emphasis"><?= localPathFile($e['file']) ?></td>
+                            <td class="text-primary-emphasis">
+                                <?php if(isset($e['file'])): ?>
+                                <?= localPathFile($e['file']) ?>
+                                <?php endif; ?>
+                            </td>
                             <td class="fw-bold"><?= isset($e['line']) ? $e['line'] : '' ?></td>
                             <td class="fst-italic text-success"><?= isset($e['class']) ? $e['class'] : '' ?></td>
                             <td class="fst-italic text-danger"><?= isset($e['function']) ? $e['function'] : '' ?></td>
@@ -140,8 +144,10 @@
                                                 <?php foreach($i as $aa => $ii):?>
                                                     <div><?=$aa?> - <?=gettype($ii)?></div>
                                                 <?php endforeach; ?>
-                                            <?php else: ?>
+                                            <?php elseif(is_string($i)) : ?>
                                                 <?=  mb_strimwidth(htmlspecialchars($i), 0, 100, "..."); ?>
+                                            <?php else: ?>
+                                                ---
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>

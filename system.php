@@ -1,5 +1,7 @@
 <?php 
 use system\core\history\history;
+use system\core\history\history2;
+use system\core\history\history3;
 use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
 
@@ -8,6 +10,10 @@ ob_start();
 if (session_status() != PHP_SESSION_ACTIVE) {
     session_start();
 }
+
+// register_shutdown_function(function(){
+
+// });
 
 require_once __DIR__ . '/consts.php';
 
@@ -27,7 +33,8 @@ try {
 
     if (ENTRANSE == 'web') {
         bootstrap::load();
-        history::unshift();
+        // history::unshift();
+        history3::start()->save();
         require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {
         require_once ENTRY_POINT_CONSOLE_SYSTEM;
