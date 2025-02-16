@@ -7,7 +7,7 @@ class text
     private static $singleton = null;
 
     private $install;
-    const color = [
+    private $color = [
         'Black' => "\033[0;30m",        # Black
         'Red' => "\033[0;31m",          # Red
         'Green' => "\033[0;32m",        # Green
@@ -88,89 +88,84 @@ class text
         $this->install = $install;
     }
 
-    private function color(string $text, string $color)
+    public function color(mixed $text, string $color)
     {
-        return self::color[$color] . $text . "\033[0m";
+        return $this->color[$color] . (string)$text . "\033[0m";
     }
 
-    private function free($text, $color, bool $exit = false, $eol = false)
+    public function free($text, $color): static
     {
-        echo self::color($text, $color) . ($eol ? PHP_EOL : '');
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo $this->color($text, $color);
+        return $this;
     }
 
-    private function print(string $text, bool $exit = false): void
+    public function print(mixed $text): static
     {
-        echo self::pre() . $text . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo $text;
+        return $this;
     }
 
-    private function warn($text, $exit = false)
+    public function warn(mixed $text): static
     {
-        echo self::pre() . self::color($text, 'Yellow') . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo $this->color($text, 'Yellow');
+        return $this;
     }
 
-    private function danger($text, $exit = false)
+    public function danger(mixed$text): static
     {
-        echo self::pre() . self::color($text, 'Red') . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo $this->color($text, color: 'Red');
+        return $this;
     }
 
-    private function success($text, $exit = false)
+    public function success(mixed $text): static
     {
-        echo self::pre() . self::color($text, 'Green') . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo $this->color($text, 'Green');
+        return $this;
     }
 
-    private function primary($text, $exit = false)
+    public function primary(mixed $text): static
     {
-        echo self::pre() . self::color($text, 'Cyan') . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install);
-            exit();
-        }
+        echo self::color($text, 'Cyan');
+        return $this;
     }    
 
-    private function info($text, $exit = false)
+    public function info(mixed $text): static
     {
-        echo self::pre() . self::color($text, 'Purple') . PHP_EOL;
-        if ($exit) {
-            functions::delItems($this->install );
-            exit();
-        }
+        echo  $this->color($text, 'Purple');
+        return $this;
     }
 
     
 
-    private function i($text)
-    {
-        if(time() % 2 == 0){
-            echo self::pre() . self::color($text, 'On_Black') . " " . time() . " \r";
-        }else{
-            echo self::pre() . self::color($text, 'On_Yellow') . " " . time() . " \r";
-        }
+    // private function i($text)
+    // {
+    //     if(time() % 2 == 0){
+    //         echo self::pre() . self::color($text, 'On_Black') . " " . time() . " \r";
+    //     }else{
+    //         echo self::pre() . self::color($text, 'On_Yellow') . " " . time() . " \r";
+    //     }
         
-    }
+    // }
     
-    private function pre()
+    public static function p(string $text = " ▶ ",string $color = 'Green'): self
     {
-        return self::color(" ▶ ", 'Green');
+        if(!self::$singleton){
+            self::$singleton = new self;
+        }
+        echo self::$singleton->color($text, $color);
+        return self::$singleton;
+    }
+
+    public function exit()
+    {
+        functions::delItems($this->install );
+        echo PHP_EOL;
+        exit();
+    }
+
+    public function e()
+    {
+        echo PHP_EOL;
     }
 
     public static function __callStatic($method, $args)

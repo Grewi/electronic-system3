@@ -56,14 +56,14 @@ class database
         if (file_exists($filesPath)) {
 
             if (!$dbType) {
-                text::print('Недостаточно данных для подключения к базе данных');
+                text::p()->print('Недостаточно данных для подключения к базе данных')->e();
                 $a = null;
                 while ($a === null) {
-                    text::print('Продолжить установку? (yes/no): ');
+                    text::p()->print('Продолжить установку? (yes/no): ')->e();
                     $a = functions::yes(trim(fgets(STDIN)));
                 }
                 if (!$a) {
-                    text::print('Установка прервана', true);
+                    text::p()->print('Установка прервана')->exit();
                 }
             }
 
@@ -87,8 +87,8 @@ class database
                 }
                 $db->query($sql);
             } catch (\Exception $e) {
-                text::danger('Ошибка загрузки в базу данных');
-                text::print($e->getMessage());
+                text::p()->danger('Ошибка загрузки в базу данных')->e();
+                text::p()->print($e->getMessage())->e();
             }
 
         }

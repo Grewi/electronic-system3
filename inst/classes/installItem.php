@@ -21,21 +21,21 @@ class installItem
         $this->install = $install;
         if($install->getParams('help')){
             if (file_exists($item->pathHelp)) {
-                text::print(file_get_contents($item->pathHelp), true);
+                text::p()->print(file_get_contents($item->pathHelp))->exit();
             } else {
-                text::warn('Справочная информация не обнаружена.', true);
+                text::p()->warn('Справочная информация не обнаружена.')->exit();
             }
         }
 
         if(empty($item->app)){
-            text::warn('Параметр app не указан, будет применено значение "app".');
+            text::p()->warn('Параметр app не указан, будет применено значение "app".')->e();
             $a = null;
             while ($a === null) {
-                text::info( "Продолжить установку компонента " . $item->name . "? (yes/no): ");
+                text::p()->info( "Продолжить установку компонента " . $item->name . "? (yes/no): ")->e();
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                text::danger('Установка прервана', true);
+                text::p()->danger('Установка прервана')->exit();
             } 
             $item->app = 'app';
         }
@@ -77,29 +77,29 @@ class installItem
         }
 
         if (!functions::complectParams($item)) {
-            text::warn('К некоторым параметрам будут применены значения по умолчанию');
+            text::p()->warn('К некоторым параметрам будут применены значения по умолчанию')->e();
             $a = null;
             while ($a === null) {
-                text::info("Продолжить установку компонента " . $item->name . "? (yes/no): ");
+                text::p()->info("Продолжить установку компонента " . $item->name . "? (yes/no): ")->e();
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                text::danger('Установка прервана', true);
+                text::p()->danger('Установка прервана')->exit();
             }            
         }
 
         if(!functions::checkRelation($item)){
             if(file_exists($item->pathRelations)){
                 $rel = parse_ini_file($item->pathRelations);
-                text::warn('Для продолжения требуется установить: ' . $rel['items']);
+                text::p()->warn('Для продолжения требуется установить: ' . $rel['items'])->e();
             }
             $a = null;
             while ($a === null) {
-                text::info("Продолжить установку компонента " . $item->name . "? (yes/no): ");
+                text::p()->info("Продолжить установку компонента " . $item->name . "? (yes/no): ")->e();
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if (!$a) {
-                text::danger('Установка прервана', true);
+                text::p()->danger('Установка прервана')->exit();
             }
         } 
 
@@ -132,7 +132,7 @@ class installItem
         if($itemIndex){
             $itemIndex->finish();
         }
-        text::success('Установка компонента '. $item->name . ' завершена');
+        text::p()->success('Установка компонента '. $item->name . ' завершена')->e();
     }
 
     private function checkRelation($p)
@@ -140,15 +140,15 @@ class installItem
         $relPath = ITEMS . '/' . $p['itemName'] . '/relations.ini';
         if(file_exists($relPath)){
             $rel = parse_ini_file($relPath);
-            text::warn('Для продолжения требуется установить: ' . $rel['items']);
+            text::p()->warn('Для продолжения требуется установить: ' . $rel['items'])->e();
         }
         $a = null;
         while ($a === null) {
-            text::info("Продолжить установку? (yes/no): ");
+            text::p()->info("Продолжить установку? (yes/no): ")->e();
             $a = functions::yes(trim(fgets(STDIN)));
         }
         if (!$a) {
-            text::danger('Установка прервана', true);
+            text::p()->danger('Установка прервана')->exit();
         }
     }
 }

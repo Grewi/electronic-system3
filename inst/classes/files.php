@@ -23,8 +23,8 @@ class files
             }
             if (!empty($t)) {
                 $t = array_unique($t);
-                text::warn('Отсутствует параметр(ы): ' . implode(', ', $t));
-                text::danger('Установка прервана', true);
+                text::p()->warn('Отсутствует параметр(ы): ' . implode(', ', $t))->e();
+                text::p()->danger('Установка прервана')->exit();
             }
 
             $fArray = explode(PHP_EOL, $ftext);
@@ -64,13 +64,13 @@ class files
                     array_pop($ff);
                     self::createDir(implode('/', $ff));
                     if (!file_exists($f1)) {
-                        text::print('Файл: ' . $f1 . ' отсутствует');
+                        text::p()->print('Файл: ' . $f1 . ' отсутствует')->e();
                     } else {
                         if (file_exists($f2)) {
                             if (($install->getParams('f') === true)) {
-                                text::print('Файл: ' . $f2 . ' перезаписан');
+                                text::p()->print('Файл: ' . $f2 . ' перезаписан')->e();
                             } else {
-                                text::print('Файл: ' . $f2 . ' уже существует');
+                                text::p()->print('Файл: ' . $f2 . ' уже существует')->e();
                                 continue;
                             }
                         }
@@ -92,9 +92,9 @@ class files
                     self::createDir($f2);
                 }
             }
-            text::success('Файлы скопированны');
+            text::p()->success('Файлы скопированны')->e();
         } else {
-            text::danger('Файлов для копирования нет');
+            text::p()->danger('Файлов для копирования нет')->e();
         }
     }
 
