@@ -1,88 +1,148 @@
 <?php
-
 namespace system\core\history;
-use system\core\app\app;
+use system\core\validate\validate;
 
 class history
 {
+    private static $singleton = null;
+    private $tameSave = 60 * 60 * 24;
+    private $cache = APP . '/cache/history.db';
+    public $actualHash = null;
+    public $referal = null;
 
-    /**
-     * Добавить запись в историю
-     */
-    public static function unshift()
+    private function __construct()
     {
-        $app = app::app();
-        if (!$app->bootstrap->ajax && isset($_SERVER['REQUEST_URI'])) {
-            
-            if (empty($_SESSION['history'])) {
-                $_SESSION['history'][] = [
-                    'uri'    => $_SERVER['REQUEST_URI'],
-                    'method' => $_SERVER['REQUEST_METHOD'],
-                    'id' => md5(date('U')),
-                ];
-            }
-    
-            $oldUri    = isset($_SESSION['history'][0]['uri'])    ? $_SESSION['history'][0]['uri']    : null;
-            $oldMethod = isset($_SESSION['history'][0]['method']) ? $_SESSION['history'][0]['method'] : null;
-    
-            if (($oldUri && $oldUri != $_SERVER['REQUEST_URI']) || ($oldMethod && $oldMethod != $_SERVER['REQUEST_METHOD'])) {
-
-                array_unshift($_SESSION['history'], [
-                    'uri'    => $_SERVER['REQUEST_URI'],
-                    'method' => $_SERVER['REQUEST_METHOD'],
-                    'id' => md5(date('U')),
-                ]);
-            }
-        }
-        $app->history = $_SESSION['history'];
+        $this->create();
+        $this->referal();
+        $this->clear();
+        $this->actualHash = md5((string)time().rand(0,9999));
     }
 
-    /**
-     * Удалить последнюю запись из истории
-     */
-    public static function shift()
+    public function save()
     {
-        $app = app::app();
-        array_shift($_SESSION['history']);
-        $app->history = $_SESSION['history'];
-    }
-
-    /**
-     * Возвращает текущий id
-     */
-    public static function currentId()
-    {
-        if(isset($_SESSION['history'][0]['id'])){
-            return $_SESSION['history'][0]['id'];
+        if (!empty(session_id())) {      
+            $sql = 'INSERT INTO `history` (`hash`, `uri`, `method`, `session`, `datetime`) VALUES (
+            "' . $this->actualHash . '",
+            "' . ($_SERVER['REQUEST_URI'] ?? '') . '",
+            "' . ($_SERVER['REQUEST_METHOD'] ?? '') . '",
+            "' . session_id() . '",
+            "' . time() . '")';
+            $this->query($sql, []);
         }
     }
 
     /**
-     * Ищет номер записи по id
+     * Возвращает хеш текущего запроса 
+     * @return string
      */
-    public static function find($id){
-        foreach($_SESSION['history'] as $a => $i){
-            if(isset($i['id']) && $i['id'] == $id){
-                return $a;
+    public function actualHash()
+    {
+        return $this->actualHash;
+    }
+
+    /**
+     * Если в запросе есть параметр referal ищет uri
+     * @return void
+     */
+    private function referal()
+    {
+        $valid = new  validate();
+        $valid->name('referal')->free("/^[0-9a-f]+$/u");
+        if($valid->control()){
+            $a = $this->fetch('SELECT * FROM `history` WHERE `hash` = "' . $valid->return('referal') . '"');
+            $this->referal = $a ? $a->uri : null;
+        }
+    }
+
+    /**
+     * Возвращает uri для редиректа
+     */
+    public function referalUrl()
+    {
+        if($this->referal){
+            return $this->referal;
+        }else{
+            $a = $this->fetch('SELECT * FROM `history` 
+                WHERE `session` = "' . session_id()  . '" 
+                AND `method` = "GET" 
+                AND `hash` != "' . $this->actualHash . '"
+                AND `uri` NOT LIKE "%referal=%"
+                ORDER BY `id` DESC LIMIT 1', []);
+            if($a){
+                return $a->uri;
+            }else{
+                return '/';
             }
         }
     }
 
-    public static function referal()
+    /**
+     * Создаёт файл базы данных для хранения
+     */
+    private function create(): void
     {
-        $s = null;
-        if(isset($_REQUEST['historyid'])){
-            $s = self::find($_REQUEST['historyid']);
+        if (!file_exists($this->cache)) {
+            file_put_contents($this->cache, '');
+            $sql = file_get_contents(__DIR__ . '/sql/createHistory.sql');
+            $this->query($sql, []);
         }
-        $s = $s ? $s : 0;
-        if(isset($_SESSION['history'])){
-            foreach($_SESSION['history'] as $a => $i){
-                if($a < $s || $i['method'] != 'GET'){
-                    continue;
-                }
-                return $i['uri'];
-            }
+    }
+
+    public function clear()
+    {
+        $this->query('DELETE FROM `history` WHERE `datetime` < "' . time() - $this->tameSave . '"');
+    }
+
+
+    private function db(): \PDO
+    {
+        $options = [
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+        ];
+        if (file_exists($this->cache)) {
+            return new \PDO('sqlite:' . $this->cache, '', '', $options);
+        } else {
+            throw new \PDOException('Ошибка создания файла истории');
         }
-        return '/';
+    }
+
+    protected function query(string $sql, array $params = [], string $className = 'stdClass'): bool|\PDOStatement
+    {
+        $pdo = $this->db();
+        $sth = $pdo->prepare($sql);
+        foreach ($params as $param => &$value) {
+            $sth->bindParam(':' . $param, $value);
+        }
+        $sth->setFetchMode($pdo::FETCH_CLASS, $className);
+        $sth->execute();
+        return $sth;
+    }
+
+    protected function fetchAll(string $sql, array $params = [], string $className = 'stdClass'): array
+    {
+        return $this->query($sql, $params, $className)->fetchAll();
+    }
+
+    private function fetch(string $sql, array $params = [], string $className = 'stdClass'): mixed
+    {
+        $r = $this->query($sql, $params, $className)->fetch();
+        return $r === false ? null : $r;
+    }
+
+    public static function __callStatic($method, $args)
+    {
+        if(!self::$singleton){
+            self::$singleton = new self;
+        }
+        self::$singleton->$method(...$args);
+    }
+
+    public static function start()
+    {
+        if(!self::$singleton){
+            self::$singleton = new self;
+        }
+        return self::$singleton;
     }
 }

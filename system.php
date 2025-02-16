@@ -1,7 +1,5 @@
 <?php 
 use system\core\history\history;
-use system\core\history\history2;
-use system\core\history\history3;
 use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
 
@@ -33,8 +31,8 @@ try {
 
     if (ENTRANSE == 'web') {
         bootstrap::load();
-        // history::unshift();
-        history3::start()->save();
+
+        history::start()->save();
         require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {
         require_once ENTRY_POINT_CONSOLE_SYSTEM;

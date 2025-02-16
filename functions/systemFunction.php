@@ -63,9 +63,16 @@ if (!function_exists('alert')) {
 }
 
 if (!function_exists('referal_url')) {
-    function referal_url($lavel = 1)
+    function referal_url()
     {
-        return history::referal();
+        return history::start()->referalUrl();
+    }
+}
+
+if (!function_exists('referal_hash')) {
+    function referal_hash()
+    {
+        return history::start()->actualHash;
     }
 }
 
@@ -89,12 +96,12 @@ if (!function_exists('csrf')) {
     }
 }
 
-if (!function_exists('historyid')) {
-    function historyid()
-    {
-        return history::currentId();
-    }
-}
+// if (!function_exists('historyid')) {
+//     function historyid()
+//     {
+//         return history::currentId();
+//     }
+// }
 
 if (!function_exists('returnModal')) {
     function returnModal($i)
