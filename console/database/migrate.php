@@ -11,7 +11,6 @@ class migrate
     public function index(): void
     {
         $db = database::connect();
-
         //Автоопределение таблицы миграции в БД
         try {
             $start = $db->fetch('SELECT COUNT(*) as count FROM `migrations`', []);
@@ -69,18 +68,13 @@ class migrate
             $m = $db->fetch('SELECT * FROM migrations WHERE name = "' . $i . '"', []);
 
             if (empty($m)) {
-
-                try {
-                    $mSql = file_get_contents(MIGRATIONS . '/' . $i . '.sql');
-                    if (!empty($mSql)) {
-                        $db->query('INSERT INTO migrations (`name`, `active`) VALUES ("' . $i . '", "' . date('Y-m-d H:i', time()) . '")', []);
-                        $db->query($mSql, []);
-                        text::success('Применён ' . $i );
-                    } else {
-                        text::danger('Пустой файл миграции ' . $i);
-                    }
-                } catch (\PDOException $e) {
-                    echo $e->getMessage()   . PHP_EOL;
+                $mSql = file_get_contents(MIGRATIONS . '/' . $i . '.sql');
+                if (!empty($mSql)) {
+                    $db->query('INSERT INTO migrations (`name`, `active`) VALUES ("' . $i . '", "' . date('Y-m-d H:i', time()) . '")', []);
+                    $db->query($mSql, []);
+                    text::success('Применён ' . $i );
+                } else {
+                    text::danger('Пустой файл миграции ' . $i);
                 }
             } else {
                 text::info('Пропущен ' . $i);

@@ -1,4 +1,5 @@
 <?php
+use system\core\text\text;
 
 $fileLen = strlen('File');
 $lineLen = strlen('Line');
@@ -15,18 +16,18 @@ foreach ($exeption->getTrace() as $e) {
     $clssLen = isset($e['class']) && strlen($e['class']) > $clssLen ? strlen($e['class']) : $clssLen;
     $funcLen = isset($e['function']) && strlen($e['function']) > $funcLen ? strlen($e['function']) : $funcLen;
 }
-
+echo PHP_EOL;
 $s = $fileLen + $lineLen + $clssLen + $funcLen;
 $errorStr = str_pad('', (int)($s / 2), '-') . 'ERROR';
-echo str_pad($errorStr, $s + 3, '-') . PHP_EOL;
+text::danger( str_pad($errorStr, $s + 3, '-') );
 
-echo $message . PHP_EOL;
-echo localPathFile($exeption->getFile()) . ' - (' .  $exeption->getLine() . ')' . PHP_EOL;
+text::warn( $message );
+text::warn(  localPathFile($exeption->getFile()) . ' - (' .  $exeption->getLine() . ')' );
 
-echo str_pad('File', $fileLen, '-') . ' '
+text::danger( str_pad('File', $fileLen, '-') . ' '
     . str_pad('Line', $lineLen, '-') . ' '
     . str_pad('Class', $clssLen, '-') . ' '
-    . str_pad('Function', $funcLen, '-') . PHP_EOL;
+    . str_pad('Function', $funcLen, '-') );
 
 foreach ($exeption->getTrace() as $e) {
 
@@ -35,10 +36,11 @@ foreach ($exeption->getTrace() as $e) {
     $class = isset($e['class']) ? $e['class'] : '';
     $function = isset($e['function']) ? $e['function'] : '';
 
-    echo str_pad($file, $fileLen, ' ') . ' '
+    text::warn(  str_pad($file, $fileLen, ' ') . ' '
         . str_pad($line, $lineLen, ' ') . ' '
         . str_pad($class, $clssLen, ' ') . ' '
-        . str_pad($function, $funcLen, ' ') . PHP_EOL;
+        . str_pad($function, $funcLen, ' ') );
 }
 $errorStr = str_pad('', (int)($s / 2 + 2), '-') . '^';
-echo str_pad($errorStr, $s + 3, '-') . PHP_EOL;
+text::danger( str_pad($errorStr, $s + 3, '-') );
+echo PHP_EOL;
