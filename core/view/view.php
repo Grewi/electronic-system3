@@ -14,7 +14,6 @@ class view
     protected $viewsDir;
     protected $validElement;
     protected $countInclude;
-    protected $historyid = true;
 
     public function __construct(string $file = null, $data = [])
     {
@@ -96,7 +95,6 @@ class view
             $content = $this->variable($content);
             $content = $this->include($content);   // Подключение файлов
             $content = $this->csrf($content);      // Токен csrf
-            $content = $this->historyid($content); // 
             $content = $this->clearing($content);  // Очистка
             $this->save($file, $content);          // Сохранение файла в кеш
         }
@@ -208,24 +206,6 @@ class view
                 $content = str_replace($matches[0][$key], '<?= csrf(\'' . $a['name'] . '\') ?>', $content);
             } else {
                 $content = str_replace($matches[0][$key], '', $content);
-            }
-        }
-        return $content;
-    }
-
-    //
-    private function historyid($content): string
-    {
-        preg_match_all('/\<history\s*(.*?)\s*\\/*>/si', $content, $matches);
-        foreach ($matches[0] as $key => $i) {
-            $content = str_replace($matches[0][$key], '<input value="<?= historyid() ?>" name="historyid" hidden >', $content);
-        }
-        if(count($matches[0]) < 1 && $this->historyid){
-            preg_match_all('/<form(.*?)<\/form\s*>/si', $content, $matches);
-            foreach ($matches[0] as $key => $i) {
-                $content = str_replace($matches[0][$key], '<form ' . $matches[1][$key] .' 
-                <input value="<?= historyid() ?>" name="historyid" hidden >
-                </form>', $content);
             }
         }
         return $content;

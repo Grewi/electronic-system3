@@ -52,7 +52,7 @@ if (!function_exists('copyDir')) {
 }
 
 if (!function_exists('alert')) {
-    function alert2($text, $type = 'primary', $header = '')
+    function alert($text, $type = 'primary', $header = '')
     {
         $_SESSION['alert'][] = [
             'header' => $header,
