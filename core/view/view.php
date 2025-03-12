@@ -119,13 +119,7 @@ class view
         preg_match_all('/\<include \s*class\s*=\s*"(.*?)"\s* \s*method\s*=\s*"(.*?)" \/*\>/si', $content, $matches);
         if ($matches && count($matches[1]) > 0) {
             foreach ($matches[1] as $key => $i) {
-                if(!class_exists($i, false)){
-                    throw new \TempException('Класс "' . $i . '" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
-                }
-                if(!method_exists($i, $matches[2][$key])){
-                    throw new \TempException('Метод "' . $matches[2][$key] . '" в классе "' . $i . '" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
-                }
-                
+                $i = $this->pathR($i);
                 $inc = '<?php (new ' . $i . '())->' . $matches[2][$key] . '() ?>';
                 $content = str_replace($matches[0][$key], $inc, $content);
             }
@@ -240,5 +234,12 @@ class view
         return $result;
     }
 
-
+	private function pathR(string $a)
+	{
+        $i = str_replace('/', '\\', $a); 
+        if($i[0] != '\\'){
+            $i = '\\' . $i;
+        }
+		return $i;
+	}
 }
