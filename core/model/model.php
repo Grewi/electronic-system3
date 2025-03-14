@@ -72,6 +72,15 @@ class model
     }
 
     /**
+     * Устанавливает условный оператор для функций where
+     */
+    public function or(): static
+    {
+        $this->EMD->where->or();
+        return $this;
+    }
+
+    /**
      * Условие с указанием оператора 
      * @param string $col Поле таблицы в базе
      * @param string $operator Оператор для условия (= < <= > >= !=)

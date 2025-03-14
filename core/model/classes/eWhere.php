@@ -28,6 +28,11 @@ class eWhere
         return empty($this->where) ? ' WHERE' : $wsep;
     }
 
+    public function or(): void
+    {
+        $this->whereSeparator = ' OR';
+    }
+
     public function where($p1, $p2, $p3, $or): void
     {
         if($or){
