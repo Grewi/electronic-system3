@@ -93,7 +93,14 @@ class text
         return self::color[$color] . $text . "\033[0m";
     }
 
-
+    private function free($text, $color, bool $exit = false, $eol = false)
+    {
+        echo self::color($text, $color) . ($eol ? PHP_EOL : '');
+        if ($exit) {
+            functions::delItems($this->install);
+            exit();
+        }
+    }
 
     private function print(string $text, bool $exit = false): void
     {
@@ -148,6 +155,8 @@ class text
             exit();
         }
     }
+
+    
 
     private function i($text)
     {

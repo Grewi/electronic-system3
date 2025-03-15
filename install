@@ -24,7 +24,7 @@ define('ITEMS', INST . '/items');
 define('INSTALL_INI', ROOT . '/install.ini');
 define('INSTALL_JSON', ROOT . '/install.json');
 require_once SYSTEM . '/system.php';
-// ob_end_clean();
+ob_end_clean();
 
 $install = new install();
 
