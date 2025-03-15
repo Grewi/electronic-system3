@@ -33,22 +33,22 @@ functions::parametrs($install);
 functions::unpuckItems($install);
 
 if (empty($install->param)) {
-    text::danger( 'Необходимо указать компонент установки.');
-    text::print('Для установки доступны: ');
+    text::p()->danger( 'Необходимо указать компонент установки.')->e();
+    text::p()->print('Для установки доступны: ')->e();
     functions::infoListItem();
-    text::print('--------------------------------------');
-    text::print('Также можно использовать параметр ' . text::color('all', 'Yellow')  . ' для автоматической установки. ' . PHP_EOL . ' 
-    Для этого необходимо создать и настроить файл install.ini в корне проекта', true);
+    text::p()->print('--------------------------------------')->e();
+    text::p()->print('Также можно использовать параметр ')->warn('all')
+        ->print(' для автоматической установки. Для этого необходимо создать и настроить файл install.ini в корне проекта')->exit();
 }
 
 if($install->param == 'all'){
     if (!file_exists(INSTALL_INI)) {
-        text::danger('Отсутствует файл install.ini');
-        text::print('Для создания файла можно использовать команду "php system/install install.ini"', true);
+        text::p()->danger('Отсутствует файл install.ini')->e();
+        text::p()->print('Для создания файла можно использовать команду')->warn(' "php system/install install.ini"')->exit();
     }    
     $all = functions::listItemsForInstall($install);
     if(count($all) <= 0){
-        text::danger('Нет элементов для установки.', true);
+        text::p()->danger('Нет элементов для установки.')->e();
     }  
     foreach ($all as $a => $i) {
         foreach ($i as $aa => $ii) {

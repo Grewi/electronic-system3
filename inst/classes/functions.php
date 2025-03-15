@@ -50,9 +50,12 @@ class functions
         foreach (self::listItems() as $i) {
             $item = ITEMS . '/' . $i;
             if (file_exists($item . '/info.txt')) {
-                text::print('    ' . text::color( $i, 'Yellow') . ': ' . file_get_contents($item . '/info.txt'));
+                echo '    ';
+                text::p()->warn( $i);
+
+                text::p('')->print(': ' . file_get_contents($item . '/info.txt'))->e();
             } else {
-                text::print($i);
+                text::p()->print($i)->e();
             }
         }
     }
@@ -92,7 +95,7 @@ class functions
                 if (isset($data[$a]['relations'])) {
                     if (in_array($aa, $data[$a]['relations'])) {
                         $control = true;
-                        text::warn('Элемент ' . $aa . ' уже установлен.');
+                        text::p()->warn('Элемент ' . $aa . ' уже установлен.')->e();
                         continue;
                     }
                 }
@@ -103,8 +106,8 @@ class functions
             }
         }
         if($control){
-            text::print('Для переустановки уже установленного элемента отредактируйте install.json в корне проекта.');
-            text::print('Для принудительной перезаписи файлов используйте параметр - f');
+            text::p()->print('Для переустановки уже установленного элемента отредактируйте install.json в корне проекта.')->e();
+            text::p()->print('Для принудительной перезаписи файлов используйте параметр - f')->e();
         }
         return $r;
     }
@@ -199,12 +202,12 @@ class functions
     public static function installIni(install &$install): void
     {
         if (file_exists(ROOT . '/install.ini')) {
-            text::print('Файл install.ini уже существует', true);
+            text::p()->print('Файл install.ini уже существует')->exit();
         }
         $t = file_get_contents(INST . '/sample.install.ini');
         file_put_contents(ROOT . '/install.ini', $t);
-        text::success('Файл install.ini создан');
-        text::warn('Файл содержит шаблонные данные. Проверьте и отредактируйте его', true);
+        text::p()->success('Файл install.ini создан')->e();
+        text::p()->warn('Файл содержит шаблонные данные. Проверьте и отредактируйте его')->exit();
     }
 
     public static function delItems(install &$install)
@@ -221,15 +224,15 @@ class functions
             return;
         }
         if(file_exists(INST . '/items')){
-            text::warn('Директория "' . INST . '/items" уже существует');
+            text::p()->warn('Директория "' . INST . '/items" уже существует')->e();
             $a = null;
             while ($a === null) {
-                text::info("Удалить и продолжить стандартную установку? (yes/no): ");
+                text::p()->info("Удалить и продолжить стандартную установку? (yes/no): ")->e();
                 $a = functions::yes(trim(fgets(STDIN)));
             }
             if ($a) {
                 self::delItems($install);
-                text::print( 'Директория перезаписана');
+                text::p()->print( 'Директория перезаписана')->e();
             }else{
                 $install->setParams('d', true);
             }
