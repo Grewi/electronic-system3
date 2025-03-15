@@ -93,6 +93,11 @@ class history
         $this->query('DELETE FROM `history` WHERE `datetime` < "' . time() - $this->tameSave . '"');
     }
 
+    public static function js()
+    {
+        $script = __DIR__ . '/scripts/script.js';
+        return file_get_contents($script) ? file_get_contents($script) : '';
+    }
 
     private function db(): \PDO
     {
