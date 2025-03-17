@@ -32,7 +32,6 @@ try {
 
     if (ENTRANSE == 'web') {
         bootstrap::load();
-
         history::start()->save();
         require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {

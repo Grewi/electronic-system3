@@ -1,6 +1,6 @@
 <?php
 namespace system\core\error;
-// use system\core\history\history;
+use system\core\history\history;
 use system\core\app\app;
 
 trait error404 
@@ -10,10 +10,10 @@ trait error404
     protected $imagesFormat = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'ico'];
 
     protected function errorResponse()
-    {        
+    {       
         $app = app::app();
         http_response_code(404);
-        // history::shift();
+        history::start()->reset();
         $this->errorTypeStr();
         if($app->bootstrap->ajax){
             exit($this->ErrorTextResponse);

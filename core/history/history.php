@@ -31,6 +31,12 @@ class history
         }
     }
 
+    public function reset()
+    {
+        $sql = 'DELETE FROM `history` WHERE `hash` = "' . $this->actualHash . '";';
+        $this->query($sql, []);
+    }
+
     /**
      * Возвращает хеш текущего запроса 
      * @return string

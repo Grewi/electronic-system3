@@ -35,9 +35,9 @@ class bootstrap
         }
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            $app->bootstrap->ajax = 0;
-        } else {
             $app->bootstrap->ajax = 1;
+        } else {
+            $app->bootstrap->ajax = 0;
         }
     }
 }
