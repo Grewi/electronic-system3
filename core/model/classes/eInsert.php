@@ -12,6 +12,7 @@ class eInsert
     private string $table;
     private array $bind;
     private array $data;
+    private bool $returnedId;
 
     public function databaseName(string $name): void
     {
@@ -38,7 +39,12 @@ class eInsert
         $this->data = $data;
     }
 
-    public function save(): int
+    public function returnedId(bool $data)
+    {
+        $this->returnedId = $data;
+    }
+
+    public function save(): int|null
     {
         $db = database::connect($this->databaseName);
         $count = count($this->data);
@@ -55,6 +61,10 @@ class eInsert
         $sql = 'INSERT INTO ' . $this->table . ' (' . $strKey .')  VALUES (' . $strData . ')';
      
         $db->query($sql, $data);
+
+        if(!$this->returnedId){
+            return null;
+        }
 
         if (config::database('type') == 'sqlite') {
             $dbId = $db->fetch('SELECT Last_insert_rowid() as ' . $this->id, []);

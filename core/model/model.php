@@ -61,6 +61,14 @@ class model
     }
 
     /**
+     * Возвращать id после update и insert
+     */
+    public function returnedId()
+    {
+        return true;
+    }
+
+    /**
      * Значение поля FROM. По умолчанию наименование класса
      * @param string $from
      * @return model
@@ -282,14 +290,18 @@ class model
      * @param array $data Данные для записи. Ключи массива должны соответствовать поля в базе
      * @return model
      */
-    public function insert(array $data): static
+    public function insert(array $data): static|null
     {
         $this->EMD->insert->databaseName($this->EMD->databaseName);
         $this->EMD->insert->table($this->EMD->from->get());
         $this->EMD->insert->bind($this->bind());
         $this->EMD->insert->id($this->EMD->id);
         $this->EMD->insert->data($data);
+        $this->EMD->insert->returnedId($this->returnedId());
         $id = $this->EMD->insert->save();
+        if(!$id){
+            return null;
+        }
         $cl = $this::class;
         return (new $cl)->find($id);
     }
