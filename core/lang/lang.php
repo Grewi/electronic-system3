@@ -9,7 +9,7 @@ class lang
 
     public function __construct()
     {
-        $l = config::globals('lang');
+        $l = getConfig('globals', 'lang');
         if($l){
            $this->default = $l;
         }

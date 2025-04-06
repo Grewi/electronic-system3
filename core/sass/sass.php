@@ -79,7 +79,7 @@ abstract class sass
 
     public function compile($name = null)
     {
-        $data = config::sass('data');
+        $data = getConfig('sass', 'data');
         if (!isset($this->data[$data])) {
             text::danger('Не удалось определить конфигурацию системы');
             text::warn('Проверьте значение "data" в файле конфигурации .sass.ini');
@@ -123,7 +123,7 @@ abstract class sass
 
     public function dowload($url, $fileName)
     {
-        $dataDir = config::sass('data');
+        $dataDir = getConfig('sass', 'data');
         if (!file_exists(APP . '/cache/sass/')) {
             mkdir(APP . '/cache/sass/', 0755, true);
         }

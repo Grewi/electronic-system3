@@ -46,7 +46,7 @@ class exeptionVar
                 http_response_code(503);
             }
             
-            if (config::globals('dev')) {
+            if (getConfig('globals', 'dev')) {
                 require SYSTEM . '/exception/tempDew.php';
             } else {
                 if(file_exists(APP . '/views/error/exception.html')){

@@ -19,7 +19,7 @@ class createConfigIni
                     continue;
                 }
                 $filename = $info['filename'];
-                config::createConfig($filename);
+                (new ('\\' . APP_NAME . '\\configs\\' . $filename))->update();
             }
             text::primary('Операция завершена', true);
         }

@@ -282,36 +282,34 @@ class model
      * @param array $data Данные для записи. Ключи массива должны соответствовать поля в базе
      * @return model
      */
-    public function insert(array $data): static
+    public function insert(array $data): ?int
     {
         $this->EMD->insert->databaseName($this->EMD->databaseName);
         $this->EMD->insert->table($this->EMD->from->get());
         $this->EMD->insert->bind($this->bind());
         $this->EMD->insert->id($this->EMD->id);
         $this->EMD->insert->data($data);
-        $id = $this->EMD->insert->save();
-        $cl = $this::class;
-        return (new $cl)->find($id);
+        return $this->EMD->insert->save();
     }
 
     /**
-     * Изменения в записи. 
+     * Изменения в записи. Возвращает количество изменённых данных 
      * @param array $data
      * @return model
      */
-    public function update(array $data = []): static
+    public function update(array $data = []): int
     {
         $d = array_merge(get_object_vars($this), $data);
-        $this->where($this->EMD->id, $d[$this->EMD->id]);
+        if(isset($this->id)){
+            $this->where($this->EMD->id, $d[$this->EMD->id]);
+        }
         $this->EMD->update->where($this->EMD->where->get());
         $this->EMD->update->databaseName($this->EMD->databaseName);
         $this->EMD->update->table($this->EMD->from->get());
         $this->EMD->update->bind($this->bind());
         $this->EMD->update->id($this->EMD->id);
         $this->EMD->update->data($d);
-        $this->EMD->update->save();
-        $cl = $this::class;
-        return (new $cl)->find($this->{$this->EMD->id});
+        return $this->EMD->update->save();
     }
 
     /**
@@ -324,11 +322,11 @@ class model
     }
 
     /**
-     * Удаление записи
+     * Удаление записи. Возвращает количество удалённых строк
      * @param array $data
      * @return void
      */
-    public function delete(array $data = []): void
+    public function delete(array $data = []): int
     {
         $d = array_merge(get_object_vars($this), $data);
         if (isset($this->id)) {
@@ -339,13 +337,16 @@ class model
         $this->EMD->delete->table($this->EMD->from->get());
         $this->EMD->delete->id($this->EMD->id);
         $this->EMD->delete->data($this->bind());
-        $this->EMD->delete->save();
+        return $this->EMD->delete->save();
     }
 
-    public function pagin(int $limit = null): static
+    /**
+     * 
+     */
+    public function pagin(int $limit = 0): static
     {
         $this->EMD->pagination->str();
-        if ($limit) {
+        if ($limit <= 0) {
             $this->EMD->pagination->setLimit($limit);
         }
         $this->EMD->offset->add($this->EMD->pagination->calcOffset());
@@ -355,7 +356,7 @@ class model
         return $this;
     }
 
-    public function pagination(string $url = null): array
+    public function pagination(string $url = ''): array
     {
         return [
             'lines' => $this->EMD->pagination->getLines(),

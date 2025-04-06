@@ -12,10 +12,10 @@ class database
 
     public function createDump()
     {
-        $dbName = config::database('name');
-        $dbHost = config::database('host');
-        $dbPass = config::database('pass');
-        $dbUser = config::database('user');
+        $dbName = getConfig('database', 'name');
+        $dbHost = getConfig('database', 'host');
+        $dbPass = getConfig('database', 'pass');
+        $dbUser = getConfig('database', 'user');
         $dumpPath = APP . '/cache/dump';
         $dumpSql = $dumpPath . '/' . date('Y-m-d', time());
         $fileName = date('Y-m-d__U', time());
@@ -50,10 +50,10 @@ class database
         } else {
             text::danger('Не удалось получить необходимые параметры', true);
         }
-        $dbName = config::database('name');
-        $dbHost = config::database('host');
-        $dbPass = config::database('pass');
-        $dbUser = config::database('user');
+        $dbName = getConfig('database', 'name');
+        $dbHost = getConfig('database', 'host');
+        $dbPass = getConfig('database', 'pass');
+        $dbUser = getConfig('database', 'user');
         $dir = APP . '/cache/dump/' . $parametr;
         $print = exec('mysql  --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' < ' . $dir, $output, $status);
         text::primary('Операция завершена', true);
@@ -63,7 +63,7 @@ class database
     {
         $db = db::connect();
         $db->query('SET FOREIGN_KEY_CHECKS = 0;');
-        $tables = $db->fetchAll('SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA = "' . config::database('name') . '"', []);
+        $tables = $db->fetchAll('SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA = "' . getConfig('database', 'name') . '"', []);
         foreach ($tables as $t) {
             $db->query("DROP TABLE " . $t->TABLE_NAME, []);
         }

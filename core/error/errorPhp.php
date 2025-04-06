@@ -12,12 +12,11 @@ class errorPhp
         if (file_exists(APP . '/configs/errors.php')) {
 
             $iniFile = APP . '/configs/.errors.ini';
-            $errors = config::errors();
             $errorCacheDir = APP . '/cache';
             $errorCacheFile = $errorCacheDir . '/errorCacheFile.php';
             $ERROR_INI_MB5 = null;
 
-            if ($errors->display == 1) {
+            if (getConfig('errors', 'display') == 1) {
                 ini_set('display_errors', 1);
                 ini_set('display_startup_errors', 1);
             } else {
@@ -47,13 +46,12 @@ class errorPhp
 
     public static function createCacheErrorReporting($errorCacheDir, $errorCacheFile, $mb5)
     {
-        $errors = config::errors();
-        $all = $errors->all();
         $s = [];
-        if ($errors->E_ALL == 1) {
+
+        if (getConfig('errors', 'E_ALL') == 1) {
             $b = '<?php error_reporting(E_ALL);  $ERROR_INI_MB5 = "' . $mb5 . '";';
         } else {
-            foreach ($all as $a => $i) {
+            foreach (allConfig('errors') as $a => $i) {
                 $c = mb_substr($a, 0, 2, "UTF-8");
                 if ($c != 'E_' || $a == 'E_ALL' || $i != 1) {
                     continue;

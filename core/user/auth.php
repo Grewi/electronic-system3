@@ -252,7 +252,7 @@ class auth
      */
     private function session_time()
     {
-        $globalConfig = config::globals('session_time');
+        $globalConfig = getConfig('globals', 'session_time');
         if ($globalConfig > 0) {
             return (int)$globalConfig;
         } else {

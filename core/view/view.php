@@ -4,7 +4,6 @@ namespace system\core\view;
 use system\core\database\database;
 use system\core\app\app;
 use system\core\lang\lang;
-use system\core\config\config;
 
 class view
 {
@@ -15,7 +14,7 @@ class view
     protected $validElement;
     protected $countInclude;
 
-    public function __construct(string $file = null, $data = [])
+    public function __construct(string $file, $data = [])
     {
         //Создать запрос в настройки
         $this->cacheDir = APP . '/cache/views';
@@ -51,7 +50,6 @@ class view
         
         $app = app::app();
         $lang = new lang();
-        $config = new config();
         extract($data);
         $file = $this->countInclude[0];
         if(file_exists($this->cacheDir . '/' . $file . '.php')){

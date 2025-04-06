@@ -2,125 +2,67 @@
 
 namespace system\core\config;
 
-class config
+abstract class config
 {
-    private $path = APP . '/configs/';
-    private $element = '';
-    private $iniArr = [];
-    private static $connect = null;
-
-    static public function connect()
+    private static $path = APP . '/configs/';
+    /** 
+     * Возвращает значение параметра
+     */
+    public function get(string $param): ?string
     {
-		if(self::$connect === null){ 
-			self::$connect = new self();
-		}
-		return self::$connect;
-	}
-
-    public static function __callStatic($element, $parameters)
-    {
-        if($element == 'createConfig'){
-            self::connect()->createConfig($parameters[0]);
-        }
-        return self::connect()->m($element, $parameters);
-    }
-
-    public function __call($element, $parameters)
-    {
-        if($element == 'createConfig'){
-            self::connect()->createConfig($parameters[0]);
-        }
-        return self::connect()->m($element, $parameters);
-    }
-
-    public function __get($parameters){
-        return self::connect()->m($this->element, [$parameters]);
-    }
-
-    public function all()
-    {
-        $ini = $this->path . '.' . $this->element . '.ini';
-        $php = $this->path . $this->element . '.php';
-
-        if (!file_exists($ini) && file_exists($php)) {
-            $this->createConfigFile($this->element);
-        }        
+        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
 
         //Парсим ini файл
         if (file_exists($ini)) {
-            return parse_ini_file($ini);
+            $iniArr = parse_ini_file($ini);
         }
-
-        return null;
-    }
-
-    private function m(string $element, array $param = null){
-        $this->iniArr = [];
-        $this->element = $element;
-        $ini = $this->path . '.' . $element . '.ini';
-        $php = $this->path . $element . '.php';
-
-        //Парсим ini файл
-        if (file_exists($ini)) {
-            $this->iniArr = parse_ini_file($ini);
-        }
-
         //Если есть значение в ini возвращаем его
-        if ($param && isset($this->iniArr[$param[0]])) {
-            return $this->iniArr[$param[0]];
+        if (isset($iniArr[$param])) {
+            return $iniArr[$param];
         }
 
-        //Парсим php файл, если есть значение, возвращаем
-        if ($param && file_exists($php)) {
-            $this->createConfigFile($element);
-            $this->iniArr = parse_ini_file($ini);
-            //Если есть значение в ini возвращаем его
-            if ($param && isset($this->iniArr[$param[0]])) {
-                return $this->iniArr[$param[0]];
-            }else{
-                return null;
-            }
-        }elseif($param){
+        self::createConfigFile();
+        $iniArr = parse_ini_file($ini);
+        //Если есть значение в ini возвращаем его
+        if (isset($iniArr[$param])) {
+            return $iniArr[$param];
+        } else {
             return null;
         }
-
-        return $this;
     }
 
-    private function createConfigFile(string $className): void
+    /**
+     * Возвращаетс значения всех параметров массивом
+     */
+    public function all(): ?array
     {
-        $class = '\\' . APP_NAMESPACE . '\\configs\\' . $className;
-        $a = new $class;
-        $config = $a->set();
-        $config = array_merge($config, $this->iniArr);
-        $this->iniArr = $config;
-        $ini = '';
-        foreach ($config as $key => $i) {
-            $ini .= $key . ' = ' . $i . PHP_EOL;
+        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
+        if (!file_exists($ini)) {
+            $this->update();
         }
-        file_put_contents($this->path . '.' . $className . '.ini', $ini);
+        return parse_ini_file($ini);
     }
 
-    //Метод для обновления ini файлов
-    private function createConfig(string $className): void
+    /**
+     * Обновляет значения в ini файле
+     */
+    public function update(): void
     {
-        $class = '\\' . APP_NAMESPACE . '\\configs\\' . $className;
-        $a = new $class;
-        $config = $a->set();
-        $this->iniArr = [];
-
-        $i = $this->path . '.' . $className . '.ini';
-        if (file_exists($i)) {
-            $this->iniArr = parse_ini_file($i);
+        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
+        $iniArr = [];
+        if (file_exists($ini)) {
+            $iniArr = parse_ini_file($ini);
         }
-
-        $config = array_merge($config, $this->iniArr);
-        $this->iniArr = $config;
-        $ini = '';
+        $config = array_merge($this->set(), $iniArr);
+        $data = '';
         foreach ($config as $key => $i) {
-            $ini .= $key . ' = ' . $i . PHP_EOL;
+            $data .= $key . ' = ' . $i . PHP_EOL;
         }
-        file_put_contents($this->path . '.' . $className . '.ini', $ini);
-        $this->iniArr = [];
+        file_put_contents($ini, $data);
+    }
+
+    private function returnClassName(): string
+    {
+        return array_reverse(explode('\\', static::class))[0];
     }
 }

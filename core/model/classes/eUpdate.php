@@ -47,7 +47,7 @@ class eUpdate
         $this->where = $where;
     }    
 
-    public function save(): void
+    public function save(): int
     {
         $db = database::connect($this->databaseName);
         $count = count($this->data);
@@ -59,6 +59,6 @@ class eUpdate
         }
         $data = array_merge($this->data, $this->bind);
         $sql = 'UPDATE ' . $this->table . ' SET ' . $str . ' ' . $this->where . ';';
-        $db->query($sql, $data);
+        return $db->update($sql, $data);
     }
 }

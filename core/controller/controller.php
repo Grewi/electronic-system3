@@ -3,7 +3,6 @@
 declare(strict_types = 1);
 
 namespace system\core\controller;
-use system\core\config\config;
 use system\core\collection\collection;
 use system\core\lang\lang;
 
@@ -19,7 +18,7 @@ abstract class controller
     public function __construct()
     {
         $this->return = new collection();
-        $this->title(config::globals('title'));
+        $this->title(getConfig('globals', 'title'));
         $this->alert();
         $this->error();
         $this->data();
@@ -47,7 +46,7 @@ abstract class controller
 
     protected function title(string $title = '')
     {
-        $configTitle = config::globals('title');
+        $configTitle = getConfig('globals', 'title');
         $sep = ' | ';
         if(!empty($title)){
             $this->data['title'] = $title . $sep . $configTitle;

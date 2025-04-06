@@ -38,7 +38,7 @@ class eInsert
         $this->data = $data;
     }
 
-    public function save(): int
+    public function save(): ?int
     {
         $db = database::connect($this->databaseName);
         $count = count($this->data);
@@ -52,16 +52,9 @@ class eInsert
         }
 
         $data = array_merge($this->data, $this->bind);
+        
+
         $sql = 'INSERT INTO ' . $this->table . ' (' . $strKey .')  VALUES (' . $strData . ')';
-     
-        $db->query($sql, $data);
-
-        if (config::database('type') == 'sqlite') {
-            $dbId = $db->fetch('SELECT Last_insert_rowid() as ' . $this->id, []);
-        }else{
-            $dbId = $db->fetch('SELECT * FROM ' . $this->table . ' where ' . $this->id .' = LAST_INSERT_ID()', []);
-        }
-
-        return $dbId->{$this->id};
+        return $db->insert($sql, $data);
     }
 }

@@ -110,11 +110,27 @@ if (!function_exists('returnModal')) {
     }
 }
 
+if (!function_exists('getConfig')) {
+    function getConfig($file, $param)
+    {
+        $class = '\\' . APP_NAME . '\\configs\\' . $file;
+        return (new $class)?->get($param);
+    }
+}
+
+if (!function_exists('allConfig')) {
+    function allConfig($file)
+    {
+        $class = '\\' . APP_NAME . '\\configs\\' . $file;
+        return (new $class)?->all();
+    }
+}
+
 if (!function_exists('dump')) {
     function dump(...$a)
     {
-        if (config::globals('dev')) {
-            if (config::globals('dumpline')) {
+        if (getConfig('globals','dev')) {
+            if (getConfig('globals','dumpline')) {
                 $backtrace = debug_backtrace();
                 echo '<div style="font-size: 12px; padding:3px; background: #fff; font-family: monospace; white-space:nowrap;">
             <span style="color:#900;">' . $backtrace[0]['file'] . '</span>
@@ -131,8 +147,8 @@ if (!function_exists('dump')) {
 if (!function_exists('dd')) {
     function dd(...$a)
     {
-        if (config::globals('dev')) {
-            if (config::globals('dumpline')) {
+        if (getConfig('globals','dev')) {
+            if (getConfig('globals','dumpline')) {
                 $backtrace = debug_backtrace();
                 if (ENTRANSE == 'web') {
                     echo '<div style="font-size: 12px; padding:3px; background: #fff; font-family: monospace; white-space:nowrap;">

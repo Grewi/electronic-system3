@@ -16,7 +16,7 @@ class migrate
             $start = $db->fetch('SELECT COUNT(*) as count FROM `migrations`', []);
         } catch (\PDOException $e) {
             if (!$start) {
-                if (config::database('type') == 'sqlite') {
+                if (getConfig('database', 'type') == 'sqlite') {
                     $startSql = '
                     CREATE TABLE `migrations` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT,

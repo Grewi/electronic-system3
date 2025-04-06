@@ -38,10 +38,10 @@ class eDelete
         $this->where = $where;
     } 
 
-    public function save(): void
+    public function save(): int
     {
         $db = database::connect($this->databaseName);
         $sql = 'DELETE FROM ' . $this->table . ' ' . $this->where;
-        $db->query($sql, $this->data);
+        return $db->delete($sql, $this->data);
     }
 }
