@@ -21,7 +21,7 @@ abstract class config
             return $iniArr[$param];
         }
 
-        self::createConfigFile();
+        self::update();
         $iniArr = parse_ini_file($ini);
         //Если есть значение в ini возвращаем его
         if (isset($iniArr[$param])) {

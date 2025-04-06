@@ -10,7 +10,7 @@ use system\core\system\header;
 use system\core\history\history;
 
 if (!function_exists('db')) {
-    function db($configName = null)
+    function db($configName = 'database')
     {
         return database::connect($configName);
     }

@@ -351,11 +351,11 @@ class model
     /**
      * 
      */
-    public function pagin(int $limit = 0): static
+    public function pagin(int $limit = 20): static
     {
         $this->EMD->pagination->str();
         if ($limit <= 0) {
-            $this->EMD->pagination->setLimit($limit);
+            $this->EMD->pagination->setLimit(20);
         }
         $this->EMD->offset->add($this->EMD->pagination->calcOffset());
         $this->EMD->limit->add($this->EMD->pagination->getLimit());

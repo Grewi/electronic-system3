@@ -9,7 +9,7 @@ use system\core\config\config;
 class database
 {
 
-    public static function connect($configName = 'database')
+    public static function connect(string $configName = 'database')
     {
         $config = (new ('\\' . APP_NAME . '\\configs\\' . $configName)())->all();
         if (!$config) {
