@@ -2,6 +2,7 @@
 use system\core\history\history;
 use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
+use system\core\history\newHistory;
 
 ob_start();
 
@@ -31,7 +32,6 @@ try {
 
     if (ENTRANSE == 'web') {
         bootstrap::load();
-
         history::start()->save();
         require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {

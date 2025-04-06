@@ -93,6 +93,7 @@ class view
             $content = $this->variable($content);
             $content = $this->include($content);   // Подключение файлов
             $content = $this->csrf($content);      // Токен csrf
+            // $content = $this->history($content);   // History js
             $content = $this->clearing($content);  // Очистка
             $this->save($file, $content);          // Сохранение файла в кеш
         }
@@ -202,6 +203,16 @@ class view
         }
         return $content;
     }
+
+    // private function history($content)
+    // {
+    //     preg_match('/\<history\s*(.*?)\s*\>/si', $content, $m);
+    //     $js = '<script>' . PHP_EOL . history::js() . PHP_EOL . '</script>';
+    //     if($m){
+    //         $content = str_replace($m[0], $js, $content);
+    //     }
+    //     return $content;
+    // }
 
     //Последнее изменение в директории
     private function foldermtime(string $dir)

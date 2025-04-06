@@ -61,6 +61,14 @@ class model
     }
 
     /**
+     * Возвращать id после update и insert
+     */
+    public function returnedId()
+    {
+        return true;
+    }
+
+    /**
      * Значение поля FROM. По умолчанию наименование класса
      * @param string $from
      * @return model

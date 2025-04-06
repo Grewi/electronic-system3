@@ -12,6 +12,7 @@ class eInsert
     private string $table;
     private array $bind;
     private array $data;
+    private bool $returnedId;
 
     public function databaseName(string $name): void
     {

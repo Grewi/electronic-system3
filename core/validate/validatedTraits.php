@@ -189,7 +189,7 @@ trait validatedTraits
     {
         $this->data[$this->currentName] = $this->data[$this->currentName] ? mb_strtolower($this->data[$this->currentName]) : '';
         $data = $this->data[$this->currentName];
-        if (!empty($data) && !preg_match("/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/u", $data)) {
+        if (!empty($data) && !preg_match("/^[a-z0-9+._-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/u", $data)) {
             $this->error[$this->currentName][] = lang::valid('mail');
             $this->setControl(false);
         }

@@ -31,6 +31,12 @@ class history
         }
     }
 
+    public function reset()
+    {
+        $sql = 'DELETE FROM `history` WHERE `hash` = "' . $this->actualHash . '";';
+        $this->query($sql, []);
+    }
+
     /**
      * Возвращает хеш текущего запроса 
      * @return string
@@ -93,6 +99,11 @@ class history
         $this->query('DELETE FROM `history` WHERE `datetime` < "' . time() - $this->tameSave . '"');
     }
 
+    // public static function js()
+    // {
+    //     $script = __DIR__ . '/scripts/script.js';
+    //     return file_get_contents($script) ? file_get_contents($script) : '';
+    // }
 
     private function db(): \PDO
     {
