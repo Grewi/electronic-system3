@@ -303,7 +303,7 @@ class model
     /**
      * Изменения в записи. Возвращает количество изменённых данных 
      * @param array $data
-     * @return model
+     * @return int
      */
     public function update(array $data = []): int
     {
@@ -322,9 +322,9 @@ class model
 
     /**
      * Summary of save
-     * @return model
+     * @return int
      */
-    public function save(): static
+    public function save(): ?int
     {
         return $this->update();
     }

@@ -80,9 +80,9 @@ class maryadb
     /**
      * Выполняет запрос и возвращает все строки результата
      */
-    public function fetchAll(string $sql, array $params = []): array
+    public function fetchAll(string $sql, array $params = [], string $className = 'stdClass'): array
     {
-        return $this->query($sql, $params)->fetchAll();
+        return $this->query($sql, $params, $className)->fetchAll();
     }
     
     /**

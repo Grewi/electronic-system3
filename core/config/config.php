@@ -1,8 +1,9 @@
 <?php
 
 namespace system\core\config;
+use system\core\config\iConfig;
 
-abstract class config
+abstract class config implements iConfig
 {
     private static $path = APP . '/configs/';
     /** 

@@ -8,6 +8,7 @@ use system\core\config\config;
 use system\core\files\files;
 use system\core\system\header;
 use system\core\history\history;
+use system\core\config\iConfig;
 
 if (!function_exists('db')) {
     function db($configName = 'database')
@@ -113,16 +114,24 @@ if (!function_exists('returnModal')) {
 if (!function_exists('getConfig')) {
     function getConfig($file, $param)
     {
-        $class = '\\' . APP_NAME . '\\configs\\' . $file;
-        return (new $class)?->get($param);
+        $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
+        if($class instanceof iConfig){
+            return (new $class)?->get($param);
+        }else{
+            throw new \Exception('Класс конфигурации ' . $file . ' не реализует интерфейс iConfig');
+        }
     }
 }
 
 if (!function_exists('allConfig')) {
     function allConfig($file)
     {
-        $class = '\\' . APP_NAME . '\\configs\\' . $file;
-        return (new $class)?->all();
+        $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
+        if($class instanceof iConfig){
+            return (new $class)?->all();
+        }else{
+            throw new \Exception('Класс конфигурации ' . $file . ' не реализует интерфейс iConfig');
+        }
     }
 }
 
