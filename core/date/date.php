@@ -226,10 +226,26 @@ class date
         return $this->dateTime->format($d . ' ' . $m . ' ' . $Y);
     }
 
-    public function intervalDay($date1, $date2)
+    /**
+     * Принимает дату меньшую чем объект
+     * Например изначальная дата в будущем а в интервал передаём текущую
+     */
+    public function intervalDay($date)
     {
-        $origin = new \DateTimeImmutable($date1);
-        $target = new \DateTimeImmutable($date2);
+        $origin = new \DateTimeImmutable($this->dateTime->format('Y-m-d'));
+        $target = new \DateTimeImmutable($date);
+        $interval = $target->diff($origin);
+        return $interval->format('%R%a') < 0 ? 0 : $interval->format('%a');
+    }
+
+    /**]
+     * Принимает дату большую чем объект
+     * Например изначальная дата в прошлом а в интервал передаём текущую
+     */
+    public function intervalDayR($date)
+    {
+        $origin = new \DateTimeImmutable($date);
+        $target = new \DateTimeImmutable($this->dateTime->format('Y-m-d'));
         $interval = $target->diff($origin);
         return $interval->format('%R%a') < 0 ? 0 : $interval->format('%a');
     }

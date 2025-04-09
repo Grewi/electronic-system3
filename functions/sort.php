@@ -11,7 +11,7 @@ if (!function_exists('sortLink')) {
      * @param string $iconAsc
      * @return string
      */
-    function sortLink(string $name, string $lang, array $params = [], string $iconDesc = null, string $iconAsc = null)
+    function sortLink(string $name, string $lang, array $params = [], ?string $iconDesc = null, ?string $iconAsc = null)
     {
         $iconDesc = $iconDesc ? $iconDesc : '<i class="bi bi-sort-up-alt"></i>';
         $iconAsc = $iconAsc ? $iconAsc : '<i class="bi bi-sort-up"></i>';

@@ -485,7 +485,7 @@ class model
      * Запись соответствубщая идентификатору
      * @param int $id
      */
-    public function find(int $id): static
+    public function find(int $id): ?static
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
