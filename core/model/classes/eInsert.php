@@ -36,6 +36,10 @@ class eInsert
 
     public function data(array $data): void
     {
+        unset($data['EMD']);
+        if(isset($data[$this->id])){
+            unset($data[$this->id]);
+        }
         $this->data = $data;
     }
 

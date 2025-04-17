@@ -14,7 +14,7 @@ class view
     protected $validElement;
     protected $countInclude;
 
-    public function __construct(string $file, $data = [])
+    public function __construct(?string $file=null, array $data = [])
     {
         //Создать запрос в настройки
         $this->cacheDir = APP . '/cache/views';

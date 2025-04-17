@@ -220,6 +220,12 @@ class model
         return $this;
     }
 
+    public function group(string $group): static
+    {
+        $this->EMD->group->add($group);
+        return $this;
+    }
+
     /**
      * Объединение  INNER
      * @param string $tableName Наименование таблицы для объединения
@@ -290,13 +296,14 @@ class model
      * @param array $data Данные для записи. Ключи массива должны соответствовать поля в базе
      * @return model
      */
-    public function insert(array $data): ?int
+    public function insert(array $data = []): ?int
     {
+        $d = array_merge(get_object_vars($this), $data);
         $this->EMD->insert->databaseName($this->EMD->databaseName);
         $this->EMD->insert->table($this->EMD->from->get());
         $this->EMD->insert->bind($this->bind());
         $this->EMD->insert->id($this->EMD->id);
-        $this->EMD->insert->data($data);
+        $this->EMD->insert->data($d);
         return $this->EMD->insert->save();
     }
 
@@ -321,12 +328,23 @@ class model
     }
 
     /**
-     * Summary of save
-     * @return int
+     * Сохраняет и возвращает объект модели
+     * @return static
      */
-    public function save(): ?int
+    public function save(array $data = []): static
     {
-        return $this->update();
+        $this->update($data);
+        return $this->find($this->id);
+    }
+
+    /**
+     * Создаёт запись и возвращает объект модели
+     * @return static
+     */
+    public function create(array $data = []): static
+    {
+        $id = $this->insert($data);
+        return $this->find((int)$id);
     }
 
     /**
