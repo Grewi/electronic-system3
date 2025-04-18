@@ -2,8 +2,9 @@
 namespace system\core\model;
 
 use system\core\database\database;
-use system\core\model\traits\wrap;
 use system\core\collection\collection;
+use system\core\model\iteratorDataModel;
+use system\core\model\traits\wrap;
 use system\core\model\classes\{
     eSelect,
     eFrom,
@@ -20,8 +21,7 @@ use system\core\model\classes\{
     ePagination,
 };
 
-#[\AllowDynamicProperties]
-class model
+class model extends iteratorDataModel
 {
     private collection $EMD;
 
@@ -298,12 +298,13 @@ class model
      */
     public function insert(array $data = []): ?int
     {
-        $d = array_merge(get_object_vars($this), $data);
+        // $d = array_merge(get_object_vars($this), $data);
+        $this->addPropertyModel($data);
         $this->EMD->insert->databaseName($this->EMD->databaseName);
         $this->EMD->insert->table($this->EMD->from->get());
         $this->EMD->insert->bind($this->bind());
         $this->EMD->insert->id($this->EMD->id);
-        $this->EMD->insert->data($d);
+        $this->EMD->insert->data($this->getPropertyModel());
         return $this->EMD->insert->save();
     }
 
@@ -314,16 +315,17 @@ class model
      */
     public function update(array $data = []): int
     {
-        $d = array_merge(get_object_vars($this), $data);
-        if(isset($this->id)){
-            $this->where($this->EMD->id, $d[$this->EMD->id]);
+        // $d = array_merge(get_object_vars($this), $data);
+        $this->addPropertyModel($data);
+        if($this->id){
+            $this->where($this->EMD->id, $this->{$this->EMD->id});
         }
         $this->EMD->update->where($this->EMD->where->get());
         $this->EMD->update->databaseName($this->EMD->databaseName);
         $this->EMD->update->table($this->EMD->from->get());
         $this->EMD->update->bind($this->bind());
         $this->EMD->update->id($this->EMD->id);
-        $this->EMD->update->data($d);
+        $this->EMD->update->data($this->getPropertyModel());
         return $this->EMD->update->save();
     }
 
@@ -354,9 +356,10 @@ class model
      */
     public function delete(array $data = []): int
     {
-        $d = array_merge(get_object_vars($this), $data);
-        if (isset($this->id)) {
-            $this->where($this->EMD->id, $d[$this->EMD->id]);
+        // $d = array_merge(get_object_vars($this), $data);
+        $this->addPropertyModel($data);
+        if ($this->id) {
+            $this->where($this->EMD->id, $this->{$this->EMD->id});
         }
         $this->EMD->delete->where($this->EMD->where->get());
         $this->EMD->delete->databaseName($this->EMD->databaseName);
@@ -586,28 +589,5 @@ class model
     private function bind(): array
     {
         return array_merge($this->EMD->where->bind->get());
-    }
-
-    public function __debugInfo(): array
-    {
-        $p = [];
-        $reflect = new \ReflectionObject($this);
-        $props = $reflect->getProperties(\ReflectionProperty::IS_PUBLIC);
-        foreach ($props as $prop) {
-            $p[$prop->getName()] = $this->{$prop->getName()};
-        }
-        return $p;
-    }
-
-    public function __get(string $name)
-    {
-        return;
-    }
-
-    public function __set(string $name, mixed $value)
-    {
-        if($name != 'EMD'){
-            $this->{$name} = $value;
-        }
     }
 }
