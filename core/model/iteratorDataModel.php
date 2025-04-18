@@ -30,7 +30,7 @@ class iteratorDataModel implements \IteratorAggregate
 
     public function __debugInfo()
     {
-        return $this->iteratorDataModel;
+        return $this->iteratorDataModel ?? null;
     }
 
     public function getIterator(): \ArrayIterator
