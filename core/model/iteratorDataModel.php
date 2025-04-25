@@ -4,7 +4,7 @@ namespace system\core\model;
 
 class iteratorDataModel implements \IteratorAggregate
 {
-    private array $iteratorDataModel;
+    private array $iteratorDataModel = [];
 
     protected function addPropertyModel(array $properties): void
     {
