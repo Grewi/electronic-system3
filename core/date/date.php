@@ -78,8 +78,18 @@ class date
         return isset($arr[(int)$day]) ? $arr[(int)$day] : '';
     }
 
+    /**
+     * 
+     */
     public static function create($dateTime)
     {
+        self::$connect = new self($dateTime);
+        return self::$connect;
+    }
+
+    public static function createUnix($dateTime)
+    {
+        $dateTime = date('Y-m-d', $dateTime);
         self::$connect = new self($dateTime);
         return self::$connect;
     }
