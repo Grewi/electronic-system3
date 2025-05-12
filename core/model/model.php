@@ -424,7 +424,7 @@ class model extends iteratorDataModel
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
      * @return mixed
      */
-    public function filterLike(string $name, string $col = null): static
+    public function filterLike(string $name, ?string $col): static
     {
         $col = $col ? $col : $name;
         if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
@@ -506,7 +506,7 @@ class model extends iteratorDataModel
      * Запись соответствубщая идентификатору
      * @param int $id
      */
-    public function find(int $id): ?static
+    public function find(?int $id): ?static
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
