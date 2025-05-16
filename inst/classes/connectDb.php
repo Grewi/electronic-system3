@@ -1,27 +1,31 @@
 <?php
 namespace system\inst\classes;
-use system\core\database\database;
+// use system\core\database\database;
+use system\core\database\maryadb;
+use system\core\database\sqlite;
+use system\core\database\postgre;
 
-class connectDb extends database
+class connectDb //extends database
 {
 
     static public function c($configs)
     {
-        if (!isset(self::$connect['install']) || self::$connect['install'] === null) {
-            self::$connect['install'] = new self($configs);
-        }
-        return self::$connect['install'];
+        return match($configs['type']){
+            'mysql' => new maryadb($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+            'sqlite' => new sqlite(ROOT . '/sqlite/' . $configs['type'] . '.db'),
+            'postgre' => new postgre($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+            default => throw new \PDOException('Не указан подходящий тип базы данных')
+        };
     }
 
-    protected function __construct($configs)
-    {
-        $this->file = $configs['file'];
-        $this->type = $configs['type'];
-        $this->name = $configs['name'];
-        $this->host = $configs['host'];
-        $this->user = $configs['user'];
-        $this->pass = $configs['pass'];
-        $this->dpo();
-    }
+    // protected function __construct($configs)
+    // {
+    //     return match($configs['type']){
+    //         'mysql' => new maryadb($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+    //         'sqlite' => new sqlite(ROOT . '/sqlite/' . $configs['type'] . '.db'),
+    //         'postgre' => new postgre($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+    //         default => throw new \PDOException('Не указан подходящий тип базы данных')
+    //     };
+    // }
 
 }

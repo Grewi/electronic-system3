@@ -43,6 +43,25 @@ class route
         $this->accord[$domain] = $app;
     }
 
+    /**
+     * Принимает путь к ini файлу 
+     * Формат записи:
+     * domain: app
+     * @var file - Путь к файлу
+     */
+    public function addAppIni(string $file) : void
+    {
+        if(!file_exists($file)){
+            return;
+        }
+        $ini = parse_ini_file($file);
+        if($ini){
+            foreach($ini as $a => $i){
+                $this->accord[$a] = $i;
+            }
+        }
+    }
+
     public function addDefault( string $app) : void
     {
         $this->default = $app;

@@ -31,10 +31,6 @@
             margin-bottom: 10px;
         }
 
-        .bl2 {
-
-        }
-
         .table {
             background: #444;
             border: #777 solid 1px;
