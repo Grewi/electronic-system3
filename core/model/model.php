@@ -549,6 +549,21 @@ class model extends iteratorDataModel
         return (float) db($this->EMD->databaseName)->fetch($str, $this->bind(), get_class($this))->summ;
     }
 
+    /**
+     * Возвращает массив значений указанного столбца
+     * [1, 2, 3, ...]
+     * @param string $col - Наименование столбца
+     * @return array
+     */
+    public function toArray(string $col = 'id'): array
+    {
+        $r = [];
+        foreach($this->all() as $i){
+            $r[] = $i->{$col};
+        }
+        return $r;
+    }
+
     public function sqlPrint($format = true, $exit = false): void
     {
         if ($format) {
