@@ -27,7 +27,7 @@ class maskRule
     /**
      * Маска прав 
      */
-    public function __construct($rules)
+    public function __construct(string $rules)
     {
         $this->rules = mb_strtolower($rules);
     }

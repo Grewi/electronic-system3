@@ -112,7 +112,7 @@ class installItem
         }    
         
         if($itemIndex){
-            $itemIndex->params();
+            $itemIndex->params($item);
         }
 
         files::copy($install, $item);
