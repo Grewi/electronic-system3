@@ -4,9 +4,14 @@ use system\core\view\view;
 
 class viewJson 
 {
+    private $content;
+
     public function __construct($file, $data)
     {
-        $content = (new view())->return($file, $data);
-        echo json_encode($content);
+        ob_start();
+        new view($file, $data);
+        $this->content = ob_get_contents();
+        ob_end_clean();
+        echo json_encode($this->content);
     }
 }

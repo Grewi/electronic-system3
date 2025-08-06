@@ -8,7 +8,10 @@ class viewJsonReturn
 
     public function __construct($file, $data)
     {
-        $this->content = (new view())->return($file, $data);
+        ob_start();
+        new view($file, $data);
+        $this->content = ob_get_contents();
+        ob_end_clean();
     }
 
     public function return() : string

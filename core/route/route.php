@@ -167,6 +167,15 @@ class route
         $this->groupName = null;
     }
 
+    public function blockGroup(string $name, callable $function):route
+    {
+        $this->get = true;
+        $this->namespace = '';
+        $this->groupName = null;
+        $this->group($name, $function);
+        return $this;
+    }    
+
     // public function prefix($name): route
     // {
     //     $this->startControl();

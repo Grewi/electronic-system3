@@ -1,6 +1,6 @@
 <?php
 namespace system\core\app;
-use system\core\collection\collection;
+use system\core\app\collection;
 
 #[\AllowDynamicProperties]
 class app{
