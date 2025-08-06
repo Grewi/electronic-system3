@@ -375,9 +375,7 @@ class model extends iteratorDataModel
     public function pagin(int $limit = 20): static
     {
         $this->EMD->pagination->str();
-        if ($limit <= 0) {
-            $this->EMD->pagination->setLimit(20);
-        }
+        $this->EMD->pagination->setLimit($limit <= 0 ? 20 : $limit);
         $this->EMD->offset->add($this->EMD->pagination->calcOffset());
         $this->EMD->limit->add($this->EMD->pagination->getLimit());
         $this->EMD->pagination->setCount($this->count());
