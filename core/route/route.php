@@ -261,6 +261,10 @@ class route
     private function parseUrl(string $get): void
     {
         $app = app::app();
+        
+        if($get == '/*'){
+            return;
+        }
         if ($this->groupName) {
             if ($get == '/') {
                 $get = substr($get, 1);

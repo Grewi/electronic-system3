@@ -189,7 +189,10 @@ class maryadb
     
     public function rollBack(): bool
     {
-        return $this->connection->rollBack();
+        if($this->connection->inTransaction()){
+            return $this->connection->rollBack();
+        }
+        return false;
     }
     
     public function lastInsertId(): string
