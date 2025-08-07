@@ -438,4 +438,18 @@ trait validatedTraits
         $this->setReturn($data);
         return $this;
     }
+
+    /**
+     * Обработка данных замыканием
+     * Функция должна вернуть значение $data
+     * Текст ошибки - $valid->error[$valid->currentName][] = 'Текст ошибки'
+     * Состояние - $this->setControl(false);
+     * @return static
+     */
+    public function func($func)
+    {
+        $data = $this->data[$this->currentName];
+        $this->setReturn($func($data, $this));
+        return $this;
+    }
 }
