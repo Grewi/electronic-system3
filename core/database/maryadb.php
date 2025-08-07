@@ -7,12 +7,14 @@ namespace system\core\database;
 use PDO;
 use PDOException;
 use PDOStatement;
+use system\core\database\cacheQuery;
 
 class maryadb
 {
     private ?PDO $connection = null;
+    private static $singleton = null;
     
-    public function __construct(
+    private function __construct(
         private string $host,
         private string $dbname,
         private string $username,
@@ -21,6 +23,21 @@ class maryadb
         private array $options = []
     ) {
         $this->connect();
+    }
+
+    public static function on(
+        string $host,
+        string $dbname,
+        string $username,
+        string $password,
+        string $charset = 'utf8mb4',
+        array $options = []
+    )
+    {
+        if(!self::$singleton){
+            self::$singleton = new static($host, $dbname, $username, $password, $charset, $options);  
+        }
+        return self::$singleton;
     }
     
     /**
@@ -74,7 +91,14 @@ class maryadb
      */
     public function fetch(string $sql, array $params = [], string $className = 'stdClass'): ?object
     {
-        return $this->query($sql, $params, $className)->fetch() ?: null;
+        cacheQuery::addKey($sql, $params);
+        if (!cacheQuery::control()) {
+            $r = $this->query($sql, $params, $className)->fetch() ?: null;
+            cacheQuery::addQuery($r);
+            return $r;
+        } else {
+            return cacheQuery::returnQuery();
+        }
     }
     
     /**
@@ -82,7 +106,14 @@ class maryadb
      */
     public function fetchAll(string $sql, array $params = [], string $className = 'stdClass'): array
     {
-        return $this->query($sql, $params, $className)->fetchAll();
+        cacheQuery::addKey($sql, $params);
+        if (!cacheQuery::control()) {
+            $r = $this->query($sql, $params, $className)->fetchAll();
+            cacheQuery::addQuery($r);
+            return $r;
+        } else {
+            return cacheQuery::returnQuery();
+        }
     }
     
     /**
@@ -90,7 +121,14 @@ class maryadb
      */
     public function fetchColumn(string $sql, array $params = [], int $column = 0): mixed
     {
-        return $this->query($sql, $params)->fetchColumn($column);
+        cacheQuery::addKey($sql, $params);
+        if (!cacheQuery::control()) {
+            $r = $this->query($sql, $params)->fetchColumn($column);
+            cacheQuery::addQuery($r);
+            return $r;
+        } else {
+            return cacheQuery::returnQuery();
+        }
     }
     
     /**

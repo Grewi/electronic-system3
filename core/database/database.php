@@ -16,6 +16,8 @@ class database
             throw new \PDOException('Не установленны настройки для подключения к базе данных');
         }
         return match($config['type']){
+            // 'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
+            'mysql' => maryadb::on($config['host'], $config['name'], $config['user'], $config['pass']),
             'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
             'sqlite' => new sqlite(ROOT . '/sqlite/' . $config['type'] . '.db'),
             'postgre' => new postgre($config['host'], $config['name'], $config['user'], $config['pass']),
