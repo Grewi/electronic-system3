@@ -10,15 +10,8 @@ class cron
     private $name;
     private $status = true;
     private $first = false;
-    private $namespace;
     private $log;
     private $logFile = APP . '/cache/cron.json';
-
-    public function namespace(string $name)
-    {
-        $this->namespace = $name;
-        return $this;
-    }
 
     public function name(string $name)
     {
@@ -32,7 +25,7 @@ class cron
     public function controller($class, $method = 'index')
     {
         if ($this->status && !$this->first) {
-            $class = '\\' . files::pathR($this->namespace, $class);
+            $class = '\\' . files::pathR($class);
             if(class_exists($class)){
                 $controller = new $class();
                 $controller->{$method}();
