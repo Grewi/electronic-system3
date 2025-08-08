@@ -193,10 +193,17 @@ if (!function_exists('subMin')) {
 }
 
 if (!function_exists('intervalDay')) {
-    function intervalDay($date1, $date2 = null)
+    function intervalDay($date1, $date2 = null): int
     {
         $date2 = $date2 ? $date2 : date('Y-m-d H:i');
-        $d = \system\core\date\date::create($date1);
-        return $d->intervalDay($date1, $date2);
+        $d1 = \system\core\date\date::create($date1);
+        $d2 = \system\core\date\date::create($date2);
+        if($d1->format('U') > $d2->format('U')){
+            return $d1->intervalDay($d2->format('Y-m-d'));
+        }elseif($d1->format('U') < $d2->format('U')){
+            return $d1->intervalDayR($d2->format('Y-m-d'));
+        }else{
+            return 0;
+        }
     }
 }
