@@ -74,7 +74,7 @@ abstract class controller
                 $this->return->class->{$k} = 'is-invalid';
             }
             $_SESSION['unset'][] = 'error';
-            // unset($_SESSION['error']);
+            unset($_SESSION['error']);
         }
     }
 
@@ -85,7 +85,7 @@ abstract class controller
                 $this->return->data->{$k} = $i;
             }
             $_SESSION['unset'][] = 'data';
-            // unset($_SESSION['data']);
+            unset($_SESSION['data']);
         }
     }
 }
