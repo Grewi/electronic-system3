@@ -21,7 +21,7 @@ use system\core\model\classes\{
     ePagination,
 };
 
-class model extends iteratorDataModel
+class model extends iteratorDataModel implements \JsonSerializable
 {
     private collection $EMD;
 
@@ -603,5 +603,16 @@ class model extends iteratorDataModel
     private function bind(): array
     {
         return array_merge($this->EMD->where->bind->get());
+    }
+
+    /**
+     * Метод отвечает за вывод при серриализации объекта
+     */
+    public function jsonSerialize() {
+        $array = [];
+        foreach($this as $a => $i){
+            $array[$a] = $i;
+        }
+        return $array;
     }
 }
