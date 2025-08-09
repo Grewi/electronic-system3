@@ -193,6 +193,9 @@ class auth
         $user = db()->fetch('SELECT * FROM `users` WHERE id = ' . $result);
         if ($result > 0 && $user) {
             foreach ($user as $a => $i) {
+                if($a == 'password'){
+                    continue;
+                }
                 $app->user->{$a} = $i;
             }
         } else {

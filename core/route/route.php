@@ -169,6 +169,8 @@ class route
 
     public function blockGroup(string $name, callable $function):route
     {
+        $app = app::app();
+        $app->route->block = $name;
         $this->get = true;
         $this->namespace = '';
         $this->groupName = null;
@@ -231,21 +233,27 @@ class route
     public function controller($class, $method): void
     {
         if ($this->get) {
+            $app = app::app();
             $controller = $this->namespace . $class;
             $reflection = new \ReflectionClass($controller);
-
             $params = $reflection->getMethod($method)->getParameters();
             $cla = [];
             foreach ($params AS $param) {
                 $cl = $param->getType()->getName();
-                $nc = new $cl();
+                if($cl == 'system\core\app\app'){
+                    $nc = $app;
+                }else{
+                    $nc = new $cl();
+                }
+                
                 if(method_exists($nc, 'toController')){
                     $cla[] = $nc->toController();
                 }else{
                     $cla[] = $nc;
                 }
             }
-
+            $app->controller->class = $class;
+            $app->controller->method = $method;
             (new $controller)->$method(... $cla);
             if ($this->autoExitController) {
                 exit();
@@ -261,7 +269,8 @@ class route
     private function parseUrl(string $get): void
     {
         $app = app::app();
-        
+        $app->route->mask = $get;
+        $app->getparams->clean();
         if($get == '/*'){
             return;
         }

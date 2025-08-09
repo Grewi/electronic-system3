@@ -53,6 +53,7 @@ class view
         extract($data);
         $file = $this->countInclude[0];
         if(file_exists($this->cacheDir . '/' . $file . '.php')){
+            $app->views->add($file);
             require $this->cacheDir . '/' . $file . '.php';
         }else{
             throw new \TempException('Отсутствует файл вывода для шаблона "' . $file . '"!');

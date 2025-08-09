@@ -608,6 +608,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Метод отвечает за вывод при серриализации объекта
      */
+    #[\ReturnTypeWillChange] 
     public function jsonSerialize() {
         $array = [];
         foreach($this as $a => $i){
