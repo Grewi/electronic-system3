@@ -134,6 +134,8 @@ class route
 
     public function group(string $name, callable $function, string $prefix = null): void
     {
+        $app = app::app();
+        $app->route->group = $name;
         $this->groupControl = true;
         $name = $this->slash($name);
         $this->startControl();
@@ -170,7 +172,7 @@ class route
     public function blockGroup(string $name, callable $function):route
     {
         $app = app::app();
-        $app->route->block = $name;
+        $app->route->group = $name;
         $this->get = true;
         $this->namespace = '';
         $this->groupName = null;
