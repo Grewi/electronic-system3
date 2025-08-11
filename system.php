@@ -30,6 +30,7 @@ try {
     $app->set('bootstrap');
     $app->set('controller');
     $app->set('views');
+    $app->set('view');
     $app->set('request');
     $app->set('getparams');
     $app->set('user');

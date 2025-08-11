@@ -165,6 +165,8 @@ class view
             $aa = array_shift($a);
             $html = 'layout/' . $aa;
             if ($matches) {
+                $app = app::app();
+                $app->view->layout = $html;
                 $layout = $this->getFile($this->viewsDir . '/' . $html . '.php');
                 preg_match_all('/\<block\s*name=\"(.*?)\"\s*\/*>/si', $layout, $matches2);
                 foreach ($matches2[1] as $a => $i) {
