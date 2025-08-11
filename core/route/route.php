@@ -171,8 +171,6 @@ class route
 
     public function blockGroup(string $name, callable $function):route
     {
-        $app = app::app();
-        $app->route->group = $name;
         $this->get = true;
         $this->namespace = '';
         $this->groupName = null;
@@ -236,6 +234,9 @@ class route
     {
         if ($this->get) {
             $app = app::app();
+            if($app->route->group != $this->groupName){
+                $app->route->group = null;
+            }
             $controller = $this->namespace . $class;
             $reflection = new \ReflectionClass($controller);
             $params = $reflection->getMethod($method)->getParameters();
