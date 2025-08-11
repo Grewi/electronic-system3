@@ -2,7 +2,7 @@
 use system\core\history\history;
 use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
-use system\core\history\newHistory;
+use system\core\app\app;
 
 ob_start();
 
@@ -26,6 +26,14 @@ try {
     errorPhp::config();
 
     $composer = ROOT . '/composer/vendor/autoload.php';
+    $app = app::app();
+    $app->set('bootstrap');
+    $app->set('controller');
+    $app->set('views');
+    $app->set('request');
+    $app->set('getparams');
+    $app->set('user');
+    $app->set('route');
     if (file_exists($composer)) {
         require_once $composer;
     }

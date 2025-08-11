@@ -8,16 +8,7 @@ class bootstrap
 {
     public static function load()
     {
-
         $app = app::app();
-
-        $app->set('bootstrap');
-        $app->set('controller');
-        $app->set('views');
-        $app->set('request');
-        $app->set('getparams');
-        $app->set('user');
-        $app->set('route');
         $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
         $url = (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https') . '://' . $_SERVER['HTTP_HOST'];
         $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
