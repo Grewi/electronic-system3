@@ -16,7 +16,7 @@ if (session_status() != PHP_SESSION_ACTIVE) {
 
 require_once __DIR__ . '/consts.php';
 
-date_default_timezone_set(TIMEZONE);
+// date_default_timezone_set(TIMEZONE);
 
 require_once SYSTEM . '/exception/exception.php';
 
