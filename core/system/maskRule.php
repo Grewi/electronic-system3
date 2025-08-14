@@ -4,99 +4,47 @@ namespace system\core\system;
 
 class maskRule
 {
-    private string $rules;
-    private $mask = [
-        '0' => '0000',
-        '1' => '0001',
-        '2' => '0010',
-        '3' => '0011',
-        '4' => '0100',
-        '5' => '0101',
-        '6' => '0110',
-        '7' => '0111',
-        '8' => '1000',
-        '9' => '1001',
-        'a' => '1010',
-        'b' => '1011',
-        'c' => '1100',
-        'd' => '1101',
-        'e' => '1110',
-        'f' => '1111',
-        ];
+    private array $rules;
 
     /**
      * Маска прав 
      */
-    public function __construct(string $rules)
+    public function __construct(string $rules, $size = 128)
     {
-        $this->rules = mb_strtolower($rules);
+        $a = str_split($rules);
+        for($i = 0; $i <= ceil($size / 4); $i++){
+            $this->rules[$i] = isset($a[$i]) ? str_pad(base_convert($a[$i], 16, 2), 4, '0', STR_PAD_LEFT) : '0000';
+        }
     }
 
     //Возвращает маску прав
     public function getRules()
     {
-        return $this->rules;
+        $a = '';
+        foreach($this->rules as $i){
+            $a .= base_convert($i, 2, 16);
+        }
+        return $a;
     }
 
     //Возвращает значение по номеру
-    public function getRule(int $number) : bool
+    public function getRule(int $number) 
     {
-        if($number < 1){
+        if($number < 0){
             throw new \GlobalException('Номер правила не может быть меньше единицы');
         }
-        $a = $number/4;
+        $a = floor($number/4);
         $b = $number%4;
-        $c = floor($b==0?$a-1:$a);
-        $d = $this->getLiteral($this->rules, $c);
-        $mask = $this->mask[$d];
-        return $mask[$this->numberInMask($b)] == 1 ? true : false;
+        return isset($this->rules[$a][$b]) && $this->rules[$a][$b] == '1' ? true : false;
     }
 
     //Устанавливает значение по номеру
-    public function setRule(int $number, bool $value):void
+    public function setRule(int $number, bool $value): void
     {
-        if($number < 1){
-            throw new \GlobalException('Номер правила не может быть меньше единицы');
-        }
-        $a = $number/4;
+        $a = floor($number/4);
         $b = $number%4;
-        $c = floor($b==0?$a-1:$a);
-        $d =  $this->getLiteral($this->rules, $c);
-        $mask = $this->mask[$d];
-        $r = $mask[$this->numberInMask($b)] == 1 ? true : false;
-
-        //Если значение не меняется выходим
-        if($r == $value){
-            return;
+        if(isset($this->rules[$a][$b])){
+            $this->rules[$a][$b] = $value ? '1' : '0';
         }
-        $mask[$this->numberInMask($b)] = $value ? '1' : '0';
-
-        //Новый литерал
-        $this->rules = $this->setLiteral($this->rules, $c, array_search($mask, $this->mask));
     }
-
-    private function setLiteral(string $string, int $number, $value): string
-    {
-        $arr = str_split($string);
-        $arr[$number] = $value;
-        return implode($arr);
-    }
-
-    private function getLiteral(string $string, int $number):string
-    {
-        $arr = str_split($string);
-        return $arr[$number];
-    }
-
-    private function numberInMask(int $b): int
-    {
-        return match($b){
-            1 => 0,
-            2 => 1,
-            3 => 2,
-            0 => 3,
-        };
-    }
-
-
 }
