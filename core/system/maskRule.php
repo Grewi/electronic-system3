@@ -8,6 +8,7 @@ class maskRule
 
     /**
      * Маска прав 
+     * 
      */
     public function __construct(string $rules, $size = 128)
     {
