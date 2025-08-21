@@ -22,7 +22,7 @@ if (!function_exists('systemPanel')) {
                 position: fixed;
                 bottom: 0;
                 left: 0;
-                z-index: 999999;
+                z-index: 999999999;
                 color: #fff;
                 padding: 5px 10px;
                 border-top-right-radius: 3px;
@@ -47,13 +47,14 @@ if (!function_exists('systemPanel')) {
 
             #system-panel-full {
                 font-family: monospace;
-                position: absolute;
+                position: fixed;
                 top: 0;
                 right: 0;
                 bottom: 0;
                 left: 0;
                 background: #003f06ff;
                 overflow: auto;
+                z-index: 999999998;
             }
 
             #system-panel-vis {
@@ -182,7 +183,7 @@ if (!function_exists('systemPanelModal')) {
                 width: 100%;
                 background: #00580cff;
                 color: #7db185ff;
-                z-index: 999999;
+                z-index: 999999999;
                 color: #fff;
                 padding: 5px 10px;
                 border-bottom-right-radius: 3px;
