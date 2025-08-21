@@ -257,7 +257,10 @@ class route
             }
             $app->controller->class = $class;
             $app->controller->method = $method;
+            time_system($class.':'.$method);
             (new $controller)->$method(... $cla);
+            time_system('finish controller');
+            dd(123456);
             if ($this->autoExitController) {
                 exit();
             }

@@ -35,6 +35,8 @@ try {
     $app->set('getparams');
     $app->set('user');
     $app->set('route');
+    $app->set('time');
+    $app->set('memory');
     if (file_exists($composer)) {
         require_once $composer;
     }

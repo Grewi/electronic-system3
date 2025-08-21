@@ -51,13 +51,15 @@ class view
         $app = app::app();
         $lang = new lang();
         extract($data);
-        $file = $this->countInclude[0];
-        if(file_exists($this->cacheDir . '/' . $file . '.php')){
-            $app->views->add($file);
+        // $file = $this->countInclude[0];
+        if(file_exists($this->cacheDir . '/' . $this->countInclude[0] . '.php')){
+            $app->views->add($this->countInclude[0]);
+            time_system('view: '.$this->countInclude[0]);
             require $this->cacheDir . '/' . $file . '.php';
         }else{
             throw new \TempException('Отсутствует файл вывода для шаблона "' . $file . '"!');
         }
+        
     }
 
     public function return(string $file, $data = null) : string
@@ -167,6 +169,7 @@ class view
             if ($matches) {
                 $app = app::app();
                 $app->view->layout = $html;
+                time_system('layout:'.$html);
                 $layout = $this->getFile($this->viewsDir . '/' . $html . '.php');
                 preg_match_all('/\<block\s*name=\"(.*?)\"\s*\/*>/si', $layout, $matches2);
                 foreach ($matches2[1] as $a => $i) {

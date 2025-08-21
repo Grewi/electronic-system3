@@ -4,7 +4,7 @@ use system\core\database\database;
 use system\core\request\request;
 use system\core\lang\lang;
 use system\core\user\auth;
-use system\core\config\config;
+use system\core\app\app;
 use system\core\files\files;
 use system\core\system\header;
 use system\core\history\history;
@@ -181,5 +181,23 @@ if (!function_exists('localPathFile')) {
     function localPathFile($path)
     {
         return str_replace(ROOT, '', str_replace('\\', '/', $path));
+    }
+}
+
+if(!function_exists('microtime_system')){
+    function time_system(string $name){
+        $app = app::app();
+        $app->time->{$name} = (round(microtime(true) - $app->time->start, 3));
+
+        $b = (memory_get_usage() - $app->memory->start);
+        $i = 0;
+        while (floor($b / 1024) > 0) {
+            $i++;
+            $b /= 1024;
+        }
+         
+        $n = array('байт', 'КБ', 'МБ');
+        $app->memory->{$name} =  round($b, 2) . ' ' . $n[$i];
+        
     }
 }

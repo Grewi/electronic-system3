@@ -14,6 +14,8 @@ class bootstrap
         $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
 
+        $app->time->start = microtime(true);
+        $app->memory->start = memory_get_usage();
         $app->bootstrap->uri = $uri;
         $app->bootstrap->url = $url;
         $app->bootstrap->host = $host;
