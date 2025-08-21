@@ -95,6 +95,14 @@ if (!function_exists('systemPanel')) {
                 border-radius: 3px;
                 margin-bottom: 3px;
                 color: #c8ce8b;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .sp-col ul li span {
+                max-width: 85%;
+                min-width: 15%;
+                background: #01400a;
             }
         </style>
         <div class="system-panel">
@@ -137,7 +145,9 @@ if (!function_exists('systemPanel')) {
                     <p>Время</p>
                     <ul>
                         <?php foreach ($app->time->getArray() as $name => $view): ?>
-                            <li><?= $name ?> -> <?= $view ?></li>
+                            <li>
+                                <span><?= $name ?></span> <span><?= $view ?></span>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -145,7 +155,9 @@ if (!function_exists('systemPanel')) {
                     <p>Память</p>
                     <ul>
                         <?php foreach ($app->memory->getArray() as $name => $view): ?>
-                            <li><?= $name ?> -> <?= $view ?></li>
+                            <li>
+                                <span><?= $name ?></span> <span><?= $view ?></span>
+                            </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
