@@ -45,7 +45,7 @@ if (!function_exists('systemPanel')) {
                 color: #7db185ff;
             }
 
-            #system-panel-full {
+            .system-panel-block {
                 font-family: monospace;
                 position: fixed;
                 top: 0;
@@ -57,7 +57,7 @@ if (!function_exists('systemPanel')) {
                 z-index: 999999998;
             }
 
-            #system-panel-vis {
+            .sp-btn {
                 background: rgb(1, 48, 5);
                 color: #7db185ff;
                 padding: 2px 5px;
@@ -173,6 +173,7 @@ if (!function_exists('systemPanel')) {
             }
 
             .electronic {
+                margin: 15px 0;
                 font-size: 1.2em;
                 color: #00ed35;
                 text-align: center;
@@ -220,12 +221,14 @@ if (!function_exists('systemPanel')) {
                 <?php endif; ?>
                 <?= $app->views->{0} ?>
             </code>
-            <span id="system-panel-vis">
-                *
-            </span>
+            <span id="system-panel-vis" class="sp-btn">$</span>
+            <span id="system-panel-trace" class="sp-btn">♯</span>
         </div>
-        <div id="system-panel-full" style="display:none" data-status="0">
-            <div class="sp-el">ELECTRONIC</div>
+        <div id="system-panel-full" style="display:none" data-status="0" class="system-panel-block">
+            <div class="electronic">
+                <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
+            </div>
+            <!-- <div class="sp-el">ELECTRONIC</div> -->
             <div class="sp-wr">
                 <div class="sp-col">
                     <p>Шаблоны</p>
@@ -234,18 +237,18 @@ if (!function_exists('systemPanel')) {
                             <li><?= $view ?></li>
                         <?php endforeach; ?>
                     </ul>
-                    <p>Переменные запроса</p>
+                    <!-- <p>Переменные запроса</p>
                     <ul>
                         <?php foreach ($app->getparams->getArray() as $name => $view): ?>
-                            <li><?=$name?> <?= $view ?></li>
+                            <li><?= $name ?> <?= $view ?></li>
                         <?php endforeach; ?>
                     </ul>
                     <p>Bootstrap</p>
                     <ul>
                         <?php foreach ($app->bootstrap->getArray() as $name => $view): ?>
-                            <li><b><?=$name?></b> <?= $view ?></li>
+                            <li><b><?= $name ?></b> <?= $view ?></li>
                         <?php endforeach; ?>
-                    </ul>                    
+                    </ul> -->
                 </div>
                 <div class="sp-col">
                     <p>Время</p>
@@ -267,6 +270,11 @@ if (!function_exists('systemPanel')) {
                         <?php endforeach; ?>
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div id="system-panel-table" style="display:none" data-status="0" class="system-panel-block">
+            <div class="electronic">
+                <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
             </div>
             <div class="sp-container">
                 <table class="sp-table">
@@ -314,24 +322,39 @@ if (!function_exists('systemPanel')) {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <div class="electronic">
-                    <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
-                </div>                
             </div>
         </div>
         <script>
             document.getElementById('system-panel-vis').addEventListener('click', function() {
                 let a = document.getElementById('system-panel-full');
                 let s = a.getAttribute('data-status');
+                spActionOpen(a, s);
+            });
+
+            document.getElementById('system-panel-trace').addEventListener('click', function() {
+                let a = document.getElementById('system-panel-table');
+                let s = a.getAttribute('data-status');
+                spActionOpen(a, s);
+            });
+
+            function spActionOpen(a, s) {
+                spActionClosedAll();
+                console.log(a, s);
                 if (s == '0') {
                     a.style.display = 'block';
                     a.setAttribute('data-status', '1');
-                } else {
-                    a.style.display = 'none';
-                    a.setAttribute('data-status', '0');
                 }
+            }
 
-            });
+            function spActionClosedAll() {
+                let a = {};
+                a.table = document.getElementById('system-panel-table');
+                a.full = document.getElementById('system-panel-full');
+                for (key in a) {
+                    a[key].style.display = 'none';
+                    a[key].setAttribute('data-status', '0');
+                }
+            }
         </script>
     <?php
     }
