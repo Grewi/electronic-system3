@@ -260,7 +260,6 @@ class route
             time_system($class.':'.$method);
             (new $controller)->$method(... $cla);
             time_system('finish controller');
-            dd(123456);
             if ($this->autoExitController) {
                 exit();
             }
