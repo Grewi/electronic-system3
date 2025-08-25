@@ -292,19 +292,19 @@ if (!function_exists('systemPanel')) {
 
                         <?php foreach (debug_backtrace() as $a => $e): ?>
                             <tr>
-                                <td class="text-muted"><?= $a + 1 ?></td>
-                                <td class="text-primary-emphasis">
+                                <td class=""><?= $a + 1 ?></td>
+                                <td class="">
                                     <?php if (isset($e['file'])): ?>
                                         <?= localPathFile($e['file']) ?>
                                     <?php endif; ?>
                                 </td>
-                                <td class="fw-bold"><?= isset($e['line']) ? $e['line'] : '' ?></td>
-                                <td class="fst-italic text-success"><?= isset($e['class']) ? $e['class'] : '' ?></td>
-                                <td class="fst-italic text-danger"><?= isset($e['function']) ? $e['function'] : '' ?></td>
+                                <td class=""><?= isset($e['line']) ? $e['line'] : '' ?></td>
+                                <td class=""><?= isset($e['class']) ? $e['class'] : '' ?></td>
+                                <td class=""><?= isset($e['function']) ? $e['function'] : '' ?></td>
                                 <td>
                                     <?php if (isset($e['args'])): ?>
                                         <?php foreach ($e['args'] as $i): ?>
-                                            <div class="text-muted">
+                                            <div class="">
                                                 <?php if (is_array($i)): ?>
                                                     <?php foreach ($i as $aa => $ii): ?>
                                                         <div><?= $aa ?> - <?= gettype($ii) ?></div>
