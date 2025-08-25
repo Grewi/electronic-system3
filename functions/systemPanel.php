@@ -139,6 +139,7 @@ if (!function_exists('systemPanel')) {
                 width: 100%;
                 border-spacing: 0;
                 padding-bottom: 10px;
+                max-width: 100%;
             }
 
             .sp-table thead tr th {
