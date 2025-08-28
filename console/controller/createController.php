@@ -221,6 +221,9 @@ class createController
     {
         $layout = file_get_contents($view);
         foreach ($data as $a => $i) {
+            if(!$i){
+                continue;
+            }
             $layout = str_replace('{{' . $a . '}}', $i, $layout);
         }
         file_put_contents($file, $layout);
