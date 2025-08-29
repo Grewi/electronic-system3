@@ -12,10 +12,16 @@ class database
 
     public function createDump()
     {
-        $dbName = getConfig('database', 'name');
-        $dbHost = getConfig('database', 'host');
-        $dbPass = getConfig('database', 'pass');
-        $dbUser = getConfig('database', 'user');
+        $database = isset(ARGV[2]) ? preg_replace('/[^a-zA-Z0-9.-_]/ui', '', ARGV[2]) : 'database';
+        try {
+            $dbName = getConfig($database, 'name');
+            $dbHost = getConfig($database, 'host');
+            $dbPass = getConfig($database, 'pass');
+            $dbUser = getConfig($database, 'user');
+        } catch (\Exception $e) {
+            text::warn('Проверьте файл конфигурации и указанные параметры.');
+            text::danger('Не удалось загрузить конфигурацию базы данных "' . $database . '"', true);
+        }
         $dumpPath = APP . '/cache/dump';
         $dumpSql = $dumpPath . '/' . date('Y-m-d', time());
         $fileName = date('Y-m-d__U', time());
@@ -47,6 +53,7 @@ class database
                 text::warn('Файл должен быть расположен в каталоге "' . APP . '/cache/dump/"', true);
             }
             $parametr = $ARGV[2];
+
             $database = isset(ARGV[3]) ? preg_replace('/[^a-zA-Z0-9.-_]/ui', '', ARGV[3]) : 'database';
 
             try {
@@ -62,14 +69,26 @@ class database
             text::danger('Не удалось получить необходимые параметры', true);
         }
 
-
         $dir = APP . '/cache/dump/' . $parametr;
         $print = exec('mysql  --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' < ' . $dir, $output, $status);
         text::primary('Операция завершена', true);
     }
 
+    /**
+     * Очистка базы данных
+     */
     public function dropTables()
     {
+        $database = isset(ARGV[2]) ? preg_replace('/[^a-zA-Z0-9.-_]/ui', '', ARGV[2]) : 'database';
+        try {
+            $dbName = getConfig($database, 'name');
+            $dbHost = getConfig($database, 'host');
+            $dbPass = getConfig($database, 'pass');
+            $dbUser = getConfig($database, 'user');
+        } catch (\Exception $e) {
+            text::warn('Проверьте файл конфигурации и указанные параметры.');
+            text::danger('Не удалось загрузить конфигурацию базы данных "' . $database . '"', true);
+        }
         $db = db::connect();
         $db->query('SET FOREIGN_KEY_CHECKS = 0;');
         $tables = $db->fetchAll('SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA = "' . getConfig('database', 'name') . '"', []);
