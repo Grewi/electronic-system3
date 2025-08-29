@@ -25,9 +25,9 @@ class database
         exec('mysqldump --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' --result-file=' . $fileSql, $output, $status);
         zip::zip($dumpSql, $dumpPath . '/' . $fileName . '.zip');
         $files = scandir($dumpSql);
-        if(is_iterable($files)){
-            foreach($files as $file){
-                if(is_file($dumpSql . '/' . $file)){
+        if (is_iterable($files)) {
+            foreach ($files as $file) {
+                if (is_file($dumpSql . '/' . $file)) {
                     unlink($dumpSql . '/' . $file);
                 }
             }
@@ -47,13 +47,22 @@ class database
                 text::warn('Файл должен быть расположен в каталоге "' . APP . '/cache/dump/"', true);
             }
             $parametr = $ARGV[2];
+            $database = isset(ARGV[3]) ? preg_replace('/[^a-zA-Z0-9.-_]/ui', '', ARGV[3]) : 'database';
+
+            try {
+                $dbName = getConfig($database, 'name');
+                $dbHost = getConfig($database, 'host');
+                $dbPass = getConfig($database, 'pass');
+                $dbUser = getConfig($database, 'user');
+            } catch (\Exception $e) {
+                text::warn('Проверьте файл конфигурации и указанные параметры.');
+                text::danger('Не удалось загрузить конфигурацию базы данных "' . $database . '"', true);
+            }
         } else {
             text::danger('Не удалось получить необходимые параметры', true);
         }
-        $dbName = getConfig('database', 'name');
-        $dbHost = getConfig('database', 'host');
-        $dbPass = getConfig('database', 'pass');
-        $dbUser = getConfig('database', 'user');
+
+
         $dir = APP . '/cache/dump/' . $parametr;
         $print = exec('mysql  --user=' . $dbUser . ' --password=' . $dbPass . ' --host=' . $dbHost . ' ' . $dbName . ' < ' . $dir, $output, $status);
         text::primary('Операция завершена', true);
@@ -85,7 +94,8 @@ class database
         /** @var SplFileInfo[] $files */
 
         $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($rootPath), \RecursiveIteratorIterator::LEAVES_ONLY
+            new \RecursiveDirectoryIterator($rootPath),
+            \RecursiveIteratorIterator::LEAVES_ONLY
         );
 
         foreach ($files as $name => $file) {

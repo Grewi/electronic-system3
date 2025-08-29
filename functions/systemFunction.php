@@ -114,6 +114,9 @@ if (!function_exists('returnModal')) {
 if (!function_exists('getConfig')) {
     function getConfig($file, $param)
     {
+        if(!file_exists(APP . '/configs/' . $file . '.php')){
+            throw new \Exception('Файл конфигурации ' . $file . ' отсутствует');
+        }
         $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
         if($class instanceof iConfig){
             return (new $class)?->get($param);
@@ -126,6 +129,9 @@ if (!function_exists('getConfig')) {
 if (!function_exists('allConfig')) {
     function allConfig($file)
     {
+        if(!file_exists(APP . '/configs/' . $file . '.php')){
+            throw new \Exception('Файл конфигурации ' . $file . ' отсутствует');
+        }
         $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
         if($class instanceof iConfig){
             return (new $class)?->all();

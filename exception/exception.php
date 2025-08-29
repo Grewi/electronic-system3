@@ -67,6 +67,7 @@ class exeptionVar
     public static function cache($exeption, $message, $code)
     {
         $dir = APP . '/cache/exception/' . ENTRANSE . '/';
+        createDir($dir);
         foreach(scandir($dir) as $file){
             if($file == '.' || $file == '..' || !file_exists($dir . $file)){
                 continue;
@@ -75,7 +76,6 @@ class exeptionVar
                 unlink($dir . $file);
             }
         }
-        createDir($dir);
 
         $str = '';
         $fileLen = strlen('File');
