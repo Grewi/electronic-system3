@@ -11,6 +11,7 @@ use PDOStatement;
 class postgre
 {
     private ?PDO $connection = null;
+    private static $singleton = null;
     
     public function __construct(
         private string $host,
@@ -21,6 +22,21 @@ class postgre
         private array $options = []
     ) {
         $this->connect();
+    }
+
+    public static function on(
+        string $host,
+        string $dbname,
+        string $username,
+        string $password,
+        string $charset = 'utf8mb4',
+        array $options = []
+    )
+    {
+        if(!self::$singleton){
+            self::$singleton = new static($host, $dbname, $username, $password, $charset, $options);  
+        }
+        return self::$singleton;
     }
     
     /**
