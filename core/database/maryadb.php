@@ -58,7 +58,7 @@ class maryadb
             PDO::ATTR_STRINGIFY_FETCHES => false,
             // Особые настройки для MariaDB
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-            // PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = "+00:00", sql_mode = "STRICT_TRANS_TABLES"',
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = "' . TIMEZONE . '", sql_mode = "STRICT_TRANS_TABLES"',
         ];
         
         $options = array_replace($defaultOptions, $this->options);
