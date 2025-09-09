@@ -10,9 +10,9 @@ class connectDb
     static public function c($configs)
     {
         return match($configs['type']){
-            'mysql' => new maryadb($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
-            'sqlite' => new sqlite(ROOT . '/sqlite/' . $configs['type'] . '.db'),
-            'postgre' => new postgre($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+            'mysql' => maryadb::on($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
+            'sqlite' => sqlite::on(ROOT . '/sqlite/' . $configs['type'] . '.db'),
+            'postgre' => postgre::on($configs['host'], $configs['name'], $configs['user'], $configs['pass']),
             default => throw new \PDOException('Не указан подходящий тип базы данных')
         };
     }

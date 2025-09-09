@@ -11,6 +11,7 @@ use PDOStatement;
 class sqlite
 {
     private ?PDO $connection = null;
+    private static $singleton = null;
     
     public function __construct(
         private string $databasePath,
@@ -18,6 +19,17 @@ class sqlite
     ) {
         $this->connect();
     }
+
+    public static function on(
+        string $databasePath,
+        array $options = []
+    )
+    {
+        if(!self::$singleton){
+            self::$singleton = new static($databasePath, $options);  
+        }
+        return self::$singleton;
+    }    
     
     /**
      * Устанавливает соединение с SQLite базой данных
