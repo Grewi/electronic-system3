@@ -226,6 +226,10 @@ class createController
             }
             $layout = str_replace('{{' . $a . '}}', $i, $layout);
         }
+        preg_match_all('/{{(.*?)}}/si', $layout, $m);
+        foreach($m[1] as $a => $i){
+            $layout = str_replace('{{' . $i . '}}', '', $layout);
+        }
         file_put_contents($file, $layout);
     }
 }

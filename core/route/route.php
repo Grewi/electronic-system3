@@ -77,7 +77,7 @@ class route
         }
     }
 
-    public function get(string $get = null): route
+    public function get(string $get): route
     {
         $this->startControl();
         $get = $this->slash($get);
@@ -132,7 +132,7 @@ class route
         return $this;
     }
 
-    public function group(string $name, callable $function, string $prefix = null): void
+    public function group(string $name, callable $function, string|null $prefix = null): void
     {
         $app = app::app();
         $app->route->group = $name;
@@ -177,19 +177,6 @@ class route
         $this->group($name, $function);
         return $this;
     }    
-
-    // public function prefix($name): route
-    // {
-    //     $this->startControl();
-    //     if ($this->get) {
-    //         $class = '\\' . APP_NAMESPACE . '\\prefix\\' . $name;
-    //         $get = (new $class)->index();
-    //         if (!is_null($get)) {
-    //             $this->get = $get;
-    //         }
-    //     }
-    //     return $this;
-    // }
 
     /**
      * interim
@@ -266,6 +253,35 @@ class route
         }
         if($this->groupControl){
 
+        }
+        $this->get = false;
+        $this->start = false;
+    }
+
+    public function closure(callable $function)
+    {
+        if ($this->get) {
+            $app = app::app();
+            $refFunction = new \ReflectionFunction($function);
+            $params = $refFunction->getParameters();
+            $cla = [];
+            foreach ($params AS $param) {
+                $cl = $param->getType()->getName();
+                if($cl == 'system\core\app\app'){
+                    $nc = $app;
+                }else{
+                    $nc = new $cl();
+                }
+                
+                if(method_exists($nc, 'toController')){
+                    $cla[] = $nc->toController();
+                }else{
+                    $cla[] = $nc;
+                }
+            } 
+            
+            $function(... $cla);
+            exit();
         }
         $this->get = false;
         $this->start = false;
