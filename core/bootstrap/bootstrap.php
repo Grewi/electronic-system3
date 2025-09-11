@@ -19,7 +19,8 @@ class bootstrap
         $app->bootstrap->uri = $uri;
         $app->bootstrap->url = $url;
         $app->bootstrap->host = $host;
-        $app->bootstrap->method = $method;      
+        $app->bootstrap->method = $method; 
+        $app->bootstrap->singletonDb = true;     
 
         if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP)) {
             $ip = @$_SERVER['HTTP_CLIENT_IP'];

@@ -8,6 +8,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use system\core\database\cacheQuery;
+use system\core\app\app;
 
 class maryadb
 {
@@ -34,7 +35,8 @@ class maryadb
         array $options = []
     )
     {
-        if(!self::$singleton){
+        $app = app::app();
+        if(!self::$singleton || (self::$singleton && !$app->bootstrap->singletonDb)){
             self::$singleton = new static($host, $dbname, $username, $password, $charset, $options);  
         }
         return self::$singleton;
