@@ -19,11 +19,11 @@ class date
 
     private function __construct($dateTime)
     {
-        try {
+        // try {
             $this->dateTime = new \DateTime($dateTime);
-        } catch (\Exception $e) {
-            dd($e);
-        }
+        // } catch (\Exception $e) {
+        //     dd($e);
+        // }
     }
 
     public static function monthLangR($month)

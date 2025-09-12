@@ -207,3 +207,9 @@ if(!function_exists('microtime_system')){
         
     }
 }
+
+if(!function_exists('eEmpty')){
+    function eEmpty(mixed $a): bool {
+        return empty($a);
+    }
+}

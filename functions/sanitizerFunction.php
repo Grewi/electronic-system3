@@ -36,8 +36,8 @@ if (!function_exists('eSanitizerDate')) {
     }
 }
 
-if (!function_exists('eSanitizerDate')) {
-    function eSanitizerDEmail($str)
+if (!function_exists('eSanitizerEmail')) {
+    function eSanitizerEmail($str)
     {
         return sanitizer::email($str);
     }
