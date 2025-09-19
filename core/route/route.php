@@ -153,10 +153,11 @@ class route
             }
         }
 
+        if($prefix){
+            $this->prefix($prefix);
+        }
+
         if ($status && $this->get) {
-            if($prefix){
-                $this->prefix($prefix);
-            }
             $function($this);
             if ($this->autoExitGroup) {
                 exit();
@@ -169,12 +170,12 @@ class route
         $this->groupName = null;
     }
 
-    public function blockGroup(string $name, callable $function):route
+    public function blockGroup(string $name, callable $function, string|null $prefix = null):route
     {
         $this->get = true;
         $this->namespace = '';
         $this->groupName = null;
-        $this->group($name, $function);
+        $this->group($name, $function, $prefix);
         return $this;
     }    
 
