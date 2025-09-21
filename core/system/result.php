@@ -68,4 +68,23 @@ class result
     {
         return isset($this->data[$name]) ? $this->data[$name] : null;
     }
+
+    public function json()
+    {
+        $data = [
+          'status' => $this->status,
+          'code' => $this->code,
+          'errors' => $this->getArrayErrors(),
+          'error'  => $this->getStringErrors(),
+          'data'   => $this->data,
+        ];
+        return json_encode($data);
+    }
+
+    public function ajax()
+    {
+        http_response_code($this->code);
+        echo $this->json();
+        exit;
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 namespace system\core\history;
+
+use system\core\app\app;
 use system\core\validate\validate;
 
 class history
@@ -97,6 +99,12 @@ class history
     public function clear()
     {
         $this->query('DELETE FROM `history` WHERE `datetime` < "' . time() - $this->tameSave . '"');
+    }
+
+    public function delete()
+    {
+        $app = app::app();
+        $this->query('DELETE FROM `history` WHERE `uri` = "' . $app->bootstrap->uri . '" AND `method` = "GET" AND `session` = "' . session_id()  . '" ');
     }
 
     // public static function js()
