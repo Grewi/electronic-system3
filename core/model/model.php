@@ -198,6 +198,30 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
+     * Условие соответствия полю active
+     * @param bool|int условие соответствия
+     * @param string|null наименование таблицы (если необходимо)
+     * @return model
+     */
+    public function active(bool|int $active = 1, string|null $table =null)
+    {
+        $this->EMD->where->active($active, $table);
+        return $this;
+    }
+
+    /**
+     * Условие соответствия полю slug
+     * @param string наименоание slug
+     * @param string|null наименование таблицы (если необходимо)
+     * @return model
+     */
+    public function slug(string $slug, string|null $table = null)
+    {
+        $this->EMD->where->slug($slug, $table);
+        return $this;
+    }
+
+    /**
      * Значение поля LIMIT
      * @param int $limit
      * @return model
