@@ -94,6 +94,17 @@ class date
         return self::$connect;
     }
 
+    public static function createFromInt($year, $month, $day = 1, $hour = 0, $min = 0, $sec = 0)
+    {
+        $month = str_pad($month, 2, '0', STR_PAD_LEFT);
+        $day = str_pad($day, 2, '0', STR_PAD_LEFT);
+        $hour = str_pad($hour, 2, '0', STR_PAD_LEFT);
+        $min = str_pad($min, 2, '0', STR_PAD_LEFT);
+        $sec = str_pad($sec, 2, '0', STR_PAD_LEFT);
+        self::$connect = new self($year.'-'.$month.'-'.$day.' '.$hour.':'.$min.':'.$sec);
+        return self::$connect;
+    }
+
     //Произвольный интервал
     public function addInterval($interval)
     {
