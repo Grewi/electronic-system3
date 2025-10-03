@@ -96,6 +96,24 @@ class eWhere
         }
     }
 
+    public function active(bool|int $active, string|null $table = null): void
+    {
+        $sep = $this->separatorWhere();
+        $p1 = $table ? $table . '.active' : 'active';
+        $pp1 = str_replace('.', '_', $p1) . '_' . $this->bind->getNumber();
+        $this->where .= $sep . ' ' . $this->wrap($p1) . ' = :' . $pp1 . ' ';
+        $this->bind->add($pp1, ($active ? 1 : 0));
+    }
+
+    public function slug(string $slug, string|null $table = null): void
+    {
+        $sep = $this->separatorWhere();
+        $p1 = $table ? $table . '.slug' : 'slug';
+        $pp1 = str_replace('.', '_', $p1) . '_' . $this->bind->getNumber();
+        $this->where .= $sep . ' ' . $this->wrap($p1) . ' = :' . $pp1 . ' ';
+        $this->bind->add($pp1, $slug);
+    }
+
     public function get(): string
     {
         return $this->where ?? '';
