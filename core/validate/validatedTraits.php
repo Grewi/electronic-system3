@@ -442,14 +442,21 @@ trait validatedTraits
     /**
      * Обработка данных замыканием
      * Функция должна вернуть значение $data
-     * Текст ошибки - $valid->error[$valid->currentName][] = 'Текст ошибки'
-     * Состояние - $this->setControl(false);
+     * Пример запроса - ->func(function($data, &$errorText, &$status)
+     * @param string errorText - Текст ошибки 
+     * @param bool status  
      * @return static
      */
     public function func($func)
     {
         $data = $this->data[$this->currentName];
-        $this->setReturn($func($data, $this));
+        $errorText = '';
+        $status = true;
+        $this->setReturn($func($data, $errorText, $status));
+        if(!$status){
+            $this->error[$this->currentName][] = $errorText;
+            $this->setControl(false);
+        }
         return $this;
     }
 }
