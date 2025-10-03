@@ -8,21 +8,20 @@ use system\core\lang\lang;
 class view
 {
     protected $file;
-    protected $forseCompile = false;
     protected $cacheDir;
     protected $viewsDir;
-    protected $validElement;
-    protected $countInclude;
+    protected $app = APP;
+    protected $app_name = APP_NAME;
+    protected $countInclude = [];
+    protected $forseCompile = false;
+    protected $validElement = "/^[a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u";//Допустимые символы в переменных
 
     public function __construct(?string $file=null, array $data = [])
     {
-        //Создать запрос в настройки
-        $this->cacheDir = APP . '/cache/views';
-        $this->viewsDir = APP . '/views';
-        $this->validElement = "/^[a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u"; //Допустимые символы в переменных
-        $this->countInclude = [];
+        $this->cacheDir = $this->app . '/cache/views';
+        $this->viewsDir = $this->app . '/views';
         if(!file_exists($this->viewsDir . '/' . $file . '.php')){
-            throw new \TempException('Файл шаблона "/apps/' . APP_NAME . '/views/' . $file . '.php" отсутствует!');
+            throw new \TempException('Файл шаблона "/apps/' . $this->app_name . '/views/' . $file . '.php" отсутствует!');
         }
         if($file){
             $this->out($file, $data);
@@ -31,13 +30,13 @@ class view
 
     public function cacheDir(string $path)
     {
-        $this->cacheDir = APP . '/' . $path;
+        $this->cacheDir = $this->app . '/' . $path;
         return $this;
     }
 
     public function viewsDir(string $path)
     {
-        $this->viewsDir = APP . '/' . $path;
+        $this->viewsDir = $this->app . '/' . $path;
         return $this;
     }
 
@@ -51,7 +50,6 @@ class view
         $app = app::app();
         $lang = new lang();
         extract($data);
-        // $file = $this->countInclude[0];
         if(file_exists($this->cacheDir . '/' . $this->countInclude[0] . '.php')){
             $app->views->add($this->countInclude[0]);
             time_system('view: '.$this->countInclude[0]);
@@ -96,7 +94,6 @@ class view
             $content = $this->variable($content);
             $content = $this->include($content);   // Подключение файлов
             $content = $this->csrf($content);      // Токен csrf
-            // $content = $this->history($content);   // History js
             $content = $this->clearing($content);  // Очистка
             $this->save($file, $content);          // Сохранение файла в кеш
         }
@@ -110,7 +107,7 @@ class view
         if ($matches && count($matches[1]) > 0) {
             foreach ($matches[1] as $key => $i) {
                 if(!file_exists($this->viewsDir . '/' . $i . '.php')){
-                    throw new \TempException('Файл шаблона "/apps/' . APP_NAME . '/views/' . $i . '.php" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
+                    throw new \TempException('Файл шаблона "/apps/' . $this->app_name . '/views/' . $i . '.php" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
                 }
                 $inc = '<?php include \'' . $this->cacheDir . '/' . $i . '.php\' ?>';
                 $content = str_replace($matches[0][$key], $inc, $content);
@@ -209,16 +206,6 @@ class view
         }
         return $content;
     }
-
-    // private function history($content)
-    // {
-    //     preg_match('/\<history\s*(.*?)\s*\>/si', $content, $m);
-    //     $js = '<script>' . PHP_EOL . history::js() . PHP_EOL . '</script>';
-    //     if($m){
-    //         $content = str_replace($m[0], $js, $content);
-    //     }
-    //     return $content;
-    // }
 
     //Последнее изменение в директории
     private function foldermtime(string $dir)
