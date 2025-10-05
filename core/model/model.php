@@ -197,6 +197,13 @@ class model extends iteratorDataModel implements \JsonSerializable
         return $this;
     }
 
+    public function whereFunc($func): static
+    {
+        $a =  $func(new eWhere(1));
+        $this->EMD->where->whereStr(' ( '.$a->get().' ) ', $a->bind->get());
+        return $this;
+    }
+
     /**
      * Условие соответствия полю active
      * @param bool|int условие соответствия
