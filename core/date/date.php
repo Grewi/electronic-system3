@@ -233,7 +233,7 @@ class date
         return $this->dateTime->format($format);
     }
 
-    //Месяц прописью в именительном и родительном падежах
+    //день, Месяц прописью в именительном и родительном падежах и год
     public function formatLang($p = 'i')
     {
         $Y = $this->dateTime->format('Y');
@@ -248,6 +248,18 @@ class date
     }
 
     //Месяц прописью в именительном и родительном падежах
+    public function monthYearFormatLang($p = 'i')
+    {
+        $Y = $this->dateTime->format('Y');
+        if ($p == 'i') {
+            return $this->monthLangI((int)$this->dateTime->format('m')) . ' ' . $Y;
+        }
+        if ($p == 'r') {
+            return $this->monthLangR((int)$this->dateTime->format('m')) . ' ' . $Y;
+        }
+    }
+
+    //Месяц прописью в именительном и родительном падежах
     public function monthFormatLang($p = 'i')
     {
         if ($p == 'i') {
@@ -257,7 +269,7 @@ class date
             return $this->monthLangR((int)$this->dateTime->format('m'));
         }
     }
-
+    
     /**
      * Принимает дату меньшую чем объект
      * Например изначальная дата в будущем а в интервал передаём текущую
