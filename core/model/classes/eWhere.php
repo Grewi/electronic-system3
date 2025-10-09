@@ -1,6 +1,7 @@
 <?php
 
 namespace system\core\model\classes;
+
 use system\core\model\classes\eBind;
 use system\core\model\traits\wrap;
 
@@ -9,12 +10,14 @@ class eWhere
     private $whereSeparator;
     private $where;
     public eBind $bind;
+    private $level;
 
     use wrap;
 
-    public function __construct()
+    public function __construct(int $level = 0)
     {
         $this->bind = new eBind;
+        $this->level = $level;
     }
 
     private function separatorWhere()
@@ -25,7 +28,11 @@ class eWhere
         } else {
             $wsep = ' AND';
         }
-        return empty($this->where) ? ' WHERE' : $wsep;
+        if ($this->level == 0) {
+            return empty($this->where) ? ' WHERE' : $wsep;
+        } else {
+            return empty($this->where) ? '' : $wsep;
+        }
     }
 
     public function or(): void
@@ -35,7 +42,7 @@ class eWhere
 
     public function where($p1, $p2, $p3, $or): void
     {
-        if($or){
+        if ($or) {
             $this->whereSeparator = ' OR';
         }
         $sep = $this->separatorWhere();
@@ -63,7 +70,7 @@ class eWhere
         foreach ($arg as $i) {
             $pp1 = str_replace('.', '_', $p1) . '_' . $this->bind->getNumber();
             $this->bind->add($pp1, $i);
-            $arr[] = ':'.$pp1;
+            $arr[] = ':' . $pp1;
         }
         $str = implode(',', $arr);
         $this->where .= $sep . ' ' . $this->wrap($p1) . ' IN (' . $str . ')';
@@ -123,5 +130,4 @@ class eWhere
     {
         return $this->get();
     }
-
 }
