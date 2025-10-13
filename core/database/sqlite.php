@@ -17,6 +17,7 @@ class sqlite
         private string $databasePath,
         private array $options = []
     ) {
+
         $this->connect();
     }
 
@@ -39,9 +40,9 @@ class sqlite
     private function connect(): void
     {
         // Проверяем, существует ли файл базы данных (если не in-memory)
-        if ($this->databasePath !== ':memory:' && !file_exists(dirname($this->databasePath))) {
-            throw new PDOException("Database directory does not exist");
-        }
+        // if ($this->databasePath !== ':memory:' && !file_exists(dirname($this->databasePath))) {
+        //     throw new PDOException("Database directory does not exist");
+        // }
         
         // Оптимальные настройки для SQLite
         $defaultOptions = [
@@ -72,9 +73,10 @@ class sqlite
     /**
      * Выполняет SQL запрос с параметрами
      */
-    public function query(string $sql, array $params = []): PDOStatement
+    public function query(string $sql, array $params = [], string $className = 'stdClass'): PDOStatement
     {
         $stmt = $this->connection->prepare($sql);
+        $stmt->setFetchMode($this->connection::FETCH_CLASS, $className);
         $stmt->execute($params);
         return $stmt;
     }
@@ -82,17 +84,17 @@ class sqlite
     /**
      * Выполняет запрос и возвращает одну строку результата
      */
-    public function fetchOne(string $sql, array $params = []): ?array
+    public function fetch(string $sql, array $params = [], string $className = 'stdClass'): ?object
     {
-        return $this->query($sql, $params)->fetch() ?: null;
+        return $this->query($sql, $params, $className)->fetch() ?: null;
     }
     
     /**
      * Выполняет запрос и возвращает все строки результата
      */
-    public function fetchAll(string $sql, array $params = []): array
+    public function fetchAll(string $sql, array $params = [], string $className = 'stdClass'): array
     {
-        return $this->query($sql, $params)->fetchAll();
+        return $this->query($sql, $params, $className)->fetchAll();
     }
     
     /**

@@ -23,7 +23,7 @@ use system\core\model\classes\{
 
 class model extends iteratorDataModel implements \JsonSerializable
 {
-    private collection $EMD;
+    protected collection $EMD;
 
     use wrap;
 

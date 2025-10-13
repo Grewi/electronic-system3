@@ -19,7 +19,7 @@ class database
             // 'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
             'mysql' => maryadb::on($config['host'], $config['name'], $config['user'], $config['pass']),
             'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
-            'sqlite' => new sqlite(ROOT . '/sqlite/' . $config['type'] . '.db'),
+            'sqlite' => new sqlite(ROOT . '/sqlite/' . $config['file'] . '.db'),
             'postgre' => new postgre($config['host'], $config['name'], $config['user'], $config['pass']),
             default => throw new \PDOException('Не указан подходящий тип базы данных')
         };
