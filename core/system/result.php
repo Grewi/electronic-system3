@@ -71,6 +71,7 @@ class result
 
     public function json()
     {
+        header('Content-Type: application/json');
         $data = [
           'status' => $this->status,
           'code' => $this->code,
