@@ -323,8 +323,8 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
-     * Зоздаёт новую запись в базе данных
-     * @param array $data Данные для записи. Ключи массива должны соответствовать поля в базе
+     * Создаёт новую запись в базе данных
+     * @param array $data Данные для записи. Ключи массива должны соответствовать полям в базе
      * @return model
      */
     public function insert(array $data = []): ?int
