@@ -17,6 +17,8 @@ use system\console\help;
 use system\console\updateSystem;
 use system\console\addComplement;
 
+use system\console\test\test;
+
 $route = new route();
 
 $route->console('update/system')->controller(updateSystem::class, 'index');

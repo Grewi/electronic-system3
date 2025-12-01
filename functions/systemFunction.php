@@ -145,6 +145,10 @@ if (!function_exists('dump')) {
     function dump(...$a)
     {
         if (getConfig('globals','dev')) {
+            if(!headers_sent()){
+                $code = getConfig('globals','dumpcode') ?? 423;
+                http_response_code($code);
+            }
             if (getConfig('globals','dumpline')) {
                 $backtrace = debug_backtrace();
                 echo '<div style="font-size: 12px; padding:3px; background: #fff; font-family: monospace; white-space:nowrap;">
@@ -163,6 +167,10 @@ if (!function_exists('dd')) {
     function dd(...$a)
     {
         if (getConfig('globals','dev')) {
+            if(!headers_sent()){
+                $code = getConfig('globals','dumpcode') ?? 423;
+                http_response_code($code);
+            }            
             if (getConfig('globals','dumpline')) {
                 $backtrace = debug_backtrace();
                 if (ENTRANSE == 'web') {
