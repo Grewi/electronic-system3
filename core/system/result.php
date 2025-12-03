@@ -59,9 +59,10 @@ class result
         return implode(', ', $this->errors);
     }
 
-    public function setParam(string $name, mixed $value): void
+    public function setParam(string $name, mixed $value): static
     {
         $this->data[$name] = $value;
+        return $this;
     }
 
     public function getParam(string $name): mixed
