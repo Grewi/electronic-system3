@@ -1,19 +1,9 @@
 <?php
 
-namespace system\sore\salid\items;
+namespace system\core\valid\items;
 use system\core\valid\item;
 
-class validMain
+class validMain extends item
 {
-    public static function int(mixed $item): item
-    {
-        $item = new item();
-
-        return $item;
-    }
-
-    private static function regex()
-    {
-        // preg_match("/^[0-9-]+$/u", (string)$data)
-    }
+    public  $test = 0;
 }
