@@ -9,23 +9,36 @@ use system\inst\classes\functions;
 class valid
 {
     private bool $control = true;
+
     /**
      * control
      * errors
      * original
      * result
      */
-    private $data = [];
+    private array $data = [];
 
-    public function add(string $name, item $item, callable $function)
+    /**
+     * Массив изначальных значений key => value
+     */
+    private array $original = [];
+
+    public function add(string $name, item $item, callable|null $function)
     {
         if(isset($this->data[$name])){
-            $item->setData($this->data[$name]);
+            // $item->setData($this->data[$name]);
+        }
+        
+        if(isset($this->original[$name])){
+            $item->setOriginal($this->original[$name]);
         }
         $function($item);
+        $item->control();
         $this->data[$name]['control'] = $item->getControl();
         $this->data[$name]['errors'] = $item->getErrors();
-        dump($item);
+        $this->data[$name]['original'] = $item->getOriginal();
+        $this->data[$name]['result'] = $item->getResult();
+        $this->setControl($item->getControl());
     }
 
     public function errors(string $name):array
@@ -36,5 +49,16 @@ class valid
     public function control(): bool
     {
         return $this->control;
+    }
+
+    public function setOriginalArray(array $data){
+        $this->original = $data;
+    }
+
+    private function setControl(bool $control)
+    {
+        if($this->control){
+            $this->control = $control;
+        }
     }
 }
