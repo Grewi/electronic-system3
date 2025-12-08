@@ -11,6 +11,8 @@ abstract class item implements validInterface
     protected mixed $result = null;
     protected string $textError = '';
 
+    public bool $getResult = true;
+
     public function setData($data)
     {
         $this->setControl($data['control']);
