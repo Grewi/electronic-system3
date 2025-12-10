@@ -1,10 +1,10 @@
 <?php 
 
-namespace system\core\valid\string;
+namespace system\core\valid\text;
 
 use system\core\valid\item;
 
-class vText extends item
+class valid_text extends item
 {
     protected string $textError = 'Значение может содержать только латинские, кириллические символы и цифры';
 

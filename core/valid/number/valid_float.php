@@ -4,7 +4,7 @@ namespace system\core\valid\number;
 
 use system\core\valid\item;
 
-class vFloat extends item
+class valid_float extends item
 {
     private string $regex = "/^[0-9\.\,-]+$/u";
     protected string $textError = 'Значение должно быть числом';

@@ -1,10 +1,10 @@
 <?php 
 
-namespace system\core\valid\string;
+namespace system\core\valid\text;
 
 use system\core\valid\item;
 
-class vlatRuInt extends item
+class valid_latRuInt extends item
 {
     private string $regex = "/^[\s a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u";
     protected string $textError = 'Значение может содержать только латинские, кириллические символы и цифры';

@@ -4,7 +4,7 @@ namespace system\core\valid\number;
 
 use system\core\valid\item;
 
-class vMin extends item
+class valid_max extends item
 {
     private string $regex = "/^[0-9\.\,-]+$/u";
     protected string $textError;
@@ -16,12 +16,12 @@ class vMin extends item
     public function __construct(float|int $param)
     {
         $this->param = $param;
-        $this->textError = 'Значение не должно быть меньше ' . $param;
+        $this->textError = 'Значение не должно быть больше ' . $param;
     }
 
     public function control()
     {
-        if ($this->original && $this->original < $this->param) {
+        if ($this->original && $this->original > $this->param) {
             $this->setError($this->textError);
             $this->setControl(false);
         }

@@ -1,13 +1,13 @@
 <?php 
 
-namespace system\core\valid\number;
+namespace system\core\valid\text;
 
 use system\core\valid\item;
 
-class vInt extends item
+class valid_ru extends item
 {
-    private string $regex = "/^[0-9-]+$/u";
-    protected string $textError = 'Значение должно быть целым числом';
+    private string $regex = "/^[\s а-яА-ЯёЁ\.]+$/u";
+    protected string $textError = 'Значение может содержать только кириллические символы';
 
     public function control()
     {
@@ -19,6 +19,6 @@ class vInt extends item
 
     public function getResult():mixed
     {
-        return ($this->control ? (int) $this->original : null);
+        return ($this->control ? (string) $this->original : null);
     }
 }
