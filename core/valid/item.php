@@ -34,6 +34,11 @@ abstract class item implements validInterface
     }
     public function setError(string $error):static
     {
+        $this->errors[0] = $error;
+        return $this;
+    }
+    public function addError(string $error):static
+    {
         $this->errors[] = $error;
         return $this;
     }
