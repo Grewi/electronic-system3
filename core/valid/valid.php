@@ -28,6 +28,7 @@ use system\core\valid\to\valid_toFloat;
 use system\core\valid\to\valid_toInt;
 use system\core\valid\to\valid_toString;
 use system\core\valid\to\valid_toNull;
+use system\core\valid\bisness\valid_inn;
 use system\core\valid\bisness\valid_bik;
 use system\core\valid\bisness\valid_kpp;
 use system\core\valid\bisness\valid_ogrn;
@@ -38,10 +39,11 @@ class valid
     private bool $control = true;
 
     /**
-     * control
-     * errors
-     * original
-     * result
+     * control - текущее состояние
+     * errors - список ошибок
+     * original - полученное значение
+     * result - конечное значение
+     * return - возвращает или нет значения
      */
     private array $data = [];
 
@@ -62,6 +64,10 @@ class valid
         if (!isset($this->data[$name])) {
             // return;
         }
+        
+        if(isset($this->data[$name]['control'])){
+            $item->setControl($this->data[$name]['control']);
+        }
 
         if (isset($this->original[$name])) {  
             $item->setOriginal($this->original[$name]);
@@ -69,14 +75,16 @@ class valid
         if ($function) {
             $function($item);
         }
+        dump($item);
         $item->control();
         $this->data[$name]['control'] = $item->getControl();
-        $this->data[$name]['errors'] = $item->getErrors();
+        $this->data[$name]['errors'] = $item->getErrors() + ($this->data[$name]['errors']??[]);
         $this->data[$name]['original'] = $item->getOriginal();
+
         if ($item->getResult || !isset($this->data[$name])) {
             $this->data[$name]['result'] = $item->getResult();
         }
-
+        $this->data[$name]['return'] = $item->getResult;
         $this->setControl($item->getControl());
     }
 
@@ -129,6 +137,9 @@ class valid
     {
         $original = [];
         foreach ($this->data as $a => $i) {
+            if(!$i['return']){
+                continue;
+            }
             if (isset($i['original'])) {
                 $original[$a] = $i['original'];
             }
@@ -136,15 +147,23 @@ class valid
         return $original;
     }
 
-    public function results(): array
+    public function results(bool $null = true): array
     {
-        $original = [];
+        $result = [];
+        
         foreach ($this->data as $a => $i) {
+            if(!$i['return']){
+                continue;
+            }
             if (isset($i['result'])) {
-                $original[$a] = $i['result'];
+                $result[$a] = $i['result'];
+            }else{
+                if($null){
+                    $result[$a] = null;
+                }
             }
         }
-        return $original;
+        return $result;
     }
 
     public function result(string $name):mixed
@@ -180,22 +199,24 @@ class valid
      * Значение должно быть целочисленным числом
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */
-    public function int(string $name, callable|null $function = null):void
+    public function int(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_int(), $function);
+        return $this;
     }
 
     /**
      * Значение должно быть дробным числом
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function float(string $name, callable|null $function = null):void
+    public function float(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_float(), $function);
+        return $this;
     }  
     
     /**
@@ -203,11 +224,12 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param int $min
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function min(string $name, int $param, callable|null $function = null):void
+    public function min(string $name, int $param, callable|null $function = null):static
     {
         $this->add($name, new valid_min($param), $function);
+        return $this;
     }
 
     /**
@@ -215,11 +237,12 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param int $max
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function max(string $name, int $param, callable|null $function = null):void
+    public function max(string $name, int $param, callable|null $function = null):static
     {
         $this->add($name, new valid_max($param), $function);
+        return $this;
     }
 
     // other
@@ -228,11 +251,12 @@ class valid
      * Значение будет преобразовано в булевое значение
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function bool(string $name, callable|null $function = null):void
+    public function bool(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_bool(), $function);
+        return $this;
     }
 
     /**
@@ -240,33 +264,36 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param string $param имя токена
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function csrf(string $name, string $param, callable|null $function = null):void
+    public function csrf(string $name, string $param, callable|null $function = null):static
     {
         $this->add($name, new valid_csrf($param), $function);
+        return $this;
     }
     
     /**
      * Значение проверяется на соответствие правилам написания почты
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function email(string $name, callable|null $function = null):void
+    public function email(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_email(), $function);
+        return $this;
     }
 
     /**
      * Проверяет на "пустоту" значения
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function required(string $name, callable|null $function = null):void
+    public function required(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_empty(), $function);
+        return $this;
     }  
 
     // text
@@ -275,44 +302,48 @@ class valid
      * Значение может содержать только латинские символы и цифры
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function latInt(string $name, callable|null $function = null):void
+    public function latInt(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_latInt(), $function);
+        return $this;
     }
 
     /**
      * Значение может содержать только латинские, кириллические символы и цифры
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function latRuInt(string $name, callable|null $function = null):void
+    public function latRuInt(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_latRuInt(), $function);
+        return $this;
     }
 
     /**
      * Значение может содержать только киреллические символы
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function ru(string $name, callable|null $function = null):void
+    public function ru(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_ru(), $function);
+        return $this;
     }
 
     /**
      * Значение преобразует символы в html сущности функцией htmlspecialchars
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function text(string $name, callable|null $function = null):void
+    public function text(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_text(), $function);
+        return $this;
     }
 
     /**
@@ -320,11 +351,12 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param string|int $strlen
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function strlen(string $name, int $param, callable|null $function = null):void
+    public function strlen(string $name, int $param, callable|null $function = null):static
     {
         $this->add($name, new valid_strlen($param), $function);
+        return $this;
     } 
 
     /**
@@ -332,11 +364,12 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param int|string $strlen
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function strlenMin(string $name, int $param, callable|null $function = null):void
+    public function strlenMin(string $name, int $param, callable|null $function = null):static
     {
         $this->add($name, new valid_strlenMin($param), $function);
+        return $this;
     }   
     
     /**
@@ -344,11 +377,12 @@ class valid
      * @param string $name - наименование проверяемого параметра
      * @param string|int $strlen
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function strlenMax(string $name, int $param, callable|null $function = null):void
+    public function strlenMax(string $name, int $param, callable|null $function = null):static
     {
         $this->add($name, new valid_strlenMax($param), $function);
+        return $this;
     } 
 
     // datetame
@@ -357,33 +391,36 @@ class valid
      * Значение проверяется на соответствие написания даты 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function date(string $name, callable|null $function = null):void
+    public function date(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_date(), $function);
+        return $this;
     }
 
     /**
      * Значение проверяется на соответствие написания времени 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */      
-    public function time(string $name, callable|null $function = null):void
+    public function time(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_time(), $function);
+        return $this;
     }    
     
     /**
      * Значение проверяется на соответствие написания параметра datatime 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */  
-    public function datetime(string $name, callable|null $function = null):void
+    public function datetime(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_datetime(), $function);
+        return $this;
     }  
     
     // database
@@ -395,11 +432,12 @@ class valid
      * @param string $col Имя стобца
      * @param int $id id исключение (0 если не требуется)
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function unique(string $name, string $table, string $col, int $id = 0, callable|null $function = null):void
+    public function unique(string $name, string $table, string $col, int $id = 0, callable|null $function = null):static
     {
         $this->add($name, new valid_unique($table, $col, $id), $function);
+        return $this;
     }
     
     /**
@@ -409,11 +447,12 @@ class valid
      * @param string $col Имя стобца
      * @param int $id id исключение (0 если не требуется)
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function isset(string $name, string $table, string $col = 'id', callable|null $function = null):void
+    public function isset(string $name, string $table, string $col = 'id', callable|null $function = null):static
     {
         $this->add($name, new valid_isset($table, $col), $function);
+        return $this;
     } 
     
     // to
@@ -422,87 +461,107 @@ class valid
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function toFloat(string $name, callable|null $function = null):void
+    public function toFloat(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_toFloat(), $function);
+        return $this;
     }   
     
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function toInt(string $name, callable|null $function = null):void
+    public function toInt(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_toInt(), $function);
+        return $this;
     } 
     
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function toString(string $name, callable|null $function = null):void
+    public function toString(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_toString(), $function);
+        return $this;
     } 
     
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function toNull(string $name, callable|null $function = null):void
+    public function toNull(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_toNull(), $function);
-    }     
+        return $this;
+    } 
     
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function bik(string $name, callable|null $function = null):void
+    public function inn(string $name, callable|null $function = null):static
+    {
+        $this->add($name, new valid_inn(), $function);
+        return $this;
+    }      
+    
+    /**
+     * 
+     * @param string $name - наименование проверяемого параметра
+     * @param callable|null $function(item $item)
+     * @return static
+     */    
+    public function bik(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_bik(), $function);
+        return $this;
     }      
         
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function kpp(string $name, callable|null $function = null):void
+    public function kpp(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_kpp(), $function);
+        return $this;
     }  
             
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function ogrn(string $name, callable|null $function = null):void
+    public function ogrn(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_ogrn(), $function);
+        return $this;
     }
             
     /**
      * 
      * @param string $name - наименование проверяемого параметра
      * @param callable|null $function(item $item)
-     * @return void
+     * @return static
      */    
-    public function schet(string $name, callable|null $function = null):void
+    public function schet(string $name, callable|null $function = null):static
     {
         $this->add($name, new valid_schet(), $function);
+        return $this;
     }    
 }

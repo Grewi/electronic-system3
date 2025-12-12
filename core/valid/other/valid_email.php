@@ -13,7 +13,7 @@ class valid_email extends item
     {
         if ($this->original && !preg_match($this->regex, $this->original)) {
             $this->setError($this->textError);
-            $this->setControl(preg_match($this->regex, $this->original));
+            $this->setControl(false);
         }
     }
 }

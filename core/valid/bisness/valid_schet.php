@@ -18,6 +18,6 @@ class valid_schet extends item
 
     public function getResult():mixed
     {
-        return ($this->control ? (int) $this->original : null);
+        return ($this->control ? (string) $this->original : null);
     }
 }

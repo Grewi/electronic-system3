@@ -22,9 +22,10 @@ class valid_csrf extends item
             $a = $_SESSION['csrf'][$this->param];
         }     
 
-        if ($a != $this->param) {
+        if ($a != $this->original) {
             $this->setError($this->textError);
             $this->setControl(false);
         }
-    }
+        $this->getResult = false;
+    } 
 }
