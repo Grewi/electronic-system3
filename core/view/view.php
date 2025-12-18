@@ -43,12 +43,7 @@ class view
     public function out(string $file, $data = null) : void
     {
         $this->render($file);
-        try{
-            $db = database::connect();
-        }catch(\Exception $e){}
-        
         $app = app::app();
-        $lang = new lang();
         extract($data);
         if(file_exists($this->cacheDir . '/' . $this->countInclude[0] . '.php')){
             $app->views->add($this->countInclude[0]);

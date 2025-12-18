@@ -9,6 +9,7 @@ class valid_csrf extends item
 
     private string $param;
     protected string $textError = 'Ошибка csrf токена';
+    public static string $deaultName = 'csrf';
 
     public function __construct(string $name)
     {
@@ -22,7 +23,7 @@ class valid_csrf extends item
             $a = $_SESSION['csrf'][$this->param];
         }     
 
-        if ($a != $this->original) {
+        if (!$a || $a != $this->original) {
             $this->setError($this->textError);
             $this->setControl(false);
         }

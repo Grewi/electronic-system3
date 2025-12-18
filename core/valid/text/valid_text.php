@@ -15,6 +15,6 @@ class valid_text extends item
 
     public function getResult():mixed
     {
-        return ($this->control ? htmlspecialchars($this->original) : null);
+        return ($this->control ? htmlspecialchars($this->original??'') : null);
     }
 }
