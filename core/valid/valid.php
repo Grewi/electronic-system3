@@ -41,6 +41,8 @@ class valid
     private bool $control = true;
 
     /**
+     * массив данных по каждому элементу
+     * @var array $data
      * control - текущее состояние
      * errors - список ошибок
      * original - полученное значение
@@ -51,9 +53,14 @@ class valid
 
     /**
      * Массив изначальных значений key => value
+     * @var array $original 
      */
     private array $original = [];
 
+    /**
+     * Наименование текущего элемента
+     * @var string|null
+     */
     private string|null $name = null;
 
     /**
@@ -89,6 +96,8 @@ class valid
 
     /**
      * Метод возвращает список ошибок для конкретного параметра
+     * @param string $name
+     * @return array
      */
     public function error(string $name): array
     {
@@ -97,6 +106,7 @@ class valid
 
     /**
      * Метод возвращает двухуровневый массив всех ошибок 
+     * @return array
      */
     public function errors(): array
     {
@@ -127,6 +137,7 @@ class valid
 
     /**
      * Возвращает одноуровневый массив ошибок
+     * @return array
      */
     public function errorList(): array
     {
@@ -141,6 +152,8 @@ class valid
 
     /**
      * Возвращает все ошибки в виде строки
+     * @param mixed $separator
+     * @return string
      */
     public function errorString($separator = ', '):string
     {
@@ -149,6 +162,8 @@ class valid
 
     /**
      * Возвращает оригинальное значение параметра
+     * @param string $name
+     * @return bool|mixed|null
      */
     public function original(string $name):mixed
     {
@@ -157,6 +172,7 @@ class valid
 
     /**
      * Возвращает массив оригинальных значений параметров
+     * @return array<bool|mixed>
      */
     public function originals(): array
     {
@@ -174,6 +190,8 @@ class valid
 
     /**
      * Метод возвращает массив результирующих значений параметров
+     * @param bool $null
+     * @return array<bool|mixed|null>
      */
     public function results(bool $null = true): array
     {
@@ -196,6 +214,8 @@ class valid
 
     /**
      * Метод возвращает конкретный результат параметра
+     * @param string $name
+     * @return bool|mixed|null
      */
     public function result(string $name):mixed
     {
@@ -204,6 +224,7 @@ class valid
 
     /**
      * Метод возвращает false есть такое значение есть у одного из параметров
+     * @return bool
      */
     public function control(): bool
     {
@@ -212,6 +233,8 @@ class valid
 
     /**
      * Метод позволяет загрузить массив параметров в формате ['key' => 'value']
+     * @param array $data
+     * @return void
      */
     public function setOriginalArray(array $data)
     {
@@ -220,6 +243,7 @@ class valid
 
     /**
      * Метод позволяет получить параметры в формате JSON
+     * @return void
      */
     public function setOriginalJson()
     {
@@ -228,6 +252,7 @@ class valid
 
     /**
      * Метод позволяет получить параметры из глобального массива $_REQUEST
+     * @return void
      */
     public function setRequest(): void
     {
@@ -236,6 +261,9 @@ class valid
 
     /**
      * Метод позволяет установить группу проверок для одного параметра
+     * @param string $name
+     * @param callable $function
+     * @return void
      */
     public function name(string $name, callable $function):void
     {
