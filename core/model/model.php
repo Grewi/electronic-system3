@@ -453,7 +453,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
      * @return mixed
      */
-    public function filterLike(string $name, ?string $col): static
+    public function filterLike(string $name, string|null $col = null): static
     {
         $col = $col ? $col : $name;
         if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
@@ -496,16 +496,17 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $name - наименование столбца в таблице
      * @return static
      */
-    public function filterRange(string $name): static
+    public function filterRange(string $name, string|null $col = null): static
     {
+        $col = $col ? $col : $name;
         if (isset($_GET['filter_' . $name])) {
 
             if (isset($_GET['filter_' . $name]['min']) && !empty($_GET['filter_' . $name]['min'])) {
-                $this->whereL($name, '>=', $_GET['filter_' . $name]['min']);
+                $this->whereL($col, '>=', $_GET['filter_' . $name]['min']);
             }
 
             if (isset($_GET['filter_' . $name]['max']) && !empty($_GET['filter_' . $name]['max'])) {
-                $this->whereL($name, '<=', $_GET['filter_' . $name]['max']);
+                $this->whereL($col, '<=', $_GET['filter_' . $name]['max']);
             }
         }
         return $this;
