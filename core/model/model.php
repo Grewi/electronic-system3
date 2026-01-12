@@ -463,6 +463,51 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
+     * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
+     * @param string $name - наименование get параметра 
+     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @return mixed
+     */
+    public function filterLikeStart(string $name, ?string $col): static
+    {
+        $col = $col ? $col : $name;
+        if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
+            $this->whereLikeStart($col, $_GET['filter_' . $name]);
+        }
+        return $this;
+    }
+    
+    /**
+     * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
+     * @param string $name - наименование get параметра 
+     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @return mixed
+     */
+    public function filterLikeEnd(string $name, ?string $col): static
+    {
+        $col = $col ? $col : $name;
+        if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
+            $this->whereLikeEnd($col, $_GET['filter_' . $name]);
+        }
+        return $this;
+    }    
+
+    /**
+     * Обработка get параметров filter_* Поиск точного совпадения в столбце по запросу
+     * @param string $name - наименование get параметра 
+     * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
+     * @return mixed
+     */
+    public function filterWhere(string $name, ?string $col): static
+    {
+        $col = $col ? $col : $name;
+        if (isset($_GET['filter_' . $name]) && $_GET['filter_' . $name] != '') {
+            $this->where($col, $_GET['filter_' . $name]);
+        }
+        return $this;
+    }    
+
+    /**
      * Обработка массива get параметров filter_* Поиск совпадений в нескольких столбцах по запросу
      * @param string $name - наименование get параметра 
      * @param string $col - Перечисление столбцов для поиска
