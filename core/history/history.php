@@ -22,6 +22,9 @@ class history
 
     public function save()
     {
+        if(app::app()->bootstrap->ajax == 1){
+            return;
+        }
         if (!empty(session_id())) {      
             $sql = 'INSERT INTO `history` (`hash`, `uri`, `method`, `session`, `datetime`) VALUES (
             "' . $this->actualHash . '",
@@ -35,6 +38,9 @@ class history
 
     public function reset()
     {
+        if(app::app()->bootstrap->ajax == 1){
+            return;
+        }
         $sql = 'DELETE FROM `history` WHERE `hash` = "' . $this->actualHash . '";';
         $this->query($sql, []);
     }
@@ -103,15 +109,12 @@ class history
 
     public function delete()
     {
+        if(app::app()->bootstrap->ajax == 1){
+            return;
+        }
         $app = app::app();
         $this->query('DELETE FROM `history` WHERE `uri` = "' . $app->bootstrap->uri . '" AND `method` = "GET" AND `session` = "' . session_id()  . '" ');
     }
-
-    // public static function js()
-    // {
-    //     $script = __DIR__ . '/scripts/script.js';
-    //     return file_get_contents($script) ? file_get_contents($script) : '';
-    // }
 
     private function db(): \PDO
     {
