@@ -220,7 +220,7 @@ class date
         return $this;
     }
 
-    public function subYaer($year)
+    public function subYear($year)
     {
         $interval = new \DateInterval('P' . $year . 'Y');
         $this->dateTime->sub($interval);
