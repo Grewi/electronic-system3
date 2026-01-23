@@ -8,9 +8,9 @@ use system\core\config\config;
 
 class database
 {
-
     public static function connect(string $configName = 'database')
     {
+        
         $config = (new ('\\' . APP_NAME . '\\configs\\' . $configName)())->all();
         if (!$config) {
             throw new \PDOException('Не установленны настройки для подключения к базе данных');
@@ -18,7 +18,7 @@ class database
         return match($config['type']){
             // 'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
             'mysql' => maryadb::on($config['host'], $config['name'], $config['user'], $config['pass']),
-            'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
+            // 'mysql' => new maryadb($config['host'], $config['name'], $config['user'], $config['pass']),
             'sqlite' => new sqlite(ROOT . '/sqlite/' . $config['file'] . '.db'),
             'postgre' => new postgre($config['host'], $config['name'], $config['user'], $config['pass']),
             default => throw new \PDOException('Не указан подходящий тип базы данных')

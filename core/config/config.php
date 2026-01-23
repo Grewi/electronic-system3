@@ -6,12 +6,27 @@ use system\core\config\iConfig;
 abstract class config implements iConfig
 {
     private static $path = APP . '/configs/';
+    private $globals = ROOT . '/config.ini';
+    private $globalData = [];
+    protected $file = '';
+
+    public function __construct(string|null $file = null)
+    {
+        $this->file = ($file ? $file : array_pop(explode('\\', static::class)) );
+        if (file_exists($this->globals)) {
+            $this->globalData = parse_ini_file($this->globals, true);
+        }       
+    }
+
     /** 
      * Возвращает значение параметра
      */
     public function get(string $param): ?string
     {
-        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
+        if(isset($this->globalData[$this->file][$param])){
+            return $this->globalData[$this->file][$param];
+        }
+        $ini = self::$path . '.' . $this->file . '.ini';
 
         //Парсим ini файл
         if (file_exists($ini)) {
@@ -32,15 +47,20 @@ abstract class config implements iConfig
         }
     }
 
+
+
     /**
      * Возвращаетс значения всех параметров массивом
      */
     public function all(): ?array
     {
-        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
+        $ini = self::$path . '.' . $this->file . '.ini';
         if (!file_exists($ini)) {
             $this->update();
         }
+        if(isset($this->globalData[$this->file])){
+            return array_merge(parse_ini_file($ini), $this->globalData[$this->file]);
+        }        
         return parse_ini_file($ini);
     }
 
@@ -49,7 +69,7 @@ abstract class config implements iConfig
      */
     public function update(): void
     {
-        $ini = self::$path . '.' . $this->returnClassName() . '.ini';
+        $ini = self::$path . '.' . $this->file . '.ini';
         $iniArr = [];
         if (file_exists($ini)) {
             $iniArr = parse_ini_file($ini);
@@ -62,8 +82,4 @@ abstract class config implements iConfig
         file_put_contents($ini, $data);
     }
 
-    private function returnClassName(): string
-    {
-        return array_reverse(explode('\\', static::class))[0];
-    }
 }

@@ -9,6 +9,7 @@ use system\core\files\files;
 use system\core\system\header;
 use system\core\history\history;
 use system\core\config\iConfig;
+use system\core\config\globals;
 
 if (!function_exists('db')) {
     function db($configName = 'database')
@@ -115,9 +116,11 @@ if (!function_exists('getConfig')) {
     function getConfig($file, $param)
     {
         if(!file_exists(APP . '/configs/' . $file . '.php')){
-            throw new \Exception('Файл конфигурации ' . $file . ' отсутствует');
+            return (new globals($file))->get($param);
+        }else{
+            $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
         }
-        $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
+        
         if($class instanceof iConfig){
             return (new $class)?->get($param);
         }else{
@@ -130,7 +133,7 @@ if (!function_exists('allConfig')) {
     function allConfig($file)
     {
         if(!file_exists(APP . '/configs/' . $file . '.php')){
-            throw new \Exception('Файл конфигурации ' . $file . ' отсутствует');
+            return (new globals($file))->all();
         }
         $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
         if($class instanceof iConfig){
