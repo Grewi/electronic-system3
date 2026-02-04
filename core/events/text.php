@@ -4,8 +4,21 @@ namespace system\core\events;
 
 trait text
 {
-    private function strong($a, $b){
+    private function otvet($name, $a, $b)
+    {
+        if(eEmpty($a)){
+            return 'Установил ' . $name . ' - <strong>' . $this->empty($b) . '</strong>';
+        }
+        if(eEmpty($b)){
+            return 'Удалил старое значение ' . $name . '  <strong>' . $this->empty($a) . '</strong>';
+        } 
+        return 'Поменял ' . $name . ' с <strong>' . $this->empty($a) . '</strong> на <strong>' . $this->empty($b) . '</strong>';           
+    }
 
+    private function strong($a, $b){
+        if(eEmpty($a)){
+            return '</strong> на <strong>' . $this->empty($b) . '</strong>';
+        }
         return 'с <strong>' . $this->empty($a) . '</strong> на <strong>' . $this->empty($b) . '</strong>';
     }
 
