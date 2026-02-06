@@ -12,7 +12,8 @@ abstract class config implements iConfig
 
     public function __construct(string|null $file = null)
     {
-        $this->file = ($file ? $file : array_pop(explode('\\', static::class)) );
+        $a = explode('\\', static::class);
+        $this->file = ($file ? $file : array_pop($a) );
         if (file_exists($this->globals)) {
             $this->globalData = parse_ini_file($this->globals, true);
         }       
