@@ -32,7 +32,7 @@ if (!function_exists('filterSelect')) {
      * @param mixed $nameColumn - Имя параметра для наименования
      * @return string
      */
-    function filterSelect(string $name, $params = [], string $defaultText = null, array $options = [], $valColumn = 'id', $nameColumn = 'name'): string
+    function filterSelect(string $name, $params = [], string|null $defaultText = null, array $options = [], $valColumn = 'id', $nameColumn = 'name'): string
     {
         return filters::filterSelect($name, $params, $defaultText, $options, $valColumn, $nameColumn);
     }

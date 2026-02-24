@@ -83,6 +83,7 @@ class history
                 AND `uri` NOT LIKE "%referal=%"
                 ORDER BY `id` DESC LIMIT 1', []);
             if($a){
+                $this->fetch('DELETE FROM `history` WHERE `id` = ' . $a->id);
                 return $a->uri;
             }else{
                 return '/';
