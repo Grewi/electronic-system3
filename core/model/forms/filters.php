@@ -19,6 +19,21 @@ class filters{
         return '<input ' . $n . ' />';
     }
 
+    public static function filterCheckbox(string $name, array $params = [])
+    {
+        $value = isset($_GET['filter_' . $name]) ? $_GET['filter_' . $name] : '';
+        $dParams = [
+            'value' => 1,
+            'name' => 'filter_' . $name,
+            'type' => 'checkbox',
+        ];
+        $n = '';
+        foreach(array_merge($dParams, $params) as $a => $i){
+            $n .= ' ' . $a . '="' . $i . '"';
+        }
+        return '<input ' . $n . ' ' . ($value == 1 ? 'checked' : '') . ' />';
+    }    
+
     public static function filterSelect(string $name, array $params = [], string $defaultText = null, array $options = [], $valColumn = 'id', $nameColumn = 'name')
     {
         $value = isset($_GET['filter_' . $name]) ? $_GET['filter_' . $name] : '';

@@ -21,6 +21,20 @@ if (!function_exists('filterInput')) {
     }
 }
 
+if (!function_exists('filterCheckbox')) {
+    /**
+     * Формирует input, значение типа, по умолчанию, text, но можно передать любой в массиве параметров
+     * @param mixed $name
+     * @param mixed $params
+     * @return string
+     */
+    function filterCheckbox($name, $params = [])
+    {
+        return filters::filterCheckbox($name, $params);
+    }
+}
+
+
 if (!function_exists('filterSelect')) {
     /**
      * Формирует выпадающий список, список опций передаётся массивом объектов
