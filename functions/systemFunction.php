@@ -67,6 +67,11 @@ if (!function_exists('alert')) {
 if (!function_exists('referal_url')) {
     function referal_url()
     {
+        if(isset($_SERVER['HTTP_REFERER'])){
+            if(strpos($_SERVER['HTTP_REFERER'], app::app()->bootstrap->url) === 0){
+                return $_SERVER['HTTP_REFERER'];
+            }
+        }
         return history::start()->referalUrl();
     }
 }
