@@ -38,6 +38,11 @@ class validate
         return $this;
 	}
 
+    public function getName()
+    {
+        return $this->currentName;
+    }
+
     protected function setReturn($data) : void
     {
         $this->return[$this->currentName] = $data;
