@@ -318,7 +318,7 @@ class route
 
         foreach ($url as $a => $i) {
             //Если на последней итерации пусто. пропускаем
-            if (empty($i) && count($url) == $a) {
+            if ($this->empty($i) && count($url) == $a) {
                 if ($i != @$g[$a]) {
                     $check = false;
                 }
@@ -342,10 +342,10 @@ class route
                 }
 
                 //Проверка обязательного параметра
-                if (!empty($param) && empty($url[$a])) {
+                if (!$this->empty($param) && $this->empty($url[$a])) {
                     $check = false;
                     break;
-                } elseif ((isset($param[1]) && !empty($url[$a])) && $check) {
+                } elseif ((isset($param[1]) && !$this->empty($url[$a])) && $check) {
                     $getReturn = preg_replace($this->param_regex, '', urldecode($url[$a]));
                     $app->getparams->{$param[1]} = $getReturn;
                 }
@@ -385,5 +385,10 @@ class route
             $this->get = true;
             $this->start = true;
         }
+    }
+
+    private function empty($param)
+    {
+        return ($param == null || $param == '' ? 1 : 0);
     }
 }
