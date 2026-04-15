@@ -452,7 +452,7 @@ trait validatedTraits
         $data = $this->data[$this->currentName];
         $errorText = '';
         $status = true;
-        $this->setReturn($func($data, $errorText, $status));
+        $this->setReturn($func($data, $errorText, $status, $this));
         if(!$status){
             $this->error[$this->currentName][] = $errorText;
             $this->setControl(false);
