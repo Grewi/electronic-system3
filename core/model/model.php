@@ -240,6 +240,17 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
+     * Значение поля OFFSET
+     * @param int $limit
+     * @return model
+     */
+    public function offset(int $offset): static
+    {
+        $this->EMD->offset->add($offset);
+        return $this;
+    }
+
+    /**
      * Сортировка по полю (полям)
      * @param string $name Поле таблицы в базе
      * @param string $type Направление сортировки
