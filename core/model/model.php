@@ -569,6 +569,27 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
+     * Обработка get параметров filter_*[min] и filter_*[max] для обработки диапазона параметров
+     * @param string $name - наименование столбца в таблице
+     * @return static
+     */
+    public function filterRangeDate(string $name, string|null $col = null): static
+    {
+        $col = $col ? $col : $name;
+        if (isset($_GET['filter_' . $name])) {
+
+            if (isset($_GET['filter_' . $name]['min']) && !empty($_GET['filter_' . $name]['min'])) {
+                $this->whereStr(' DATE(' . $col . ') >= "' . $_GET['filter_date_create']['min'] . '"');
+            }
+
+            if (isset($_GET['filter_' . $name]['max']) && !empty($_GET['filter_' . $name]['max'])) {
+                $this->whereStr(' DATE(' . $col . ') <= "' . $_GET['filter_date_create']['max'] . '"');
+            }
+        }
+        return $this;
+    }    
+
+    /**
      * Массив данных 
      * @return array
      */
