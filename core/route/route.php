@@ -365,7 +365,7 @@ class route
 
     private function delParametr(array $param)
     {
-        preg_match('/\{(.*?)\?\}/si', $param[count($param)], $freeParam);
+        preg_match('/\{(.*?)\?\}/si', $param[count($param)]??'', $freeParam);
         if (isset($freeParam[0])) {
             unset($param[count($param)]);
             return $this->delParametr($param);
