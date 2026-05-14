@@ -1,32 +1,19 @@
 <?php
 
-$appFunctionDir = APP . '/system/functions';
-if (file_exists($appFunctionDir)) {
-    $systemFnctionFiles = scandir($appFunctionDir);
-    if (is_iterable($systemFnctionFiles)) {
-        foreach ($systemFnctionFiles as $file) {
-            if (!file_exists($appFunctionDir . '/' . $file)) {
-                continue;
-            }
-            $f = pathinfo($file);
-            if ($f['extension'] == 'php') {
-                require $appFunctionDir . '/' . $file;
-            }
-        }
-    }
-}
+$function_directories = is_array(FUNCTION_DIRECTORIES)?FUNCTION_DIRECTORIES:[];
 
-$systemFunctionDir = SYSTEM . '/functions';
-if (file_exists($systemFunctionDir)) {
-    $systemFnctionFiles = scandir($systemFunctionDir);
-    if (is_iterable($systemFnctionFiles)) {
-        foreach ($systemFnctionFiles as $file) {
-            if (!file_exists($systemFunctionDir . '/' . $file)) {
-                continue;
-            }
-            $f = pathinfo($file);
-            if ($f['extension'] == 'php') {
-                require $systemFunctionDir . '/' . $file;
+foreach($function_directories as $dir){
+    if (file_exists($dir)) {
+        $systemFnctionFiles = scandir($dir);
+        if (is_iterable($systemFnctionFiles)) {
+            foreach ($systemFnctionFiles as $file) {
+                if (!file_exists($dir . '/' . $file)) {
+                    continue;
+                }
+                $f = pathinfo($file);
+                if ($f['extension'] == 'php') {
+                    require $dir . '/' . $file;
+                }
             }
         }
     }

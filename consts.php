@@ -50,3 +50,11 @@ if (!defined('ENTRY_POINT_CONSOLE_SYSTEM')) {
 if (!defined('ENTRY_POINT_CRON')) {
     define('ENTRY_POINT_CRON', APP . '/route/cron.php');
 }
+
+if (!defined('FUNCTION_DIRECTORIES')) {
+    define('FUNCTION_DIRECTORIES', [
+        ROOT . '/functions',
+        APP . '/system/functions',
+        SYSTEM . '/functions'
+    ]);
+}
