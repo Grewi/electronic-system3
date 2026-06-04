@@ -37,6 +37,7 @@ try {
     $app->set('route');
     $app->set('time');
     $app->set('memory');
+    $app->set('cookies');
     if (file_exists($composer)) {
         require_once $composer;
     }

@@ -4,9 +4,9 @@ namespace system\core\user;
 
 use system\core\validate\validate;
 use system\core\user\bruteforce;
-use system\core\config\config;
 use system\core\system\header;
 use system\core\app\app;
+use system\inst\classes\functions;
 
 class auth
 {
@@ -20,16 +20,17 @@ class auth
     private $pass;
     private $csrf = true;
     public $error;
-    private static $connect = null;
+    private string $cookieName;
+    private string $cookieDomains;
+    private string $cookiePath;
 
-    static public function connect()
+    public function __construct()
     {
-		if(self::$connect === null){ 
-			self::$connect = new self();
-		}
-		return self::$connect;
-	}
-
+        $app = app::app();
+        $this->cookieName = $app->cookies->name;
+        $this->cookieDomains = $app->cookies->domains;
+        $this->cookiePath = $app->cookies->cookiePath;
+    }
     protected function setLogin($login)
     {
         $this->login = $login;
@@ -53,6 +54,11 @@ class auth
     protected function setCsrf(bool $status)
     {
         $this->csrf = $status;
+    }
+
+    public function setSessionTime(int $time)
+    {
+        $this->session_time = $time;
     }
 
     /**
@@ -103,8 +109,8 @@ class auth
 
             db()->query('INSERT INTO `sessions` (`user_id`, `session_key`, `active_time`, `user_agent`, `ip`) VALUES (:user_id,  :session_key, :active_time, :user_agent, :ip)', $param);
 
-            setcookie('us', $passForCook, date('U') + $this->session_time(), '/');
-            $_SESSION['us'] = $passForCook;
+            setcookie($this->cookieName, $passForCook, date('U') + $this->session_time(), $this->cookiePath, $this->cookieDomains);
+            $_SESSION[$this->cookieName] = $passForCook;
             $this->status = $user->id;
 
             if ($function) {
@@ -130,10 +136,8 @@ class auth
      */
     protected function out($function = null): void
     {
-        db()->query('DELETE FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $_SESSION['us']]);
-        unset($_SESSION['us']);
-        unset($_SESSION['user']);
-        setcookie('us', '', 1, '/');
+        db()->query('DELETE FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $_SESSION[$this->cookieName]]);
+        $this->deleteSessionsAndCookies();      
         if ($function) {
             $function();
         }
@@ -146,12 +150,25 @@ class auth
         }
     }
 
-    // возвращает id пользователя или 0 если не зарегистрирован
-    protected function status(): string
+    /**
+     * Авторизация пользователя по конкретному ключу
+     * @param string $key
+     * @return void
+     */
+    public function authUserSystem(string $key)
     {
-        $session = isset($_SESSION['us']) ? $_SESSION['us'] : null;
-        $coockie = isset($_COOKIE['us']) ? $_COOKIE['us'] : null;
+        setcookie($this->cookieName, $key, date('U') + 60 * 60, $this->cookiePath, $this->cookieDomains);
+        $_SESSION[$this->cookieName] = $key;
+        // dd(123456);
+        redirect('/');
+    }
 
+    // возвращает id пользователя или 0 если не зарегистрирован
+    protected function status(): string|int
+    {
+        $session = isset($_SESSION[$this->cookieName]) ? $_SESSION[$this->cookieName] : null;
+        $coockie = isset($_COOKIE[$this->cookieName]) ? $_COOKIE[$this->cookieName] : null;
+        $result = 0;
         if (isset($session) && isset($coockie) && $session == $coockie) {
             //Если есть и сессия, и куки 
             //Проверяем актуальность кук и сессии
@@ -159,38 +176,38 @@ class auth
             if (isset($ses->user_id) && $this->sanitary($ses)) {
                 
                 //При активности пользователя, продлеваем сессию
-                db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
-                @setcookie('us', $ses->session_key, date('U') + $this->session_time(), '/');
-                $result = $ses->user_id; // Актуальная сессия
+                // if($ses->active_time < (time()-(60*60)) ){
+                    db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
+                    @setcookie($this->cookieName, $ses->session_key, date('U') + $this->session_time(), $this->cookiePath, $this->cookieDomains);
+                    $result = $ses->user_id; // Актуальная сессия                    
+                // }
 
                 $this->delOldSes($ses->user_id);
             } else {
                 $this->error = 'Сессия завершенна';
-                $result = '0'; // Сессия завершенна
             }
-        } elseif (isset($_COOKIE['us'])) {
+        } elseif (isset($_COOKIE[$this->cookieName])) {
             //Если есть только куки
             //Проверяем актуальность кук,
             $ses = db()->fetch('SELECT * FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $coockie]);
             if (isset($ses->session_key)  && $this->sanitary($ses)) {
                 //востанавливаем сессию, 
-                $_SESSION['us'] = $ses->session_key;
+                $_SESSION[$this->cookieName] = $ses->session_key;
                 $result = $ses->user_id; // Востановленная сессия
                 //Обновляем дату
                 db()->query('UPDATE `sessions` SET `active_time` =  :active_time WHERE `id` = :id', ['active_time' => date('U'), 'id' =>  $ses->id]);
                 $this->delOldSes($ses->user_id);
             } else {
                 $this->error = 'Востановить ссесию невозможно';
-                $result = '0'; // Востановить ссесию невозможно
             }
         } else {
             $this->error = 'Требуется авторизация';
-            $result = '0'; // Требуется авторизация
         }
+        
         $this->status = $result;
-
         $app = app::app();
         $user = db()->fetch('SELECT * FROM `users` WHERE id = ' . $result);
+        
         if ($result > 0 && $user) {
             foreach ($user as $a => $i) {
                 if($a == 'password'){
@@ -201,6 +218,7 @@ class auth
         } else {
             $app->user->id = 0;
         }
+        
         return $result;
     }
 
@@ -261,6 +279,16 @@ class auth
         } else {
             return $this->session_time;
         }
+    }
+
+    public function deleteSessionsAndCookies()
+    {
+        unset($_SESSION[$this->cookieName]);
+        unset($_SESSION['user']);
+        setcookie($this->cookieName, '', 1, $this->cookiePath, $this->cookieDomains);
+        setcookie($this->cookieName, '', 1, '/', $this->cookieDomains);
+        setcookie($this->cookieName, '', 1, $this->cookiePath);
+        setcookie($this->cookieName, '', 1, '/');
     }
 
     public static function __callStatic($method, $parameters)

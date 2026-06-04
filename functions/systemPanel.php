@@ -201,7 +201,7 @@ if (!function_exists('systemPanel')) {
                 border-radius: 0 10px 0 0;
             }
         </style>
-        <div class="system-panel">
+        <div class="system-panel system-panel-visible">
             <span class="sp-name">Роутер</span>
             <code class="sp-code">
                 <?php if ($app->route->group): ?>
@@ -222,10 +222,20 @@ if (!function_exists('systemPanel')) {
                 <?php endif; ?>
                 <?= $app->views->{0} ?>
             </code>
+            <span class="sp-sep">|></span>
+            <span class="sp-name">user id</span>
+            <code class="sp-code">
+                <?=user_id()?>
+            </code>
+            <span class="sp-sep">|></span>
+            <span class="sp-name">Скрыть</span>
+            <code class="sp-code">
+                Ctrl+X
+            </code>            
             <span id="system-panel-vis" class="sp-btn">$</span>
             <span id="system-panel-trace" class="sp-btn">♯</span>
         </div>
-        <div id="system-panel-full" style="display:none" data-status="0" class="system-panel-block">
+        <div id="system-panel-full" style="display:none" data-status="0" class="system-panel-block system-panel-visible">
             <div class="electronic">
                 <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
             </div>
@@ -250,6 +260,12 @@ if (!function_exists('systemPanel')) {
                             <li><b><?= $name ?></b> <?= $view ?></li>
                         <?php endforeach; ?>
                     </ul> -->
+                    <p>Пользователь</p>
+                    <ul>
+                        <?php foreach ($app->user->getArray() as $a => $view): ?>
+                            <li><?=$a?> - <?= $view ?></li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
                 <div class="sp-col">
                     <p>Время</p>
@@ -273,7 +289,7 @@ if (!function_exists('systemPanel')) {
                 </div>
             </div>
         </div>
-        <div id="system-panel-table" style="display:none" data-status="0" class="system-panel-block">
+        <div id="system-panel-table" style="display:none" data-status="0" class="system-panel-bloc system-panel-visible">
             <div class="electronic">
                 <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
             </div>
@@ -326,6 +342,21 @@ if (!function_exists('systemPanel')) {
             </div>
         </div>
         <script>
+            var visibleStatusSystemPanel = false;
+            document.addEventListener('keydown', function(event) {
+                if (event.ctrlKey && event.key === 'x') {
+                    event.preventDefault();
+                    document.querySelectorAll('.system-panel').forEach(function(e) {
+                        if (visibleStatusSystemPanel) {
+                            e.style.display = 'block';
+                        } else {
+                            e.style.display = 'none';
+                        }
+                    });
+                    visibleStatusSystemPanel = !visibleStatusSystemPanel;
+                }
+            });
+
             document.getElementById('system-panel-vis').addEventListener('click', function() {
                 let a = document.getElementById('system-panel-full');
                 let s = a.getAttribute('data-status');

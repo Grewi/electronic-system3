@@ -42,5 +42,9 @@ class bootstrap
         } else {
             $app->bootstrap->ajax = 0;
         }
+
+        $app->cookies->name = 'us';
+        $app->cookies->domains = '';
+        $app->cookies->cookiePath = '/';
     }
 }
