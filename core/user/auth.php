@@ -23,6 +23,9 @@ class auth
     private string $cookieName;
     private string $cookieDomains;
     private string $cookiePath;
+    private bool $cookieSecure;
+    private bool $cookieHttponly;
+    private string $cookieSamesite;
 
     public function __construct()
     {
@@ -31,6 +34,10 @@ class auth
         $this->cookieDomains = $app->cookies->domains;
         $this->cookiePath = $app->cookies->path;
         $this->session_time = $app->cookies->time;
+        $this->cookieSecure = $app->cookies->secure;
+        $this->cookieHttponly = $app->cookies->httponly;
+        $this->cookieSamesite = $app->cookies->samesite;
+// $this->cookieSecure, $this->cookieHttponly
     }
     protected function setLogin($login)
     {
@@ -110,7 +117,16 @@ class auth
 
             db()->query('INSERT INTO `sessions` (`user_id`, `session_key`, `active_time`, `user_agent`, `ip`) VALUES (:user_id,  :session_key, :active_time, :user_agent, :ip)', $param);
 
-            setcookie($this->cookieName, $passForCook, date('U') + $this->session_time(), $this->cookiePath, $this->cookieDomains);
+            $arr_cookie_options = [
+                'expires' => date('U') + $this->session_time(), 
+                'path' => $this->cookiePath, 
+                'domain' => $this->cookieDomains,
+                'secure' => $this->cookieSecure,
+                'httponly' => $this->cookieHttponly,
+                'samesite' => $this->cookieSamesite,
+            ];
+            setcookie($this->cookieName, $passForCook, $arr_cookie_options);   
+
             $_SESSION[$this->cookieName] = $passForCook;
             $this->status = $user->id;
 
@@ -158,7 +174,16 @@ class auth
      */
     public function authUserSystem(string $key)
     {
-        setcookie($this->cookieName, $key, date('U') + 60 * 60, $this->cookiePath, $this->cookieDomains);
+        $arr_cookie_options = [
+            'expires' => date('U') + 60 * 60, 
+            'path' => $this->cookiePath, 
+            'domain' => $this->cookieDomains,
+            'secure' => $this->cookieSecure,
+            'httponly' => $this->cookieHttponly,
+            'samesite' => $this->cookieSamesite,
+        ];
+        setcookie($this->cookieName, $key, $arr_cookie_options); 
+
         $_SESSION[$this->cookieName] = $key;
         // dd(123456);
         redirect('/');
@@ -179,7 +204,16 @@ class auth
                 //При активности пользователя, продлеваем сессию
                 // if($ses->active_time < (time()-(60*60)) ){
                     db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
-                    @setcookie($this->cookieName, $ses->session_key, date('U') + $this->session_time(), $this->cookiePath, $this->cookieDomains);
+                    $arr_cookie_options = [
+                        'expires' => date('U') + $this->session_time(), 
+                        'path' => $this->cookiePath, 
+                        'domain' => $this->cookieDomains,
+                        'secure' => $this->cookieSecure,
+                        'httponly' => $this->cookieHttponly,
+                        'samesite' => $this->cookieSamesite,
+                    ];
+                    @setcookie($this->cookieName, $ses->session_key, $arr_cookie_options);  
+
                     $result = $ses->user_id; // Актуальная сессия                    
                 // }
 

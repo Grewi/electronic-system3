@@ -47,5 +47,8 @@ class bootstrap
         $app->cookies->domains = '';
         $app->cookies->path = '/';
         $app->cookies->time = 60*60*24*365;
+        $app->cookies->secure = true;
+        $app->cookies->httponly = true;
+        $app->cookies->samesite = 'Lax';
     }
 }
