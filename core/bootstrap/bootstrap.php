@@ -45,6 +45,7 @@ class bootstrap
 
         $app->cookies->name = 'us';
         $app->cookies->domains = '';
-        $app->cookies->cookiePath = '/';
+        $app->cookies->path = '/';
+        $app->cookies->time = 60*60*24*365;
     }
 }

@@ -21,6 +21,7 @@ if (!function_exists('db')) {
 if (!function_exists('user_id')) {
     function user_id()
     {
+        // dd(app::app());
         return (new auth())->status();
     }
 }

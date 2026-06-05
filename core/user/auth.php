@@ -11,7 +11,7 @@ use system\inst\classes\functions;
 class auth
 {
     public $status;
-    private $session_time = 60 * 60 * 24;
+    private $session_time;
     private $loginRegex = "/^[\s a-zA-Z0-9а-яА-ЯёЁ.,\(\)$@!?#=+\-_]+$/u";
     private $urlFailed = null;
     private $urlSuccess = null;
@@ -29,7 +29,8 @@ class auth
         $app = app::app();
         $this->cookieName = $app->cookies->name;
         $this->cookieDomains = $app->cookies->domains;
-        $this->cookiePath = $app->cookies->cookiePath;
+        $this->cookiePath = $app->cookies->path;
+        $this->session_time = $app->cookies->time;
     }
     protected function setLogin($login)
     {
