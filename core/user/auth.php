@@ -199,10 +199,11 @@ class auth
             //Если есть и сессия, и куки 
             //Проверяем актуальность кук и сессии
             $ses = db()->fetch('SELECT * FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $coockie]);
+            $this->delOldSes($ses->user_id);
+
             if (isset($ses->user_id) && $this->sanitary($ses)) {
-                
                 //При активности пользователя, продлеваем сессию
-                // if($ses->active_time < (time()-(60*60)) ){
+                if($ses->active_time < (time()-(60*60)) && $_SESSION['session_cookie_update'] == true){
                     db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
                     $arr_cookie_options = [
                         'expires' => date('U') + $this->session_time(), 
@@ -212,12 +213,10 @@ class auth
                         'httponly' => $this->cookieHttponly,
                         'samesite' => $this->cookieSamesite,
                     ];
-                    @setcookie($this->cookieName, $ses->session_key, $arr_cookie_options);  
-
-                    $result = $ses->user_id; // Актуальная сессия                    
-                // }
-
-                $this->delOldSes($ses->user_id);
+                    @setcookie($this->cookieName, $ses->session_key, $arr_cookie_options);     
+                    $_SESSION['session_cookie_update'] = true;
+                }
+                $result = $ses->user_id; // Актуальная сессия
             } else {
                 $this->error = 'Сессия завершенна';
             }
