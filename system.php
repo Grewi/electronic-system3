@@ -6,10 +6,6 @@ use system\core\app\app;
 
 ob_start();
 
-if (session_status() != PHP_SESSION_ACTIVE) {
-    session_start();
-}
-
 // register_shutdown_function(function(){
 
 // });
@@ -43,8 +39,6 @@ try {
     }
 
     if (ENTRANSE == 'web') {
-        bootstrap::load();
-        history::start()->save();
         require_once ENTRY_POINT_WEB;
     } elseif (ENTRANSE == 'console') {
         require_once ENTRY_POINT_CONSOLE_SYSTEM;

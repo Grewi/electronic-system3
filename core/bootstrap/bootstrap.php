@@ -51,4 +51,18 @@ class bootstrap
         $app->cookies->httponly = true;
         $app->cookies->samesite = 'Lax';
     }
+
+    public static function session()
+    {
+        $app = app::app();
+        session_set_cookie_params([
+            'lifetime' => $app->cookies->time,
+            'path' => $app->cookies->path,
+            'domain' => $app->cookies->domains,
+            'secure' => $app->cookies->secure,
+            'httponly' => $app->cookies->httponly,
+            'samesite' => $app->cookies->samesite,
+        ]);
+        session_start();
+    }
 }
