@@ -104,19 +104,7 @@ class auth
         
         if ($valid->control() && $user && password_verify($valid->return('password'), is_null($user->password) ? '' : $user->password) && $bruteforce->status()) {
             $bruteforce->resetTry();
-            $passForCook = bin2hex(random_bytes(15)); //временный хеш сессии
-            $date        = date('U'); // Дата сессии
-
-            $param = [
-                'user_id'     => $user->id,
-                'session_key' => $passForCook,
-                'active_time' => $date,
-                'user_agent' => $app->bootstrap->user_agent,
-                'ip' => $app->bootstrap->ip,
-            ];
-
-            db()->query('INSERT INTO `sessions` (`user_id`, `session_key`, `active_time`, `user_agent`, `ip`) VALUES (:user_id,  :session_key, :active_time, :user_agent, :ip)', $param);
-
+            $passForCook = $this->saveSession($app, $user);
             $arr_cookie_options = [
                 'expires' => date('U') + $this->session_time(), 
                 'path' => $this->cookiePath, 
@@ -145,6 +133,29 @@ class auth
                 (new header())->location($this->urlFailed);
             }
         }
+    }
+
+    /**
+     * Сохранение сессии в базе 
+     * @param app
+     * @param users
+     * @return string
+     */
+    public function saveSession(app $app, $user): string
+    {
+        $passForCook = bin2hex(random_bytes(15)); //временный хеш сессии
+        $date        = date('U'); // Дата сессии
+
+        $param = [
+            'user_id'     => $user->id,
+            'session_key' => $passForCook,
+            'active_time' => $date,
+            'user_agent' => $app->bootstrap->user_agent,
+            'ip' => $app->bootstrap->ip,
+        ];
+
+        db()->query('INSERT INTO `sessions` (`user_id`, `session_key`, `active_time`, `user_agent`, `ip`) VALUES (:user_id,  :session_key, :active_time, :user_agent, :ip)', $param);
+        return $passForCook;
     }
 
     /**
