@@ -53,6 +53,12 @@ class textLogs extends logs
         file_put_contents($this->path, $this->text . PHP_EOL, FILE_APPEND);
     }
 
+    public function saveAndClean()
+    {
+        $this->clean();
+        $this->save();
+    }
+
     public function extention(): string
     {
         return 'log';

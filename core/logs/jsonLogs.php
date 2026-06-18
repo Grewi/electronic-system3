@@ -20,6 +20,12 @@ class jsonLogs extends logs
         file_put_contents($this->path, json_encode($data));
     }
 
+    public function saveAndClean($data)
+    {
+        $this->clean();
+        $this->save($data);
+    }    
+
     private function createFile()
     {
         if(!file_exists($this->path)){
