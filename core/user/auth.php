@@ -205,6 +205,7 @@ class auth
     {
         $session = isset($_SESSION[$this->cookieName]) ? $_SESSION[$this->cookieName] : null;
         $coockie = isset($_COOKIE[$this->cookieName]) ? $_COOKIE[$this->cookieName] : null;
+        $_SESSION['session_cookie_update'] = $_SESSION['session_cookie_update'] ?? false;
         $result = 0;
         if (isset($session) && isset($coockie) && $session == $coockie) {
             //Если есть и сессия, и куки 
