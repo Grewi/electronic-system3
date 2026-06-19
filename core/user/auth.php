@@ -197,7 +197,7 @@ class auth
 
         $_SESSION[$this->cookieName] = $key;
         // dd(123456);
-        redirect('/');
+        // redirect('/');
     }
 
     // возвращает id пользователя или 0 если не зарегистрирован
