@@ -8,9 +8,10 @@ class textLogs extends logs
 {
     private string $text = '';
     
-    public function fatal(string $text)
+    public function fatal(string $text):static
     {
         $this->text('FATAL', $text);
+        return $this;
     }
 
     public function error(string $text)
@@ -18,9 +19,10 @@ class textLogs extends logs
         $this->text('ERROR', $text);
     }
 
-    public function warn(string $text)
+    public function warn(string $text):static
     {
         $this->text('WARN', $text);
+        return $this;
     }
 
     public function info(string $text)
@@ -28,24 +30,28 @@ class textLogs extends logs
         $this->text('INFO', $text);
     } 
     
-    public function trace(string $text)
+    public function trace(string $text):static
     {
         $this->text('TRACE', $text);
+        return $this;
     } 
     
-    public function debug(string $text)
+    public function debug(string $text):static
     {
         $this->text('DEBUG', $text);
+        return $this;
     }
 
-    private function text($type, $text)
+    private function text($type, $text):static
     {
         $this->text = date('Y-m-d H:i:s') . ' ' . $type . ' ' . $text;
+        return $this;
     }
 
-    public function add(string $text): void
+    public function add(string $text): static
     {
         $this->text = $this->text . ' ' . $text;
+        return $this;
     }    
 
     public function save()
