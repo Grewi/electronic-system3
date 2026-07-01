@@ -31,7 +31,7 @@ class auth
     {
         $app = app::app();
         // dd($app->cookies);
-        $this->cookieName = $app->cookies->name;
+        $this->cookieName = $app->cookies?->name;
         $this->cookieDomains = $app->cookies?->domains;
         $this->cookiePath = $app->cookies?->path;
         $this->session_time = $app->cookies?->time;
