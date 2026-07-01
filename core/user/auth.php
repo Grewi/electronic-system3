@@ -20,23 +20,24 @@ class auth
     private $pass;
     private $csrf = true;
     public $error;
-    private string $cookieName;
-    private string $cookieDomains;
-    private string $cookiePath;
-    private bool $cookieSecure;
-    private bool $cookieHttponly;
-    private string $cookieSamesite;
+    private string|null $cookieName = null;
+    private string|null $cookieDomains = null;
+    private string|null $cookiePath = null;
+    private bool|null $cookieSecure = null;
+    private bool|null $cookieHttponly  = null;
+    private string|null $cookieSamesite = null;
 
     public function __construct()
     {
         $app = app::app();
+        // dd($app->cookies);
         $this->cookieName = $app->cookies->name;
-        $this->cookieDomains = $app->cookies->domains;
-        $this->cookiePath = $app->cookies->path;
-        $this->session_time = $app->cookies->time;
-        $this->cookieSecure = $app->cookies->secure;
-        $this->cookieHttponly = $app->cookies->httponly;
-        $this->cookieSamesite = $app->cookies->samesite;
+        $this->cookieDomains = $app->cookies?->domains;
+        $this->cookiePath = $app->cookies?->path;
+        $this->session_time = $app->cookies?->time;
+        $this->cookieSecure = $app->cookies?->secure;
+        $this->cookieHttponly = $app->cookies?->httponly;
+        $this->cookieSamesite = $app->cookies?->samesite;
 // $this->cookieSecure, $this->cookieHttponly
     }
     protected function setLogin($login)
