@@ -58,3 +58,11 @@ if (!defined('FUNCTION_DIRECTORIES')) {
         SYSTEM . '/functions'
     ]);
 }
+
+if (!defined('SQLITE_PATH')) {
+    define('SQLITE_PATH', ROOT . '/sqlite/');
+}
+
+if (!defined('SQLITE_EXT')) {
+    define('SQLITE_EXT', '.db');
+}
