@@ -1,4 +1,5 @@
 <?php
+
 namespace system\core\model;
 
 use system\core\database\database;
@@ -52,9 +53,9 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Значение поля SELECT. по умолчанию "*" 
      * @param string $select
-     * @return model
+     * @return static 
      */
-    public function select(string $select)
+    public function select(string $select): static
     {
         $this->EMD->select->add($select);
         return $this;
@@ -71,7 +72,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Значение поля FROM. По умолчанию наименование класса
      * @param string $from
-     * @return model
+     * @return static 
      */
     public function from(string $from): static
     {
@@ -81,6 +82,7 @@ class model extends iteratorDataModel implements \JsonSerializable
 
     /**
      * Устанавливает условный оператор для функций where
+     * @return static 
      */
     public function or(): static
     {
@@ -94,7 +96,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $operator Оператор для условия (= < <= > >= !=)
      * @param string|int|float $value Значение поля
      * @param bool $or Логический оператор с предыдущим блоком where. По умолчанию "AND"
-     * @return model
+     * @return static 
      */
     public function whereL(string $col, string $operator, string|int|float $value, bool $or = false): static
     {
@@ -107,7 +109,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $col Поле таблицы в базе
      * @param string|int|float $value Значение поля
      * @param bool $or Логический оператор с предыдущим блоком where. По умолчанию "AND"
-     * @return model
+     * @return static 
      */
     public function where(string $col, string|int|float $value, bool $or = false): static
     {
@@ -118,7 +120,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Условие соответствия поля значению NULL
      * @param string $col Поле таблицы в базе
-     * @return model
+     * @return static 
      */
     public function whereNull(string $col): static
     {
@@ -129,7 +131,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Условие не соответствия поля значению NULL
      * @param string $col Поле таблицы в базе
-     * @return model
+     * @return static 
      */
     public function whereNotNull(string $col): static
     {
@@ -141,7 +143,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * Условие соответствия поля значениям в массиве 
      * @param string $col Поле таблицы в базе
      * @param array|object $arg Список возможных значений
-     * @return model
+     * @return static 
      */
     public function whereIn(string $col, array|object $arg): static
     {
@@ -152,8 +154,8 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Условие соответствия поля значениям в массиве 
      * @param string $col Поле таблицы в базе
-     * @param array|object $arg Список возможных значений
-     * @return model
+     * @param string $arg Список возможных значений
+     * @return static 
      */
     public function whereLike(string $col, string $arg): static
     {
@@ -164,8 +166,8 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Условие соответствия поля значениям в массиве 
      * @param string $col Поле таблицы в базе
-     * @param array|object $arg Список возможных значений
-     * @return model
+     * @param string $arg Список возможных значений
+     * @return static 
      */
     public function whereLikeStart(string $col, string $arg): static
     {
@@ -176,8 +178,8 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Условие соответствия поля значениям в массиве 
      * @param string $col Поле таблицы в базе
-     * @param array|object $arg Список возможных значений
-     * @return model
+     * @param string $arg Список возможных значений
+     * @return static 
      */
     public function whereLikeEnd(string $col, string $arg): static
     {
@@ -189,28 +191,32 @@ class model extends iteratorDataModel implements \JsonSerializable
      * Произвольная строка для условия
      * @param string $str Строка
      * @param array $bind Данные для биндинга
-     * @return model
+     * @return static 
      */
-    public function whereStr(string $str, array $bind = [])
+    public function whereStr(string $str, array $bind = []): static
     {
         $this->EMD->where->whereStr($str, $bind);
         return $this;
     }
 
-    public function whereFunc($func): static
+    /**
+     * @param callable $func Функция
+     * @return static 
+     */
+    public function whereFunc(callable $func): static
     {
         $a =  $func(new eWhere(1));
-        $this->EMD->where->whereStr(' ( '.$a->get().' ) ', $a->bind->get());
+        $this->EMD->where->whereStr(' ( ' . $a->get() . ' ) ', $a->bind->get());
         return $this;
     }
 
     /**
      * Условие соответствия полю active
-     * @param bool|int условие соответствия
-     * @param string|null наименование таблицы (если необходимо)
-     * @return model
+     * @param bool|int $active условие соответствия
+     * @param string|null  $table наименование таблицы (если необходимо)
+     * @return static 
      */
-    public function active(bool|int $active = 1, string|null $table =null)
+    public function active(bool|int $active = 1, string|null $table = null): static
     {
         $this->EMD->where->active($active, $table);
         return $this;
@@ -218,11 +224,11 @@ class model extends iteratorDataModel implements \JsonSerializable
 
     /**
      * Условие соответствия полю slug
-     * @param string наименоание slug
-     * @param string|null наименование таблицы (если необходимо)
-     * @return model
+     * @param string $slug наименоание slug
+     * @param string|null $table  наименование таблицы (если необходимо)
+     * @return static 
      */
-    public function slug(string $slug, string|null $table = null)
+    public function slug(string $slug, string|null $table = null): static
     {
         $this->EMD->where->slug($slug, $table);
         return $this;
@@ -231,7 +237,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Значение поля LIMIT
      * @param int $limit
-     * @return model
+     * @return static 
      */
     public function limit(int $limit): static
     {
@@ -241,8 +247,8 @@ class model extends iteratorDataModel implements \JsonSerializable
 
     /**
      * Значение поля OFFSET
-     * @param int $limit
-     * @return model
+     * @param int $offset
+     * @return static 
      */
     public function offset(int $offset): static
     {
@@ -254,7 +260,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * Сортировка по полю (полям)
      * @param string $name Поле таблицы в базе
      * @param string $type Направление сортировки
-     * @return model
+     * @return static 
      */
     public function sort(string $name, string $type = 'asc'): static
     {
@@ -262,6 +268,10 @@ class model extends iteratorDataModel implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @param string $group
+     * @return static 
+     */
     public function group(string $group): static
     {
         $this->EMD->group->add($group);
@@ -273,7 +283,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
      * @param string $secondaryTable Поле подключаемой таблицы для сравнения
-     * @return model
+     * @return static 
      */
     public function innerJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
@@ -286,7 +296,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
      * @param string $secondaryTable Поле подключаемой таблицы для сравнения
-     * @return model
+     * @return static 
      */
     public function leftJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
@@ -299,7 +309,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
      * @param string $secondaryTable Поле подключаемой таблицы для сравнения
-     * @return model
+     * @return static 
      */
     public function rightJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
@@ -312,7 +322,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
      * @param string $secondaryTable Поле подключаемой таблицы для сравнения
-     * @return model
+     * @return static 
      */
     public function fullJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
@@ -325,7 +335,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param string $tableName Наименование таблицы для объединения
      * @param string $firstTable Поле текущей таблицы для сравненеи
      * @param string $secondaryTable Поле подключаемой таблицы для сравнения
-     * @return model
+     * @return static 
      */
     public function crossJoin(string $tableName, string $firstTable, string $secondaryTable): static
     {
@@ -336,7 +346,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Создаёт новую запись в базе данных
      * @param array $data Данные для записи. Ключи массива должны соответствовать полям в базе
-     * @return model
+     * @return int 
      */
     public function insert(array $data = []): ?int
     {
@@ -359,7 +369,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     {
         // $d = array_merge(get_object_vars($this), $data);
         $this->addPropertyModel($data);
-        if($this->id){
+        if ($this->id) {
             $this->where($this->EMD->id, $this->{$this->EMD->id});
         }
         $this->EMD->update->where($this->EMD->where->get());
@@ -394,7 +404,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Удаление записи. Возвращает количество удалённых строк
      * @param array $data
-     * @return void
+     * @return int 
      */
     public function delete(array $data = []): int
     {
@@ -412,7 +422,8 @@ class model extends iteratorDataModel implements \JsonSerializable
     }
 
     /**
-     * 
+     * @param int $limit
+     * @return static 
      */
     public function pagin(int $limit = 20): static
     {
@@ -425,6 +436,10 @@ class model extends iteratorDataModel implements \JsonSerializable
         return $this;
     }
 
+    /*
+    * @param string $url
+    * @return array 
+     */
     public function pagination(string $url = ''): array
     {
         return [
@@ -442,7 +457,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * @param array $listCol - Список колонок по которым допускается сортировка
      * @param string $defaultSort - стролбец по умолчанию
      * @param string $defaultDirection - направление по умолчанию
-     * @return mixed
+     * @return static
      */
     public function sorting(array $listCol = [], $defaultSort = '', $defaultDirection = ''): static
     {
@@ -462,7 +477,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
      * @param string $name - наименование get параметра 
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
-     * @return mixed
+     * @return static 
      */
     public function filterLike(string $name, string|null $col = null): static
     {
@@ -477,7 +492,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
      * @param string $name - наименование get параметра 
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
-     * @return mixed
+     * @return static 
      */
     public function filterLikeStart(string $name, ?string $col): static
     {
@@ -487,12 +502,12 @@ class model extends iteratorDataModel implements \JsonSerializable
         }
         return $this;
     }
-    
+
     /**
      * Обработка get параметров filter_* Поиск совпадений в столбце по запросу
      * @param string $name - наименование get параметра 
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
-     * @return mixed
+     * @return static 
      */
     public function filterLikeEnd(string $name, ?string $col): static
     {
@@ -501,13 +516,13 @@ class model extends iteratorDataModel implements \JsonSerializable
             $this->whereLikeEnd($col, $_GET['filter_' . $name]);
         }
         return $this;
-    }    
+    }
 
     /**
      * Обработка get параметров filter_* Поиск точного совпадения в столбце по запросу
      * @param string $name - наименование get параметра 
      * @param string $col - наименование столбца в таблице, если не указан, то равен параметру name
-     * @return mixed
+     * @return static 
      */
     public function filterWhere(string $name, ?string $col): static
     {
@@ -516,7 +531,7 @@ class model extends iteratorDataModel implements \JsonSerializable
             $this->where($col, $_GET['filter_' . $name]);
         }
         return $this;
-    }    
+    }
 
     /**
      * Обработка массива get параметров filter_* Поиск совпадений в нескольких столбцах по запросу
@@ -587,7 +602,7 @@ class model extends iteratorDataModel implements \JsonSerializable
             }
         }
         return $this;
-    }    
+    }
 
     /**
      * Массив данных 
@@ -601,9 +616,9 @@ class model extends iteratorDataModel implements \JsonSerializable
 
     /**
      * Единичная запись
-     * @return model
+     * @return static|null
      */
-    public function get()
+    public function get(): ?static
     {
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch($this->slectSql(), $this->bind(), get_class($this));
@@ -611,7 +626,8 @@ class model extends iteratorDataModel implements \JsonSerializable
 
     /**
      * Запись соответствубщая идентификатору
-     * @param int $id
+     * @param numeric  $id
+     * @return static|null 
      */
     public function find(mixed $id): ?static
     {
@@ -620,6 +636,11 @@ class model extends iteratorDataModel implements \JsonSerializable
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
     }
 
+    /**
+     * @param string $col 
+     * @param numeric $value  
+     * @return static 
+     */
     public function search(string $col, int|float|string $value): static
     {
         $db = database::connect($this->EMD->databaseName);
@@ -666,7 +687,7 @@ class model extends iteratorDataModel implements \JsonSerializable
     public function toArray(string $col = 'id'): array
     {
         $r = [];
-        foreach($this->all() as $i){
+        foreach ($this->all() as $i) {
             $r[] = $i->{$col};
         }
         return $r;
@@ -717,10 +738,11 @@ class model extends iteratorDataModel implements \JsonSerializable
     /**
      * Метод отвечает за вывод при серриализации объекта
      */
-    #[\ReturnTypeWillChange] 
-    public function jsonSerialize() {
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
         $array = [];
-        foreach($this as $a => $i){
+        foreach ($this as $a => $i) {
             $array[$a] = $i;
         }
         return $array;
