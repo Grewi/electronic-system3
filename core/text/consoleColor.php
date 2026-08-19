@@ -4,7 +4,7 @@ namespace system\core\text;
 
 trait consoleColor
 {
-    const string reset = "\033[0m"; 
+    const string reset = "\033[0m";
     // Цвет
     const array textColor = [
         "\033[0;30m", # Black
@@ -100,7 +100,7 @@ trait consoleColor
         7 => 'white'
     ];
 
-    const color = [
+    const array color = [
         'Black' => "\033[0;30m",        # Black
         'Red' => "\033[0;31m",          # Red
         'Green' => "\033[0;32m",        # Green

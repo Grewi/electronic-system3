@@ -1,11 +1,17 @@
 <?php
+
 namespace system\core\view;
+
 use system\core\view\view;
 
-class viewJson 
+class viewJson
 {
-    private $content;
+    private string $content;
 
+    /**
+     * @param string $file 
+     * @param array $data 
+     */
     public function __construct($file, $data)
     {
         ob_start();
@@ -15,3 +21,4 @@ class viewJson
         echo json_encode($this->content);
     }
 }
+

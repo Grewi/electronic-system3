@@ -1,10 +1,16 @@
 <?php
+
 namespace system\core\user;
 
 class register
 {
-    public static function password($pass)
+    /**
+     * @param string $pass 
+     * @return string 
+     */
+    public static function password(string $pass): string
     {
         return password_hash($pass, PASSWORD_DEFAULT);
     }
 }
+

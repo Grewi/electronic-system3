@@ -1,77 +1,103 @@
 <?php
 
 namespace system\core\view;
+
 use system\core\database\database;
 use system\core\app\app;
 use system\core\lang\lang;
 
 class view
 {
-    protected $file;
-    protected $cacheDir;
-    protected $viewsDir;
-    protected $app = APP;
-    protected $app_name = APP_NAME;
-    protected $countInclude = [];
-    protected $forseCompile = false;
-    protected $validElement = "/^[a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u";//Допустимые символы в переменных
+    protected string $file;
+    protected string $cacheDir;
+    protected string $viewsDir;
+    protected string $app = APP;
+    protected string $app_name = APP_NAME;
+    protected array $countInclude = [];
+    protected bool $forseCompile = false;
+    protected string $validElement = "/^[a-zA-Z0-9а-яА-ЯёЁ\-_]+$/u";//Допустимые символы в переменных
 
-    public function __construct(?string $file=null, array $data = [])
+    /**
+     * @param string $file  
+     * @param array $data
+     */
+    public function __construct(?string $file = null, array $data = [])
     {
         $this->cacheDir = $this->app . '/cache/views';
         $this->viewsDir = $this->app . '/views';
-        if(!file_exists($this->viewsDir . '/' . $file . '.php')){
+        if (!file_exists($this->viewsDir . '/' . $file . '.php')) {
             throw new \TempException('Файл шаблона "/apps/' . $this->app_name . '/views/' . $file . '.php" отсутствует!');
         }
-        if($file){
+        if ($file) {
             $this->out($file, $data);
         }
     }
 
-    public function cacheDir(string $path)
+    /**
+     * @param string $path 
+     * @return static 
+     */
+    public function cacheDir(string $path): static
     {
         $this->cacheDir = $this->app . '/' . $path;
         return $this;
     }
 
-    public function viewsDir(string $path)
+    /**
+     * @param string $path 
+     * @return static 
+     */
+    public function viewsDir(string $path): static
     {
         $this->viewsDir = $this->app . '/' . $path;
         return $this;
     }
 
-    public function out(string $file, $data = null) : void
+    /**
+     * @param string $file 
+     * @param null|array<mixed>
+     * @return void 
+     */
+    public function out(string $file, $data = null): void
     {
         $this->render($file);
         $app = app::app();
         extract($data);
-        if(file_exists($this->cacheDir . '/' . $this->countInclude[0] . '.php')){
+        if (file_exists($this->cacheDir . '/' . $this->countInclude[0] . '.php')) {
             $app->views->add($this->countInclude[0]);
-            time_system('view: '.$this->countInclude[0]);
+            time_system('view: ' . $this->countInclude[0]);
             require $this->cacheDir . '/' . $file . '.php';
-        }else{
+        } else {
             throw new \TempException('Отсутствует файл вывода для шаблона "' . $file . '"!');
         }
-        
     }
 
-    public function return(string $file, $data = null) : string
+    /**
+     * @param string $file 
+     * @param null|array<mixed>
+     * @return string 
+     */
+    public function return(string $file, $data = null): string
     {
         $this->render($file);
         extract($data);
         $file = $this->countInclude[0];
-        if(file_exists($this->cacheDir . '/' . $file . '.php')){
+        if (file_exists($this->cacheDir . '/' . $file . '.php')) {
             ob_start();
             require $this->cacheDir . '/' . $file . '.php';
             $content = ob_get_contents();
             ob_end_clean();
             return $content;
-        }else{
+        } else {
             throw new \TempException('Отсутствует файл вывода для шаблона "' . $file . '"!');
         }
     }
 
-    private function render(string $file)
+    /**
+     * @param string $file 
+     * @return static 
+     */
+    private function render(string $file): static
     {
         $this->file = $file;
         $this->countInclude[] = $file;
@@ -95,14 +121,18 @@ class view
         return $this;
     }
 
-    //Подключаем внешние файлы
+    /*
+    * Подключаем внешние файлы
+    * $param string $content 
+    * $return string 
+    */
     private function include($content): string
     {
         preg_match_all('/\<include \s*file\s*=\s*"(.*?)"\s*\/*\>/si', $content, $matches);
         if ($matches && count($matches[1]) > 0) {
             foreach ($matches[1] as $key => $i) {
-                if(!file_exists($this->viewsDir . '/' . $i . '.php')){
-                    throw new \TempException('Файл шаблона "/apps/' . $this->app_name . '/views/' . $i . '.php" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file. '.php"');
+                if (!file_exists($this->viewsDir . '/' . $i . '.php')) {
+                    throw new \TempException('Файл шаблона "/apps/' . $this->app_name . '/views/' . $i . '.php" отсутствует! Подключен в шаблоне "/apps/' . APP_NAME . '/views/' . $this->file . '.php"');
                 }
                 $inc = '<?php include \'' . $this->cacheDir . '/' . $i . '.php\' ?>';
                 $content = str_replace($matches[0][$key], $inc, $content);
@@ -121,6 +151,10 @@ class view
         return $content;
     }
 
+    /**
+     * @param string $path 
+     * @return string 
+     */
     private function getFile(string $path): string
     {
         if (file_exists($path)) {
@@ -131,6 +165,11 @@ class view
         return $temp;
     }
 
+    /**
+     * @param string $file
+     * @param string $content 
+     * @return void 
+     */
     private function save($file, $content): void
     {
         $a = explode('/', $file);
@@ -150,7 +189,11 @@ class view
         return preg_replace('/\<\!--(.*?)-->/si', '', $content);
     }
 
-    //Если есть тег use используем шаблон
+    /**
+     * Если есть тег use используем шаблон
+     * @param string $content 
+     * @return string 
+     */
     private function useLauoyt($content): string
     {
         preg_match('/\<use\s*(.*?)\s*\>/si', $content, $matches);
@@ -161,7 +204,7 @@ class view
             if ($matches) {
                 $app = app::app();
                 $app->view->layout = $html;
-                time_system('layout:'.$html);
+                time_system('layout:' . $html);
                 $layout = $this->getFile($this->viewsDir . '/' . $html . '.php');
                 preg_match_all('/\<block\s*name=\"(.*?)\"\s*\/*>/si', $layout, $matches2);
                 foreach ($matches2[1] as $a => $i) {
@@ -175,6 +218,10 @@ class view
         return $content;
     }
 
+    /**
+     * @param string $content 
+     * @return string 
+     */
     private function variable($content): string
     {
         preg_match_all('/\{\{\s*\$(.*?)\s*\}\}(else\{\{(.*?)}\})?/si', $content, $matches);
@@ -185,7 +232,11 @@ class view
         return $content;
     }
 
-    //Принимает два параметра type= input/token и name
+    /**
+     * //Принимает два параметра type= input/token и name
+     * @param string $content 
+     * @return string 
+     */
     private function csrf($content): string
     {
         preg_match_all('/\<csrf\s*(.*?)\s*\\/*>/si', $content, $matches);
@@ -202,7 +253,11 @@ class view
         return $content;
     }
 
-    //Последнее изменение в директории
+    /**
+     * //Последнее изменение в директории
+     * @param string $dir 
+     * @return int|null 
+     */
     private function foldermtime(string $dir)
     {
         $foldermtime = 0;
@@ -217,6 +272,11 @@ class view
         return $foldermtime ?: null;
     }
 
+    /**
+     * @param string $parametrs 
+     * @param bool $valid 
+     * @return array 
+     */
     private function parserHtmlTag(string $parametrs, bool $valid = true)
     {
         preg_match_all('/\s*(.*?)=\"(.*?)\"\s*/siu', $parametrs, $m);
@@ -231,12 +291,16 @@ class view
         return $result;
     }
 
-	private function pathR(string $a)
-	{
-        $i = str_replace('/', '\\', $a); 
-        if($i[0] != '\\'){
+    /**
+     * @param string $a 
+     * @return string 
+     */
+    private function pathR(string $a): string
+    {
+        $i = str_replace('/', '\\', $a);
+        if ($i[0] != '\\') {
             $i = '\\' . $i;
         }
-		return $i;
-	}
+        return $i;
+    }
 }

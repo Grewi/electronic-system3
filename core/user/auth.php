@@ -10,9 +10,12 @@ use system\inst\classes\functions;
 
 class auth
 {
-    public $status;
-    private $session_time;
-    private $loginRegex = "/^[\s a-zA-Z0-9а-яА-ЯёЁ.,\(\)$@!?#=+\-_]+$/u";
+    /**
+     * @var int $status user id 
+     */
+    public int $status;
+    private int $session_time;
+    private string $loginRegex = "/^[\s a-zA-Z0-9а-яА-ЯёЁ.,\(\)$@!?#=+\-_]+$/u";
     private $urlFailed = null;
     private $urlSuccess = null;
     private $login;
@@ -30,7 +33,6 @@ class auth
     public function __construct()
     {
         $app = app::app();
-        // dd($app->cookies);
         $this->cookieName = $app->cookies?->name;
         $this->cookieDomains = $app->cookies?->domains;
         $this->cookiePath = $app->cookies?->path;
@@ -38,41 +40,42 @@ class auth
         $this->cookieSecure = $app->cookies?->secure;
         $this->cookieHttponly = $app->cookies?->httponly;
         $this->cookieSamesite = $app->cookies?->samesite;
-// $this->cookieSecure, $this->cookieHttponly
+        // $this->cookieSecure, $this->cookieHttponly
     }
-    protected function setLogin($login)
+    protected function setLogin($login): void
     {
         $this->login = $login;
     }
 
-    protected function setEmail($email)
+    protected function setEmail($email): void
     {
         $this->email = $email;
     }
 
-    protected function setPass($pass)
+    protected function setPass($pass): void
     {
         $this->pass = $pass;
     }
 
-    protected function setLoginRegex($regex)
+    protected function setLoginRegex($regex): void
     {
         $this->loginRegex = $regex;
     }
 
-    protected function setCsrf(bool $status)
+    protected function setCsrf(bool $status): void
     {
         $this->csrf = $status;
     }
 
-    public function setSessionTime(int $time)
+    public function setSessionTime(int $time): void
     {
         $this->session_time = $time;
     }
 
     /**
-     * @var  Вход пользователя 
-     * 
+     *  Вход пользователя 
+     *  @param callable|null $function 
+     *  @return void 
      */
     protected function login($function = null): void
     {
@@ -102,19 +105,19 @@ class auth
         $bruteforce->addTry();
 
         $user = !empty($where) ? db()->fetch('SELECT * FROM `users` WHERE ' . implode(' AND ', $where), $bild) : null;
-        
+
         if ($valid->control() && $user && password_verify($valid->return('password'), is_null($user->password) ? '' : $user->password) && $bruteforce->status()) {
             $bruteforce->resetTry();
             $passForCook = $this->saveSession($app, $user);
             $arr_cookie_options = [
-                'expires' => date('U') + $this->session_time(), 
-                'path' => $this->cookiePath, 
+                'expires' => date('U') + $this->session_time(),
+                'path' => $this->cookiePath,
                 'domain' => $this->cookieDomains,
                 'secure' => $this->cookieSecure,
                 'httponly' => $this->cookieHttponly,
                 'samesite' => $this->cookieSamesite,
             ];
-            setcookie($this->cookieName, $passForCook, $arr_cookie_options);   
+            setcookie($this->cookieName, $passForCook, $arr_cookie_options);
 
             $_SESSION[$this->cookieName] = $passForCook;
             $this->status = $user->id;
@@ -138,11 +141,11 @@ class auth
 
     /**
      * Сохранение сессии в базе 
-     * @param app
-     * @param users
+     * @param app $app 
+     * @param object $user 
      * @return string
      */
-    public function saveSession(app $app, $user): string
+    public function saveSession(app $app, object $user): string
     {
         $passForCook = bin2hex(random_bytes(15)); //временный хеш сессии
         $date        = date('U'); // Дата сессии
@@ -161,12 +164,15 @@ class auth
 
     /**
      * 
-     * @var Выход пользователя
+     *  Выход пользователя
+     *  @param callable|null $function 
+     *  @return void 
+     *
      */
-    protected function out($function = null): void
+    protected function out(callable|null $function = null): void
     {
         db()->query('DELETE FROM `sessions` WHERE `session_key` = :session_key', ['session_key' => $_SESSION[$this->cookieName]]);
-        $this->deleteSessionsAndCookies();      
+        $this->deleteSessionsAndCookies();
         if ($function) {
             $function();
         }
@@ -184,25 +190,26 @@ class auth
      * @param string $key
      * @return void
      */
-    public function authUserSystem(string $key)
+    public function authUserSystem(string $key): void
     {
         $arr_cookie_options = [
-            'expires' => date('U') + 60 * 60, 
-            'path' => $this->cookiePath, 
+            'expires' => date('U') + 60 * 60,
+            'path' => $this->cookiePath,
             'domain' => $this->cookieDomains,
             'secure' => $this->cookieSecure,
             'httponly' => $this->cookieHttponly,
             'samesite' => $this->cookieSamesite,
         ];
-        setcookie($this->cookieName, $key, $arr_cookie_options); 
+        setcookie($this->cookieName, $key, $arr_cookie_options);
 
         $_SESSION[$this->cookieName] = $key;
-        // dd(123456);
-        // redirect('/');
     }
 
-    // возвращает id пользователя или 0 если не зарегистрирован
-    protected function status(): string|int
+    /**
+     * // возвращает id пользователя или 0 если не зарегистрирован
+     * @return int 
+     */
+    protected function status(): int
     {
         $session = isset($_SESSION[$this->cookieName]) ? $_SESSION[$this->cookieName] : null;
         $coockie = isset($_COOKIE[$this->cookieName]) ? $_COOKIE[$this->cookieName] : null;
@@ -216,17 +223,17 @@ class auth
 
             if (isset($ses->user_id) && $this->sanitary($ses)) {
                 //При активности пользователя, продлеваем сессию
-                if($ses->active_time < (time()-(60*60)) && $_SESSION['session_cookie_update'] == true){
+                if ($ses->active_time < (time() - (60 * 60)) && $_SESSION['session_cookie_update'] == true) {
                     db()->query('UPDATE `sessions` SET `active_time` = :active_time WHERE `id` = ' . $ses->id, ['active_time' => time()]);
                     $arr_cookie_options = [
-                        'expires' => date('U') + $this->session_time(), 
-                        'path' => $this->cookiePath, 
+                        'expires' => date('U') + $this->session_time(),
+                        'path' => $this->cookiePath,
                         'domain' => $this->cookieDomains,
                         'secure' => $this->cookieSecure,
                         'httponly' => $this->cookieHttponly,
                         'samesite' => $this->cookieSamesite,
                     ];
-                    @setcookie($this->cookieName, $ses->session_key, $arr_cookie_options);     
+                    @setcookie($this->cookieName, $ses->session_key, $arr_cookie_options);
                     $_SESSION['session_cookie_update'] = true;
                 }
                 $result = $ses->user_id; // Актуальная сессия
@@ -250,14 +257,14 @@ class auth
         } else {
             $this->error = 'Требуется авторизация';
         }
-        
+
         $this->status = $result;
         $app = app::app();
         $user = db()->fetch('SELECT * FROM `users` WHERE id = ' . $result);
-        
+
         if ($result > 0 && $user) {
             foreach ($user as $a => $i) {
-                if($a == 'password'){
+                if ($a == 'password') {
                     continue;
                 }
                 $app->user->{$a} = $i;
@@ -265,10 +272,14 @@ class auth
         } else {
             $app->user->id = 0;
         }
-        
-        return $result;
+
+        return (int)$result;
     }
 
+    /**
+     * @param int|string|null $user_id 
+     * @return void 
+     */
     private function delOldSes($user_id = null): void
     {
         //проверяем актуальность всех сессий
@@ -284,7 +295,11 @@ class auth
         // }
     }
 
-    protected function sanitary($ses)
+    /**
+     * @param object $ses 
+     * @return bool 
+     */
+    protected function sanitary($ses): bool
     {
         $app = app::app();
         if ($ses->user_agent && $ses->user_agent == $app->bootstrap->user_agent) {
@@ -296,19 +311,31 @@ class auth
         }
     }
 
-    protected function redirectFailed(string $url)
+    /**
+     * @param string $url 
+     * @return static 
+     */
+    protected function redirectFailed(string $url): static
     {
         $this->urlFailed = $url;
         return $this;
     }
 
-    protected function redirectSuccess(string $url)
+    /**
+     * @param string $url 
+     * @return static 
+     */
+    protected function redirectSuccess(string $url): static
     {
         $this->urlSuccess = $url;
         return $this;
     }
 
-    protected function redirect(string $url)
+    /**
+     * @param string $url 
+     * @return static 
+     */
+    protected function redirect(string $url): static
     {
         $this->urlSuccess = $url;
         $this->urlFailed = $url;
@@ -317,8 +344,9 @@ class auth
 
     /**
      *Время жизни сессии
+     * @return int 
      */
-    private function session_time()
+    private function session_time(): int
     {
         $globalConfig = getConfig('globals', 'session_time');
         if ($globalConfig > 0) {
@@ -328,7 +356,10 @@ class auth
         }
     }
 
-    public function deleteSessionsAndCookies()
+    /**
+     * @return void 
+     */
+    public function deleteSessionsAndCookies(): void
     {
         unset($_SESSION[$this->cookieName]);
         unset($_SESSION['user']);
@@ -340,14 +371,14 @@ class auth
 
     public static function __callStatic($method, $parameters)
     {
-        if(method_exists(self::connect(), $method)){
+        if (method_exists(self::connect(), $method)) {
             return self::connect()->$method(...$parameters);
         }
     }
 
     public function __call($method, $param)
     {
-        if(method_exists($this, $method)){
+        if (method_exists($this, $method)) {
             return $this->$method(...$param);
         }
     }

@@ -1,11 +1,17 @@
 <?php
+
 namespace system\core\view;
+
 use system\core\view\view;
 
 class viewStringReturn
 {
-    private $content;
+    private string $content;
 
+    /**
+     * @param string $file 
+     * @param array $data 
+     */
     public function __construct($file, $data)
     {
         ob_start();
@@ -14,8 +20,12 @@ class viewStringReturn
         ob_end_clean();
     }
 
-    public function return() : string
+    /**
+     * @return string
+     */
+    public function return(): string
     {
         return $this->content;
     }
 }
+

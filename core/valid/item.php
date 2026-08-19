@@ -3,6 +3,7 @@
 namespace system\core\valid;
 
 use system\core\valid\validInterface;
+
 abstract class item implements validInterface
 {
     protected bool $control = true;
@@ -11,76 +12,120 @@ abstract class item implements validInterface
     protected mixed $result = null;
     protected string $textError = '';
 
+    /**
+     * @var bool getResult 
+     */
     public bool $getResult = true;
 
-    public function setData($data)
+    public function setData(array $data): void
     {
         $this->setControl($data['control']);
         array_merge($this->errors, $data['errors']);
-
     }
-    public function setControl(bool $control):static
+
+    /**
+     * @param bool $control 
+     * @return static 
+     */
+    public function setControl(bool $control): static
     {
         $this->control = ($this->control == true ? $control : false);
-        if(!$this->control){
+        if (!$this->control) {
             // $this->setError($this->textError);
         }
-        
+
         return $this;
     }
-    public function getControl():bool
+
+    /**
+     * @return bool 
+     */
+    public function getControl(): bool
     {
         return $this->control;
     }
-    public function setError(string $error):static
+
+    /**
+     * @param string $error 
+     * @return static 
+     */
+    public function setError(string $error): static
     {
         $this->errors[0] = $error;
         return $this;
     }
-    public function addError(string $error):static
+
+    /**
+     * @param string $error 
+     */
+    public function addError(string $error): static
     {
         $this->errors[] = $error;
         return $this;
     }
-    public function getErrors():array
+
+    /**
+     * @return array 
+     */
+    public function getErrors(): array
     {
         return $this->errors;
     }
-    public function getError():string
+
+    /**
+     * @return string 
+     */
+    public function getError(): string
     {
         return implode(', ', $this->errors);
     }
 
-    public function setOriginal(mixed $original):static
+    /**
+     * @param mixed $original 
+     * @return static 
+     */
+    public function setOriginal(mixed $original): static
     {
         $this->original = $original;
         return $this;
     }
 
-    public function getOriginal():mixed
+    /**
+     * @return mixed 
+     */
+    public function getOriginal(): mixed
     {
         return $this->original;
     }
 
-    public function setResulr(mixed $original):static
+    /**
+     * @param mixed $original 
+     * @return static 
+     */
+    public function setResulr(mixed $original): static
     {
         $this->original = $original;
         return $this;
     }
 
-    public function getResult():mixed
+    /**
+     * @return mixed 
+     */
+    public function getResult(): mixed
     {
         return $this->original;
     }
 
-    public function setErrorText(string $text):static
+    /**
+     * @param string $text 
+     * @return static
+     */
+    public function setErrorText(string $text): static
     {
         $this->textError = $text;
         return $this;
     }
-    
-    public function control()
-    {
 
-    }
+    public function control() {}
 }
+
