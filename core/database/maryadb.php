@@ -59,7 +59,7 @@ class maryadb
             PDO::ATTR_STRINGIFY_FETCHES => false,
             // Особые настройки для MariaDB
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = "' . TIMEZONE . '"',
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = "' . $this->timezone() . '"',
             // sql_mode = "STRICT_TRANS_TABLES"',
         ];
 
@@ -247,5 +247,20 @@ class maryadb
     public function __destruct()
     {
         $this->close();
+    }
+
+    private function timezone()
+    {
+        $timezone = new \DateTimeZone(TIMEZONE);
+        $dateTime = new \DateTime('now', $timezone);
+        $offset = $timezone->getOffset($dateTime); // смещение в секундах
+
+        // Преобразуем в формат ±HH:MM
+        $hours = floor(abs($offset) / 3600);
+        $minutes = (abs($offset) % 3600) / 60;
+        $sign = $offset >= 0 ? '+' : '-';
+        $offsetFormatted = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
+
+        return $offsetFormatted;
     }
 }
