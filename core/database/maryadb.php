@@ -14,7 +14,7 @@ class maryadb
 {
     private ?PDO $connection = null;
     private static $singleton = null;
-    
+
     private function __construct(
         private string $host,
         private string $dbname,
@@ -33,15 +33,14 @@ class maryadb
         string $password,
         string $charset = 'utf8mb4',
         array $options = []
-    )
-    {
+    ) {
         $app = app::app();
-        if(!self::$singleton || (self::$singleton && !$app->bootstrap->singletonDb)){
-            self::$singleton = new static($host, $dbname, $username, $password, $charset, $options);  
+        if (!self::$singleton || (self::$singleton && !$app->bootstrap->singletonDb)) {
+            self::$singleton = new static($host, $dbname, $username, $password, $charset, $options);
         }
         return self::$singleton;
     }
-    
+
     /**
      * Устанавливает соединение с MariaDB
      * 
@@ -51,7 +50,7 @@ class maryadb
     {
         // Используем префикс "mysql:" так как MariaDB совместима с MySQL
         $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname . ';charset=' . $this->charset;
-        
+
         // Оптимальные настройки для MariaDB
         $defaultOptions = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -60,23 +59,23 @@ class maryadb
             PDO::ATTR_STRINGIFY_FETCHES => false,
             // Особые настройки для MariaDB
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-            // PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = "' . TIMEZONE . '", sql_mode = "STRICT_TRANS_TABLES"',
+            \Pdo\Mysql::ATTR_INIT_COMMAND => 'SET time_zone = "' . TIMEZONE . '"',
+            // sql_mode = "STRICT_TRANS_TABLES"',
         ];
-        
+
         $options = array_replace($defaultOptions, $this->options);
-        
+
         try {
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
-            
+
             // Установка дополнительных параметров после подключения
             $this->connection->exec('SET NAMES "' . $this->charset . '"');
             $this->connection->exec('SET CHARACTER SET "' . $this->charset . '"');
-            
         } catch (PDOException $e) {
             throw new PDOException('MariaDB connection failed: ' . $e->getMessage(), (int)$e->getCode());
         }
     }
-    
+
     /**
      * Выполняет SQL запрос с параметрами
      */
@@ -87,7 +86,7 @@ class maryadb
         $stmt->execute($params);
         return $stmt;
     }
-    
+
     /**
      * Выполняет запрос и возвращает одну строку результата
      */
@@ -102,7 +101,7 @@ class maryadb
             return cacheQuery::returnQuery();
         }
     }
-    
+
     /**
      * Выполняет запрос и возвращает все строки результата
      */
@@ -117,7 +116,7 @@ class maryadb
             return cacheQuery::returnQuery();
         }
     }
-    
+
     /**
      * Выполняет запрос и возвращает значение первого столбца первой строки
      */
@@ -132,7 +131,7 @@ class maryadb
             return cacheQuery::returnQuery();
         }
     }
-    
+
     /**
      * Выполняет запрос и возвращает результат в виде массива,
      * где ключом является значение указанного столбца
@@ -141,14 +140,14 @@ class maryadb
     {
         $data = [];
         $stmt = $this->query($sql, $params);
-        
+
         while ($row = $stmt->fetch()) {
             $data[$row->{$keyColumn}] = $row;
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Выполняет запрос и возвращает массив значений одного столбца
      */
@@ -156,7 +155,7 @@ class maryadb
     {
         return $this->query($sql, $params)->fetchAll(PDO::FETCH_COLUMN, $column);
     }
-    
+
     /**
      * Выполняет запрос и возвращает результат в виде пар ключ-значение
      */
@@ -164,7 +163,7 @@ class maryadb
     {
         return $this->query($sql, $params)->fetchAll(PDO::FETCH_KEY_PAIR);
     }
-    
+
     /**
      * Выполняет INSERT запрос и возвращает ID последней вставленной записи
      */
@@ -174,7 +173,7 @@ class maryadb
         $id = $this->lastInsertId();
         return $id ? (int) $id : null;
     }
-    
+
     /**
      * Выполняет UPDATE запрос и возвращает количество изменённых строк
      */
@@ -183,7 +182,7 @@ class maryadb
         $stmt = $this->query($sql, $params);
         return $stmt->rowCount();
     }
-    
+
     /**
      * Выполняет DELETE запрос и возвращает количество удалённых строк
      */
@@ -192,20 +191,20 @@ class maryadb
         $stmt = $this->query($sql, $params);
         return $stmt->rowCount();
     }
-    
+
     /**
      * Проверяет существует ли таблица в базе данных
      */
     public function tableExists(string $tableName): bool
     {
         $result = $this->fetchColumn(
-            'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?', 
+            'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?',
             [$this->dbname, $tableName]
         );
-        
+
         return (bool)$result;
     }
-    
+
     /**
      * Получает список таблиц в текущей базе данных
      */
@@ -216,37 +215,38 @@ class maryadb
             [$this->dbname]
         );
     }
-    
+
     public function beginTransaction(): bool
     {
         return $this->connection->beginTransaction();
     }
-    
+
     public function commit(): bool
     {
         return $this->connection->commit();
     }
-    
+
     public function rollBack(): bool
     {
-        if($this->connection->inTransaction()){
+        if ($this->connection->inTransaction()) {
             return $this->connection->rollBack();
         }
         return false;
     }
-    
+
     public function lastInsertId(): string
     {
         return $this->connection->lastInsertId();
     }
-    
+
     public function close(): void
     {
         $this->connection = null;
     }
-    
+
     public function __destruct()
     {
         $this->close();
     }
 }
+
