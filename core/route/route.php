@@ -1,9 +1,11 @@
-<?php 
+<?php
+
 namespace system\core\route;
 
 use system\core\app\app;
+use system\core\system\bot;
 
-class route 
+class route
 {
     protected $url = [];
     protected $namespace;
@@ -19,6 +21,7 @@ class route
     {
         $app = app::app();
         if (ENTRANSE == 'web') {
+            new bot();
             //Парсинг URL
             $urls = explode('?', $app->bootstrap->uri);
             $url = explode('/', $urls[0]);
@@ -153,7 +156,7 @@ class route
             }
         }
 
-        if($prefix){
+        if ($prefix) {
             $this->prefix($prefix);
         }
 
@@ -162,7 +165,7 @@ class route
             if ($this->autoExitGroup) {
                 exit();
             }
-        } 
+        }
 
         $this->get = true;
         $this->start = false;
@@ -170,14 +173,14 @@ class route
         $this->groupName = null;
     }
 
-    public function blockGroup(string $name, callable $function, string|null $prefix = null):route
+    public function blockGroup(string $name, callable $function, string|null $prefix = null): route
     {
         $this->get = true;
         $this->namespace = '';
         $this->groupName = null;
         $this->group($name, $function, $prefix);
         return $this;
-    }    
+    }
 
     /**
      * interim
@@ -190,15 +193,15 @@ class route
 
             $params = $reflection->getMethod($method)->getParameters();
             $cla = [];
-            foreach ($params AS $param) {
+            foreach ($params as $param) {
                 $cl = $param->getType()->getName();
                 $nc = new $cl();
-                if(method_exists($nc, 'toController')){
+                if (method_exists($nc, 'toController')) {
                     $cla[] = $nc->toController();
-                }else{
+                } else {
                     $cla[] = $nc;
                 }
-            }            
+            }
             $get = (new $class)->{$method}(...$cla);
             if (!is_null($get)) {
                 $this->get = $get;
@@ -222,38 +225,37 @@ class route
     {
         if ($this->get) {
             $app = app::app();
-            if($app->route->group != $this->groupName){
+            if ($app->route->group != $this->groupName) {
                 $app->route->group = null;
             }
             $controller = $this->namespace . $class;
             $reflection = new \ReflectionClass($controller);
             $params = $reflection->getMethod($method)->getParameters();
             $cla = [];
-            foreach ($params AS $param) {
+            foreach ($params as $param) {
                 $cl = $param->getType()->getName();
-                if($cl == 'system\core\app\app'){
+                if ($cl == 'system\core\app\app') {
                     $nc = $app;
-                }else{
+                } else {
                     $nc = new $cl();
                 }
-                
-                if(method_exists($nc, 'toController')){
+
+                if (method_exists($nc, 'toController')) {
                     $cla[] = $nc->toController();
-                }else{
+                } else {
                     $cla[] = $nc;
                 }
             }
             $app->controller->class = $class;
             $app->controller->method = $method;
-            time_system($class.':'.$method);
-            (new $controller)->$method(... $cla);
+            time_system($class . ':' . $method);
+            (new $controller)->$method(...$cla);
             time_system('finish controller');
             if ($this->autoExitController) {
                 exit();
             }
         }
-        if($this->groupControl){
-
+        if ($this->groupControl) {
         }
         $this->get = false;
         $this->start = false;
@@ -266,22 +268,22 @@ class route
             $refFunction = new \ReflectionFunction($function);
             $params = $refFunction->getParameters();
             $cla = [];
-            foreach ($params AS $param) {
+            foreach ($params as $param) {
                 $cl = $param->getType()->getName();
-                if($cl == 'system\core\app\app'){
+                if ($cl == 'system\core\app\app') {
                     $nc = $app;
-                }else{
+                } else {
                     $nc = new $cl();
                 }
-                
-                if(method_exists($nc, 'toController')){
+
+                if (method_exists($nc, 'toController')) {
                     $cla[] = $nc->toController();
-                }else{
+                } else {
                     $cla[] = $nc;
                 }
-            } 
-            
-            $function(... $cla);
+            }
+
+            $function(...$cla);
             exit();
         }
         $this->get = false;
@@ -293,7 +295,7 @@ class route
         $app = app::app();
         $app->route->mask = $get;
         $app->getparams->clean();
-        if($get == '/*'){
+        if ($get == '/*') {
             return;
         }
         if ($this->groupName) {
@@ -365,7 +367,7 @@ class route
 
     private function delParametr(array $param)
     {
-        preg_match('/\{(.*?)\?\}/si', $param[count($param)]??'', $freeParam);
+        preg_match('/\{(.*?)\?\}/si', $param[count($param)] ?? '', $freeParam);
         if (isset($freeParam[0])) {
             unset($param[count($param)]);
             return $this->delParametr($param);
@@ -376,12 +378,12 @@ class route
 
     private function slash(string $str): string
     {
-        return '/' . trim(str_replace('\\', '/', $str), '/');            
+        return '/' . trim(str_replace('\\', '/', $str), '/');
     }
 
-    private function startControl() : void
+    private function startControl(): void
     {
-        if(!$this->start){
+        if (!$this->start) {
             $this->get = true;
             $this->start = true;
         }

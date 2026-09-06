@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 namespace system\core\valid\datetime;
 
 use system\core\valid\item;
 use system\core\date\date;
 
-class valid_date extends item 
+class valid_date extends item
 {
     private string $regex = "/^[0-9\-]+$/u";
     protected string $textError = 'Указана не существующая дата';
@@ -20,15 +20,16 @@ class valid_date extends item
                 $check = true;
             }
 
-            if(!$check){
+            if (!$check) {
                 $this->setError($this->textError);
-                $this->setControl(false);                 
+                $this->setControl(false);
             }
         }
     }
 
-    public function getResult():mixed
+    public function getResult(): mixed
     {
         return ($this->control ? date::create($this->original) : null);
     }
 }
+

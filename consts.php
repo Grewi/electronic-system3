@@ -66,3 +66,15 @@ if (!defined('SQLITE_PATH')) {
 if (!defined('SQLITE_EXT')) {
     define('SQLITE_EXT', '.db');
 }
+
+if (!defined('BOT_DIR')) {
+    define('BOT_DIR', ROOT . '/bot');
+}
+
+if (!defined('BOT_RESPONSE_CODE')) {
+    define('BOT_RESPONSE_CODE', 403);
+}
+
+if (!defined('BOT_TIME')) {
+    define('BOT_TIME', 60 * 60);
+}
