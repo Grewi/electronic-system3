@@ -44,7 +44,7 @@ class bruteforce
     }
 
     /**
-     * //Сброс счётчика попыток
+
      * @return void 
      */
     public function resetTry(): void

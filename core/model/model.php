@@ -631,7 +631,7 @@ class model extends iteratorDataModel implements \JsonSerializable
      */
     public function find(mixed $id): ?static
     {
-        $d = (int) $id;
+        $id = (int) $id;
         $db = database::connect($this->EMD->databaseName);
         return $db->fetch('SELECT * FROM ' . $this->EMD->from->get() . ' WHERE `' . $this->EMD->id . '` = :' . $this->EMD->id . ' ', [$this->EMD->id => $id], get_class($this));
     }
