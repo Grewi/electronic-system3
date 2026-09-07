@@ -61,8 +61,9 @@ class bot
         }
         $this->fileName = $this->dirIp . '/' . $app->bootstrap->ip;
         $this->secret = md5($app->bootstrap->ip . BOT_SECRET . date('YmdH'));
-        $this->unlocking();
+        $_SESSION['bot_session'] = $this->secret;
         $this->clean($this->dirIp, $this->time);
+        $this->unlocking();
         $this->control();
         if (file_exists($this->stopWordsFile)) {
             $this->stopWordsList = array_merge($this->stopWordsList, include $this->stopWordsFile);
@@ -73,7 +74,7 @@ class bot
     private function unlocking()
     {
         $app = app::app();
-        if ($_SESSION['bot_session'] != $this->secret) {
+        if ('/' . $_SESSION['bot_session'] != $app->bootstrap->uri) {
             return;
         }
         if (!file_exists($this->dirUnlocking)) {
@@ -109,7 +110,6 @@ class bot
     private function stop()
     {
         $app = app::app();
-        $_SESSION['bot_session'] = $this->secret;
         file_put_contents($this->fileName, date('Y-m-d H:i') . ' ' . $app->bootstrap->url . $app->bootstrap->uri . PHP_EOL, FILE_APPEND);
         http_response_code($this->httpCode);
         if (file_exists($this->infoFile)) {
