@@ -86,7 +86,7 @@ class bot
     private function stop()
     {
         $app = app::app();
-        file_put_contents($this->fileName, $app->bootstrap->uri . PHP_EOL, FILE_APPEND);
+        file_put_contents($this->fileName, date('Y-m-d H:i') . ' ' . $app->bootstrap->url . $app->bootstrap->uri . PHP_EOL, FILE_APPEND);
         http_response_code($this->httpCode);
         echo '<h1>403 Forbidden</h1>' . PHP_EOL;
         echo 'Доступ запрещён! ';
