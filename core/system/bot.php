@@ -9,8 +9,11 @@ class bot
     private int $time = BOT_TIME;
     private int $httpCode = BOT_RESPONSE_CODE;
     private string $fileName;
+    private string $secret;
     private string $dirIp = BOT_DIR . '/ip';
-    private string $stopWordsFile = BOT_DIR . '/stopWords.php';
+    private string $dirUnlocking = BOT_DIR . '/unlocking';
+    private string $stopWordsFile = BOT_DIR . '/files/stopWords.php';
+    private string $infoFile = BOT_DIR . '/files/infoFile.php';
     private array $stopWordsList = [
         '@fs',
         '.env',
@@ -56,14 +59,34 @@ class bot
         if (!file_exists($this->dirIp)) {
             createDir($this->dirIp);
         }
-
-        $this->clean();
         $this->fileName = $this->dirIp . '/' . $app->bootstrap->ip;
+        $this->secret = md5($app->bootstrap->ip . BOT_SECRET . date('YmdH'));
+        $this->unlocking();
+        $this->clean($this->dirIp, $this->time);
         $this->control();
         if (file_exists($this->stopWordsFile)) {
             $this->stopWordsList = array_merge($this->stopWordsList, include $this->stopWordsFile);
         }
         $this->valid();
+    }
+
+    private function unlocking()
+    {
+        $app = app::app();
+        if ($_SESSION['bot_session'] != $this->secret) {
+            return;
+        }
+        if (!file_exists($this->dirUnlocking)) {
+            createDir($this->dirUnlocking);
+        }
+        $this->clean($this->dirUnlocking, $this->time);
+        $f = $this->dirUnlocking . '/' . $app->bootstrap->ip;
+        if (file_exists($f)) {
+            return;
+        }
+        unlink($this->fileName);
+        file_put_contents($f, date('Y-m-d H:i') . PHP_EOL, FILE_APPEND);
+        redirect('/');
     }
 
     private function control()
@@ -86,21 +109,26 @@ class bot
     private function stop()
     {
         $app = app::app();
+        $_SESSION['bot_session'] = $this->secret;
         file_put_contents($this->fileName, date('Y-m-d H:i') . ' ' . $app->bootstrap->url . $app->bootstrap->uri . PHP_EOL, FILE_APPEND);
         http_response_code($this->httpCode);
-        echo '<h1>403 Forbidden</h1>' . PHP_EOL;
-        echo 'Доступ запрещён! ';
+        if (file_exists($this->infoFile)) {
+            include $this->infoFile;
+        } else {
+            echo '<h1>403 Forbidden</h1>' . PHP_EOL;
+            echo 'Доступ запрещён! ';
+        }
         exit();
     }
 
-    private function clean()
+    private function clean(string $dir, int $time)
     {
-        foreach (scandir($this->dirIp) as $file) {
-            if ($file == '.' || $file == '..' || !file_exists($this->dirIp . $file)) {
+        foreach (scandir($dir) as $file) {
+            if ($file == '.' || $file == '..' || !file_exists($dir . $file)) {
                 continue;
             }
-            if (filectime($this->dirIp . $file) < (time() - ($this->time))) {
-                unlink($this->dirIp . $file);
+            if (filectime($dir . $file) < (time() - ($time))) {
+                unlink($dir . $file);
             }
         }
     }

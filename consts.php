@@ -76,5 +76,9 @@ if (!defined('BOT_RESPONSE_CODE')) {
 }
 
 if (!defined('BOT_TIME')) {
-    define('BOT_TIME', 60 * 60);
+    define('BOT_TIME', 60 * 60 * 24);
+}
+
+if (!defined('BOT_SECRET')) {
+    define('BOT_SECRET', 'v5b435435v4s3d5v4s3dv354r3w5b');
 }
