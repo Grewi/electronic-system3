@@ -76,6 +76,10 @@ class bot
 
     public function statList()
     {
+        if (!file_exists($this->statFile)) {
+            $this->createDbTables();
+        }
+
         $db = new sqlite($this->statFile);
         $list = $db->fetchAll("SELECT * FROM stat ORDER BY count DESC LIMIT 100");
         if (count($list) > 0) {
@@ -154,7 +158,6 @@ class bot
     private function stat()
     {
         if (!file_exists($this->statFile)) {
-            file_put_contents($this->statFile, '');
             $this->createDbTables();
         }
         $app = app::app();
@@ -184,6 +187,7 @@ class bot
 
     private function createDbTables()
     {
+        file_put_contents($this->statFile, '');
         $this->db()->query("CREATE TABLE IF NOT EXISTS stat (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             query TEXT,
