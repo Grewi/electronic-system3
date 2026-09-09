@@ -21,7 +21,7 @@ class route
     {
         $app = app::app();
         if (ENTRANSE == 'web') {
-            new bot();
+            (new bot())->init();
             //Парсинг URL
             $urls = explode('?', $app->bootstrap->uri);
             $url = explode('/', $urls[0]);

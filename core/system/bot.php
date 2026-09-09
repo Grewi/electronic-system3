@@ -3,6 +3,8 @@
 namespace system\core\system;
 
 use system\core\app\app;
+use system\core\database\sqlite;
+use system\core\text\text;
 
 class bot
 {
@@ -14,6 +16,7 @@ class bot
     private string $dirUnlocking = BOT_DIR . '/unlocking';
     private string $stopWordsFile = BOT_DIR . '/files/stopWords.php';
     private string $infoFile = BOT_DIR . '/files/infoFile.php';
+    private string $statFile = BOT_DIR . '/files/stat.db';
     private array $stopWordsList = [
         '@fs',
         '.env',
@@ -50,7 +53,7 @@ class bot
         'rest_route',
     ];
 
-    public function __construct()
+    public function init()
     {
         $app = app::app();
         if (!file_exists(BOT_DIR)) {
@@ -69,6 +72,20 @@ class bot
             $this->stopWordsList = array_merge($this->stopWordsList, include $this->stopWordsFile);
         }
         $this->valid();
+    }
+
+    public function statList()
+    {
+        $db = new sqlite($this->statFile);
+        $list = $db->fetchAll("SELECT * FROM stat ORDER BY count DESC LIMIT 100");
+        if (count($list) > 0) {
+            foreach ($list as $i) {
+                echo text::yellow($i->count . ' - ' . $i->query) . PHP_EOL;
+            }
+            echo text::red('Всего ' . count($list) . ' записей') . PHP_EOL;
+        } else {
+            echo text::green('Нет записей') . PHP_EOL;
+        }
     }
 
     private function unlocking()
@@ -111,6 +128,7 @@ class bot
     {
         $app = app::app();
         file_put_contents($this->fileName, date('Y-m-d H:i') . ' ' . $app->bootstrap->url . $app->bootstrap->uri . PHP_EOL, FILE_APPEND);
+        $this->stat();
         http_response_code($this->httpCode);
         if (file_exists($this->infoFile)) {
             include $this->infoFile;
@@ -131,5 +149,50 @@ class bot
                 unlink($dir . $file);
             }
         }
+    }
+
+    private function stat()
+    {
+        if (!file_exists($this->statFile)) {
+            file_put_contents($this->statFile, '');
+            $this->createDbTables();
+        }
+        $app = app::app();
+        $this->clearOld();
+        $i = $this->db()->fetch('SELECT * FROM stat WHERE query = :query', ['query' => $app->bootstrap->uri]);
+        if ($i) {
+            $data = [
+                'id' => $i->id,
+                'count' => $i->count + 1,
+                'date_update' => time(),
+            ];
+            $this->db()->query('UPDATE stat SET count = :count, date_update = :date_update WHERE id = :id', $data);
+        } else {
+            $data = [
+                'query' => $app->bootstrap->uri,
+                'count' => 1,
+                'date_update' => time(),
+            ];
+            $this->db()->query('INSERT INTO stat (query, count, date_update) VALUES(:query, :count, :date_update)', $data);
+        }
+    }
+
+    private function db()
+    {
+        return new sqlite($this->statFile);
+    }
+
+    private function createDbTables()
+    {
+        $this->db()->query("CREATE TABLE IF NOT EXISTS stat (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            query TEXT,
+            count INT,
+            date_update INT);", []);
+    }
+
+    private function clearOld()
+    {
+        $this->db()->query("DELETE FROM stat WHERE date_update < :date", ['date' => time() - (60 * 60 * 24 * 365)]);
     }
 }

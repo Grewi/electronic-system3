@@ -82,3 +82,7 @@ if (!defined('BOT_TIME')) {
 if (!defined('BOT_SECRET')) {
     define('BOT_SECRET', 'v5b435435v4s3d5v4s3dv354r3w5b');
 }
+
+if (!defined('BOT_STAT')) {
+    define('BOT_STAT', true);;
+}

@@ -12,14 +12,15 @@ use system\console\symlink\symlink;
 use system\console\symlink\createSymlink;
 use system\console\model\createModel;
 use system\console\sass\sass;
-
 use system\console\help;
 use system\console\updateSystem;
 use system\console\addComplement;
+use system\core\system\bot;
 
-use system\console\test\test;
 
 $route = new route();
+
+$route->console('bot/stat')->controller(bot::class, 'statList');
 
 $route->console('update/system')->controller(updateSystem::class, 'index');
 $route->console('add/complement')->controller(addComplement::class, 'index');

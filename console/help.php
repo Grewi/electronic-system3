@@ -1,4 +1,5 @@
 <?php
+
 namespace system\console;
 
 use system\core\text\text;
@@ -25,18 +26,20 @@ class help
         // 'add/complement' => 'Установка дополнений из отдельных репозиториев, параметром принимает имя репозитория',
         'style' => 'Компилирование css файлов по значениям из app/system/sass/sass.php',
         'style/info' => 'Список возможных значений для конфигурации sass',
+        'bot/stat' => 'Статистика заблокированных запросов ',
     ];
     public function index()
     {
         $strlen = 0;
-        foreach($this->arr as $a => $i){
+        foreach ($this->arr as $a => $i) {
             $l = strlen($a);
             $strlen = $l > $strlen ? $l : $strlen;
         }
         text::info('Команды доступные из консоли:');
-        foreach($this->arr as $a => $i){
+        foreach ($this->arr as $a => $i) {
             $l = str_pad($a, $strlen, ' ', STR_PAD_RIGHT);
             echo text::pre() . text::color($l, 'Yellow') . ' - ' . $i . PHP_EOL;
         }
     }
 }
+
