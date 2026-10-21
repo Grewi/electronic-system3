@@ -1,7 +1,6 @@
 <?php 
-use system\core\history\history;
-use system\core\bootstrap\bootstrap;
 use system\core\error\errorPhp;
+use system\core\text\text;
 use system\core\app\app;
 
 ob_start();
@@ -43,7 +42,7 @@ try {
     } elseif (ENTRANSE == 'console') {
         require_once ENTRY_POINT_CONSOLE_SYSTEM;
         require_once ENTRY_POINT_CONSOLE;
-        exit('no controller ');
+        text::danger('no controller ');
     } elseif (ENTRANSE == 'cron') {
         require_once ENTRY_POINT_CRON;
     }
