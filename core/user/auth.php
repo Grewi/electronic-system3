@@ -36,7 +36,7 @@ class auth
         $this->cookieName = $app->cookies?->name;
         $this->cookieDomains = $app->cookies?->domains;
         $this->cookiePath = $app->cookies?->path;
-        $this->session_time = $app->cookies?->time;
+        $this->session_time = $app->cookies?->time??60*60*24*365;
         $this->cookieSecure = $app->cookies?->secure;
         $this->cookieHttponly = $app->cookies?->httponly;
         $this->cookieSamesite = $app->cookies?->samesite;
