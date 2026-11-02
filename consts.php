@@ -31,6 +31,10 @@ if (!defined('MODELS')) {
     define('MODELS', APP . '/db/models');
 }
 
+if (!defined('CACHE')) {
+    define('CACHE', APP . '/cache');
+}
+
 if (!defined('TIMEZONE')) {
     define('TIMEZONE', 'UTC');
 }
