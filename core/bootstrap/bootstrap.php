@@ -19,8 +19,8 @@ class bootstrap
         $app->bootstrap->uri = $uri;
         $app->bootstrap->url = $url;
         $app->bootstrap->host = $host;
-        $app->bootstrap->method = $method; 
-        $app->bootstrap->singletonDb = true;     
+        $app->bootstrap->method = $method;
+        $app->bootstrap->singletonDb = true;
 
         if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP)) {
             $ip = @$_SERVER['HTTP_CLIENT_IP'];
@@ -46,7 +46,7 @@ class bootstrap
         $app->cookies->name = 'us';
         $app->cookies->domains = '';
         $app->cookies->path = '/';
-        $app->cookies->time = 60*60*24*365;
+        $app->cookies->time = 60 * 60 * 24 * 365;
         $app->cookies->secure = true;
         $app->cookies->httponly = true;
         $app->cookies->samesite = 'Lax';
