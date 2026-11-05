@@ -9,6 +9,7 @@ use PDOException;
 use PDOStatement;
 use system\core\database\cacheQuery;
 use system\core\app\app;
+use system\core\logs\textLogs;
 
 class maryadb
 {
@@ -81,6 +82,7 @@ class maryadb
      */
     public function query(string $sql, array $params = [], string $className = 'stdClass'): PDOStatement
     {
+        $this->log($sql, $params);
         $stmt = $this->connection->prepare($sql);
         $stmt->setFetchMode($this->connection::FETCH_CLASS, $className);
         $stmt->execute($params);
@@ -262,5 +264,18 @@ class maryadb
         $offsetFormatted = sprintf('%s%02d:%02d', $sign, $hours, $minutes);
 
         return $offsetFormatted;
+    }
+
+    private function log($sql, $data): void
+    {
+        if (!getConfig('globals', 'dev')) {
+            return;
+        }
+        $str = $sql . PHP_EOL;
+        $str .= print_r($data, true);
+        $log = new textLogs(APP . '/cache/database_query', date('Y-m-d'));
+        $log->clean(60 * 60);
+        $log->add($str);
+        $log->save();
     }
 }

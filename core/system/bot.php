@@ -146,11 +146,11 @@ class bot
     private function clean(string $dir, int $time)
     {
         foreach (scandir($dir) as $file) {
-            if ($file == '.' || $file == '..' || !file_exists($dir . $file)) {
+            if ($file == '.' || $file == '..' || !file_exists($dir . '/' . $file)) {
                 continue;
             }
-            if (filectime($dir . $file) < (time() - ($time))) {
-                unlink($dir . $file);
+            if (filectime($dir . '/' . $file) < (time() - ($time))) {
+                unlink($dir . '/' . $file);
             }
         }
     }

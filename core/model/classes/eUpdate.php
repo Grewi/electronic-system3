@@ -1,5 +1,7 @@
 <?php
+
 namespace system\core\model\classes;
+
 use system\core\model\classes\where;
 use system\core\model\classes\bind;
 use system\core\database\database;
@@ -36,7 +38,7 @@ class eUpdate
     public function data(array $data): void
     {
         unset($data['EMD']);
-        if(isset($data[$this->id])){
+        if (isset($data[$this->id])) {
             unset($data[$this->id]);
         }
         $this->data = $data;
@@ -45,7 +47,7 @@ class eUpdate
     public function where(string $where): void
     {
         $this->where = $where;
-    }    
+    }
 
     public function save(): int
     {
@@ -55,7 +57,7 @@ class eUpdate
         $c = 0;
         foreach ($this->data as $key => $i) {
             $c++;
-            $str .= ' `' . $key . '` = :' . $key . ($c == $count ? '': ',') . ' ';
+            $str .= ' `' . $key . '` = :' . $key . ($c == $count ? '' : ',') . ' ';
         }
         $data = array_merge($this->data, $this->bind);
         $sql = 'UPDATE ' . $this->table . ' SET ' . $str . ' ' . $this->where . ';';

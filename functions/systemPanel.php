@@ -225,13 +225,13 @@ if (!function_exists('systemPanel')) {
             <span class="sp-sep">|></span>
             <span class="sp-name">user id</span>
             <code class="sp-code">
-                <?=user_id()?>
+                <?= user_id() ?>
             </code>
             <span class="sp-sep">|></span>
             <span class="sp-name">Скрыть</span>
             <code class="sp-code">
                 Ctrl+X
-            </code>            
+            </code>
             <span id="system-panel-vis" class="sp-btn">$</span>
             <span id="system-panel-trace" class="sp-btn">♯</span>
         </div>
@@ -263,7 +263,7 @@ if (!function_exists('systemPanel')) {
                     <p>Пользователь</p>
                     <ul>
                         <?php foreach ($app->user->getArray() as $a => $view): ?>
-                            <li><?=$a?> - <?= $view ?></li>
+                            <li><?= $a ?> - <?= $view ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -289,7 +289,7 @@ if (!function_exists('systemPanel')) {
                 </div>
             </div>
         </div>
-        <div id="system-panel-table" style="display:none" data-status="0" class="system-panel-bloc system-panel-visible">
+        <div id="system-panel-table" style="display:none" data-status="0" class="system-panel-block system-panel-visible">
             <div class="electronic">
                 <a href="https://github.com/Grewi/electronic-system3" target="_blank">Electronic</a> | <a href="https://grewi.ru" target="_blank">Grewi</a>
             </div>
