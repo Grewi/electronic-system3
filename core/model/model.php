@@ -25,13 +25,14 @@ use system\core\model\classes\{
 class model extends iteratorDataModel implements \JsonSerializable
 {
     protected collection $EMD;
+    protected string $_database = 'database';
 
     use wrap;
 
     public function __construct()
     {
         $this->EMD = new collection;
-        $this->EMD->databaseName = 'database';
+        $this->EMD->databaseName = $this->_database;
         $this->EMD->select = new eSelect;
         $this->EMD->from = new eFrom;
         $this->EMD->sort = new eSort;
