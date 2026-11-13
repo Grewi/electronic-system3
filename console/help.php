@@ -10,7 +10,7 @@ class help
         'create/controller' => 'Параметры "v" (+ view) "crud" (create, read, update, delete методы)',
         'create/model' => 'Создать модель',
         'migrate' => 'Запустить миграции',
-        'create/migration' => 'Создать файл миграции',
+        'create/migration' => 'Создать файл миграции, необходимо указать наименование конфигурации базы данных',
         'clean' => 'Удаление конфигураций и кеша шаблонов',
         'clean/cache' => 'Удаление кеша шаблонов',
         'create/dump' => 'Создание дампа базы',
