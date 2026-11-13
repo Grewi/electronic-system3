@@ -28,7 +28,7 @@ $route->console('add/complement')->controller(addComplement::class, 'index');
 $route->console('create/controller')->controller(createController::class, 'index');
 $route->console('create/model')->controller(createModel::class, 'index');
 
-$route->console('migrate')->controller(migrate::class, 'index');
+$route->console('migrate')->controller(migrate::class, 'start');
 $route->console('create/migration')->controller(migrate::class, 'createMigration');
 
 $route->console('clean')->controller(clear::class, 'index');

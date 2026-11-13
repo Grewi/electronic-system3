@@ -10,8 +10,7 @@ class database
 {
     public static function connect(string $configName = 'database')
     {
-        
-        $config = (new ('\\' . APP_NAME . '\\configs\\' . $configName)())->all();
+        $config = allConfig($configName);
         if (!$config) {
             throw new \PDOException('Не установленны настройки для подключения к базе данных');
         }
