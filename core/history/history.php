@@ -27,12 +27,14 @@ class history
         }
         if (!empty(session_id())) {      
             $sql = 'INSERT INTO `history` (`hash`, `uri`, `method`, `session`, `datetime`) VALUES (
-            "' . $this->actualHash . '",
-            "' . ($_SERVER['REQUEST_URI'] ?? '') . '",
-            "' . ($_SERVER['REQUEST_METHOD'] ?? '') . '",
-            "' . session_id() . '",
-            "' . time() . '")';
-            $this->query($sql, []);
+            :hash, :uri, :method, :session, :datetime)';
+            $this->query($sql, [
+                'hash' => $this->actualHash,
+                'uri' => ($_SERVER['REQUEST_URI'] ?? ''),
+                'method' => ($_SERVER['REQUEST_METHOD'] ?? ''),
+                'session' => session_id(),
+                'datetime' => time(),
+            ]);
         }
     }
 
@@ -41,8 +43,8 @@ class history
         if(app::app()->bootstrap->ajax == 1){
             return;
         }
-        $sql = 'DELETE FROM `history` WHERE `hash` = "' . $this->actualHash . '";';
-        $this->query($sql, []);
+        $sql = 'DELETE FROM `history` WHERE `hash` = :hash;';
+        $this->query($sql, ['hash' => $this->actualHash]);
     }
 
     /**
@@ -63,7 +65,7 @@ class history
         $valid = new  validate();
         $valid->name('referal')->free("/^[0-9a-f]+$/u");
         if($valid->control()){
-            $a = $this->fetch('SELECT * FROM `history` WHERE `hash` = "' . $valid->return('referal') . '"');
+            $a = $this->fetch('SELECT * FROM `history` WHERE `hash` = :hash', ['hash' => $valid->return('referal')]);
             $this->referal = $a ? $a->uri : null;
         }
     }
@@ -83,7 +85,7 @@ class history
                 AND `uri` NOT LIKE "%referal=%"
                 ORDER BY `id` DESC LIMIT 1', []);
             if($a){
-                $this->fetch('DELETE FROM `history` WHERE `id` = ' . $a->id);
+                $this->fetch('DELETE FROM `history` WHERE `id` = :id', ['id' => $a->id]);
                 return $a->uri;
             }else{
                 return '/';
@@ -105,7 +107,7 @@ class history
 
     public function clear()
     {
-        $this->query('DELETE FROM `history` WHERE `datetime` < "' . time() - $this->tameSave . '"');
+        $this->query('DELETE FROM `history` WHERE `datetime` < :datetime', ['datetime' => time() - $this->tameSave]);
     }
 
     public function delete()
@@ -114,7 +116,11 @@ class history
             return;
         }
         $app = app::app();
-        $this->query('DELETE FROM `history` WHERE `uri` = "' . $app->bootstrap->uri . '" AND `method` = "GET" AND `session` = "' . session_id()  . '" ');
+        $this->query('DELETE FROM `history` WHERE `uri` = :uri AND `method` = :method AND `session` = :session ', [
+            'uri' => $app->bootstrap->uri, 
+            'session' => session_id(),
+            'method' => 'GET',
+        ]);
     }
 
     private function db(): \PDO
