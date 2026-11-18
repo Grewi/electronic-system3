@@ -46,7 +46,7 @@ $route->console('clean/config')->controller(clear::class, 'config');
 $route->console('symlink')->controller(symlink::class, 'index');
 $route->console('create/symlink')->controller(createSymlink::class, 'index');
 
-$route->console('config')->controller(config::class, 'actual');
+$route->console('config')->controller(config::class, 'control');
 
 $route->console('style')->controller(sass::class, 'compile');
 $route->console('style/info')->controller(sass::class, 'info');

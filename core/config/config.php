@@ -1,86 +1,146 @@
 <?php
 
 namespace system\core\config;
-use system\core\config\iConfig;
 
-abstract class config implements iConfig
+use system\core\text\text;
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+ini_set('display_startup_errors', 'On');
+class config 
 {
-    private static $path = APP . '/configs/';
-    private $globals = ROOT . '/config.ini';
-    private $globalData = [];
-    protected $file = '';
+    private array $config;
 
-    public function __construct(string|null $file = null)
+    public function __construct()
     {
-        $a = explode('\\', static::class);
-        $this->file = ($file ? $file : array_pop($a) );
-        if (file_exists($this->globals)) {
-            $this->globalData = parse_ini_file($this->globals, true);
-        }       
+        $appConfig = APP . '/configs/config.ini';
+        $globalConfig = ROOT . '/config.ini';
+        $cache = APP . '/cache/config.json';
+
+        //Время последнего изменения в шаблонах и файла в кеше
+        $timeCacheFile = file_exists($cache) ? filemtime($cache) : 0;
+        $timeApp = filemtime($appConfig);
+        $timeGlobal = filemtime($globalConfig);
+        //$cache = @parse_ini_file($cache, true);
+var_dump($timeApp, $timeCacheFile, $timeGlobal, $timeCacheFile, !file_exists($cache)); exit();
+        //Файл изменился 
+        if ($timeApp > $timeCacheFile || $timeGlobal > $timeCacheFile || !file_exists($cache)) {
+            $this->config = $this->updateConfig();
+            file_put_contents($cache, json_encode($this->config));
+        }else{
+            $this->config = json_decode(file_get_contents($cache));
+        }
     }
 
-    /** 
-     * Возвращает значение параметра
-     */
-    public function get(string $param): ?string
+    public function getConfig(string $file, string $param)
     {
-        if(isset($this->globalData[$this->file][$param])){
-            return $this->globalData[$this->file][$param];
-        }
-        $ini = self::$path . '.' . $this->file . '.ini';
-
-        //Парсим ini файл
-        if (file_exists($ini)) {
-            $iniArr = parse_ini_file($ini);
-        }
-        //Если есть значение в ini возвращаем его
-        if (isset($iniArr[$param])) {
-            return $iniArr[$param];
-        }
-
-        self::update();
-        $iniArr = parse_ini_file($ini);
-        //Если есть значение в ini возвращаем его
-        if (isset($iniArr[$param])) {
-            return $iniArr[$param];
-        } else {
+        if(!isset($this->config[$file][$param])){
             return null;
-        }
+        } 
+        return $this->config[$file][$param];
     }
 
+    public function allConfig(string $file){
+        if(!isset($this->config[$file])){
+            return null;
+        } 
+        return $this->config[$file];
+    }
 
-
-    /**
-     * Возвращаетс значения всех параметров массивом
-     */
-    public function all(): ?array
+    public function control()
     {
-        $ini = self::$path . '.' . $this->file . '.ini';
-        if (!file_exists($ini)) {
-            $this->update();
+        $appConfig = APP . '/configs/config.ini';
+        $globalConfig = ROOT . '/config.ini';
+        if(file_exists($globalConfig)){
+            $this->createExamle($globalConfig);
+            $this->test($globalConfig);
         }
-        if(isset($this->globalData[$this->file])){
-            return array_merge(parse_ini_file($ini), $this->globalData[$this->file]);
-        }        
-        return parse_ini_file($ini);
+        if(file_exists($appConfig)){
+            $this->createExamle($appConfig);
+            $this->test($appConfig);
+        }    
+
     }
 
-    /**
-     * Обновляет значения в ini файле
-     */
-    public function update(): void
+    private function createExamle(string $path)
     {
-        $ini = self::$path . '.' . $this->file . '.ini';
-        $iniArr = [];
-        if (file_exists($ini)) {
-            $iniArr = parse_ini_file($ini);
+        $arr = parse_ini_file($path, true);
+        $exPath = str_replace('config.ini', 'examle.config.ini', $path);
+        $ex = null;
+        if(file_exists($exPath)){
+            $ex = parse_ini_file($exPath, true);
         }
-        $config = array_merge($this->set(), $iniArr);
-        $data = '';
-        foreach ($config as $key => $i) {
-            $data .= $key . ' = ' . $i . PHP_EOL;
+        if(!$ex){
+            $ex = [];
         }
-        file_put_contents($ini, $data);
+        $str = '';
+        $add = [];
+
+        foreach(array_replace_recursive($arr, $ex) as $file => $param){
+            $str .= '[' . $file . ']' . PHP_EOL;
+            foreach($param as $key => $value){
+                if(isset($ex[$file][$key])){
+                    $str .= $key . ' = ' . $ex[$file][$key] . PHP_EOL;
+                }else{
+                    $str .= $key . ' = ' . PHP_EOL;
+                    $add[] = $file . ' => ' . $key;
+                }
+            }
+            $str .= PHP_EOL;
+        }
+        if(!empty($add)){
+            text::success('В файл examle.config.ini были добавлены новые параметры ' . PHP_EOL . implode(', ' . PHP_EOL, $add));
+        }
+        file_put_contents($exPath, $str);
     }
+
+
+    private function test(string $path)
+    {
+        $arr = parse_ini_file($path, true);
+        $exPath = str_replace('config.ini', 'examle.config.ini', $path);
+        $ex = null;
+        if(file_exists($exPath)){
+            $ex = parse_ini_file($exPath, true);
+        }
+        if(!$ex){
+            $ex = [];
+        }
+        text::primary('Проверка параметров конфигурации ' . $path);
+        foreach($ex as $file => $param){
+            if(!isset($arr[$file])){
+                text::warn('В файле ' . $path . ' отсутствует секция параметров ' . $file);
+                continue;
+            }
+            foreach($param as $key => $value){
+                if(!isset($arr[$file][$key])){
+                    text::danger('В файле '  . $path . ' в секции ' . $file . ' отсутствует параметр ' . $key);
+                }
+            }
+        }
+    }
+
+    private function updateConfig()
+    {
+        $appConfig = APP . '/configs/config.ini';
+        $globalConfig = ROOT . '/config.ini';
+        $a = $g = [];
+        if(!file_exists($appConfig) && !file_exists($globalConfig)){
+            throw new \Exception('Отсутствуют файлы конфигурации');
+        }
+        if(file_exists($appConfig)){
+            $a = parse_ini_file($appConfig, true);
+            if(!$a){
+                throw new \Exception('Ошибка чтения файла конфигурации ' . $appConfig);
+            }
+        }
+        if(file_exists($globalConfig)){
+            $g = parse_ini_file($globalConfig, true);
+            if(!$g){
+                throw new \Exception('Ошибка чтения файла конфигурации ' . $globalConfig);
+            }
+        }
+        return array_replace_recursive($a, $g);
+    }
+
 
 }

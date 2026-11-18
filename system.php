@@ -18,6 +18,9 @@ require_once SYSTEM . '/exception/exception.php';
 try {
     require_once SYSTEM . '/function.php';
     require_once SYSTEM . '/autoloader.php';
+    $a = (new \system\core\config\config());
+    var_dump($a);
+    exit('---');
     errorPhp::config();
 
     $composer = ROOT . '/composer/vendor/autoload.php';
