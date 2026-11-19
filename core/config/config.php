@@ -3,10 +3,11 @@
 namespace system\core\config;
 
 use system\core\text\text;
+
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 ini_set('display_startup_errors', 'On');
-class config 
+class config
 {
     private array $config;
 
@@ -16,78 +17,98 @@ class config
         $globalConfig = ROOT . '/config.ini';
         $cache = APP . '/cache/config.json';
 
-        //Время последнего изменения в шаблонах и файла в кеше
+        //Время последнего изменения в конфигах и файлах в кеше
         $timeCacheFile = file_exists($cache) ? filemtime($cache) : 0;
-        $timeApp = filemtime($appConfig);
-        $timeGlobal = filemtime($globalConfig);
-        //$cache = @parse_ini_file($cache, true);
-var_dump($timeApp, $timeCacheFile, $timeGlobal, $timeCacheFile, !file_exists($cache)); exit();
-        //Файл изменился 
-        if ($timeApp > $timeCacheFile || $timeGlobal > $timeCacheFile || !file_exists($cache)) {
+        $timeApp = file_exists($appConfig) ? filemtime($appConfig) : 0;
+        $timeGlobal = file_exists($globalConfig) ? filemtime($globalConfig) : 0;
+        //Файл изменился
+        if (file_exists($appConfig) && $timeApp > $timeCacheFile) {
             $this->config = $this->updateConfig();
             file_put_contents($cache, json_encode($this->config));
-        }else{
-            $this->config = json_decode(file_get_contents($cache));
+        } elseif (file_exists($globalConfig) && $timeGlobal > $timeCacheFile) {
+            $this->config = $this->updateConfig();
+            file_put_contents($cache, json_encode($this->config));
+        } elseif (file_exists($cache)) {
+            $this->config = json_decode(file_get_contents($cache), true);
+        } else {
+            $this->config = $this->updateConfig();
+            file_put_contents($cache, json_encode($this->config));
         }
     }
 
     public function getConfig(string $file, string $param)
     {
-        if(!isset($this->config[$file][$param])){
+        if (!isset($this->config[$file][$param])) {
             return null;
-        } 
+        }
         return $this->config[$file][$param];
     }
 
-    public function allConfig(string $file){
-        if(!isset($this->config[$file])){
+    public function allConfig(string $file)
+    {
+        if (!isset($this->config[$file])) {
             return null;
-        } 
+        }
         return $this->config[$file];
+    }
+
+    public function allConfigs()
+    {
+        return $this->config ?? [];
     }
 
     public function control()
     {
         $appConfig = APP . '/configs/config.ini';
         $globalConfig = ROOT . '/config.ini';
-        if(file_exists($globalConfig)){
+        if (file_exists($globalConfig)) {
             $this->createExamle($globalConfig);
+        }
+        if (file_exists($appConfig)) {
+            $this->createExamle($appConfig);
+        }
+    }
+
+    public function testing()
+    {
+        $appConfig = APP . '/configs/config.ini';
+        $globalConfig = ROOT . '/config.ini';
+        if (file_exists($globalConfig)) {
             $this->test($globalConfig);
         }
-        if(file_exists($appConfig)){
-            $this->createExamle($appConfig);
+        if (file_exists($appConfig)) {
             $this->test($appConfig);
-        }    
-
+        }
     }
+
 
     private function createExamle(string $path)
     {
         $arr = parse_ini_file($path, true);
         $exPath = str_replace('config.ini', 'examle.config.ini', $path);
         $ex = null;
-        if(file_exists($exPath)){
+        if (file_exists($exPath)) {
             $ex = parse_ini_file($exPath, true);
         }
-        if(!$ex){
+        if (!$ex) {
             $ex = [];
         }
         $str = '';
         $add = [];
 
-        foreach(array_replace_recursive($arr, $ex) as $file => $param){
+        foreach (array_replace_recursive($arr, $ex) as $file => $param) {
             $str .= '[' . $file . ']' . PHP_EOL;
-            foreach($param as $key => $value){
-                if(isset($ex[$file][$key])){
+            foreach ($param as $key => $value) {
+                if (isset($ex[$file][$key])) {
                     $str .= $key . ' = ' . $ex[$file][$key] . PHP_EOL;
-                }else{
+                } else {
                     $str .= $key . ' = ' . PHP_EOL;
                     $add[] = $file . ' => ' . $key;
                 }
             }
             $str .= PHP_EOL;
         }
-        if(!empty($add)){
+        if (!empty($add)) {
             text::success('В файл examle.config.ini были добавлены новые параметры ' . PHP_EOL . implode(', ' . PHP_EOL, $add));
         }
         file_put_contents($exPath, $str);
@@ -99,20 +120,20 @@ var_dump($timeApp, $timeCacheFile, $timeGlobal, $timeCacheFile, !file_exists($ca
         $arr = parse_ini_file($path, true);
         $exPath = str_replace('config.ini', 'examle.config.ini', $path);
         $ex = null;
-        if(file_exists($exPath)){
+        if (file_exists($exPath)) {
             $ex = parse_ini_file($exPath, true);
         }
-        if(!$ex){
+        if (!$ex) {
             $ex = [];
         }
         text::primary('Проверка параметров конфигурации ' . $path);
-        foreach($ex as $file => $param){
-            if(!isset($arr[$file])){
+        foreach ($ex as $file => $param) {
+            if (!isset($arr[$file])) {
                 text::warn('В файле ' . $path . ' отсутствует секция параметров ' . $file);
                 continue;
             }
-            foreach($param as $key => $value){
-                if(!isset($arr[$file][$key])){
+            foreach ($param as $key => $value) {
+                if (!isset($arr[$file][$key])) {
                     text::danger('В файле '  . $path . ' в секции ' . $file . ' отсутствует параметр ' . $key);
                 }
             }
@@ -124,23 +145,21 @@ var_dump($timeApp, $timeCacheFile, $timeGlobal, $timeCacheFile, !file_exists($ca
         $appConfig = APP . '/configs/config.ini';
         $globalConfig = ROOT . '/config.ini';
         $a = $g = [];
-        if(!file_exists($appConfig) && !file_exists($globalConfig)){
+        if (!file_exists($appConfig) && !file_exists($globalConfig)) {
             throw new \Exception('Отсутствуют файлы конфигурации');
         }
-        if(file_exists($appConfig)){
+        if (file_exists($appConfig)) {
             $a = parse_ini_file($appConfig, true);
-            if(!$a){
+            if (!$a) {
                 throw new \Exception('Ошибка чтения файла конфигурации ' . $appConfig);
             }
         }
-        if(file_exists($globalConfig)){
+        if (file_exists($globalConfig)) {
             $g = parse_ini_file($globalConfig, true);
-            if(!$g){
+            if (!$g) {
                 throw new \Exception('Ошибка чтения файла конфигурации ' . $globalConfig);
             }
         }
         return array_replace_recursive($a, $g);
     }
-
-
 }

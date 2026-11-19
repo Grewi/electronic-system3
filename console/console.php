@@ -38,15 +38,11 @@ $route->console('create/dump')->controller(database::class, 'createDump');
 $route->console('restore/dump')->controller(database::class, 'restoreDump');
 $route->console('drop/tables')->controller(database::class, 'dropTables');
 
-//Config
-$route->console('create/config')->controller(createConfig::class, 'index');
-$route->console('create/config/ini')->controller(createConfigIni::class, 'index');
-$route->console('clean/config')->controller(clear::class, 'config');
-
 $route->console('symlink')->controller(symlink::class, 'index');
 $route->console('create/symlink')->controller(createSymlink::class, 'index');
 
-$route->console('config')->controller(config::class, 'control');
+$route->console('config/control')->controller(config::class, 'control');
+$route->console('config/testing')->controller(config::class, 'testing');
 
 $route->console('style')->controller(sass::class, 'compile');
 $route->console('style/info')->controller(sass::class, 'info');

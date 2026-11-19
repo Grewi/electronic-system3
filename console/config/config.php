@@ -9,4 +9,9 @@ class config
     {
         (new \system\core\config\config())->control();
     }
+
+    public function testing()
+    {
+        (new \system\core\config\config())->testing();
+    }
 }
