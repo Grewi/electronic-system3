@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 use system\core\error\errorPhp;
 use system\core\text\text;
 use system\core\app\app;
@@ -18,6 +19,7 @@ require_once SYSTEM . '/exception/exception.php';
 try {
     require_once SYSTEM . '/function.php';
     require_once SYSTEM . '/autoloader.php';
+    $a = (new \system\core\config\config());
     errorPhp::config();
 
     $composer = ROOT . '/composer/vendor/autoload.php';
@@ -46,7 +48,6 @@ try {
     } elseif (ENTRANSE == 'cron') {
         require_once ENTRY_POINT_CRON;
     }
-
 } catch (Throwable $e) {
     exeptionVar::dump($e, $e->getMessage(), 0);
     exit();

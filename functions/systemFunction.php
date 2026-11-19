@@ -1,15 +1,12 @@
 <?php
 
 use system\core\database\database;
-use system\core\request\request;
-use system\core\lang\lang;
 use system\core\user\auth;
 use system\core\app\app;
 use system\core\files\files;
 use system\core\system\header;
 use system\core\history\history;
-use system\core\config\iConfig;
-use system\core\config\globals;
+use system\core\config\config;
 
 if (!function_exists('db')) {
     function db($configName = 'database')
@@ -119,34 +116,16 @@ if (!function_exists('returnModal')) {
 }
 
 if (!function_exists('getConfig')) {
-    function getConfig($file, $param)
+    function getConfig(string $file, string $param)
     {
-        if(!file_exists(APP . '/configs/' . $file . '.php')){
-            return (new globals($file))->get($param);
-        }else{
-            $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
-        }
-        
-        if($class instanceof iConfig){
-            return (new $class)?->get($param);
-        }else{
-            throw new \Exception('Класс конфигурации ' . $file . ' не реализует интерфейс iConfig');
-        }
+       return (new config)->getConfig($file, $param); 
     }
 }
 
 if (!function_exists('allConfig')) {
-    function allConfig($file)
+    function allConfig(string $file)
     {
-        if(!file_exists(APP . '/configs/' . $file . '.php')){
-            return (new globals($file))->all();
-        }
-        $class = new ('\\' . APP_NAME . '\\configs\\' . $file);
-        if($class instanceof iConfig){
-            return (new $class)?->all();
-        }else{
-            throw new \Exception('Класс конфигурации ' . $file . ' не реализует интерфейс iConfig');
-        }
+       return (new config)->allConfig($file); 
     }
 }
 

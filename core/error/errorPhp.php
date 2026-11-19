@@ -2,16 +2,14 @@
 
 namespace system\core\error;
 
-use system\core\config\config;
 use system\core\files\files;
 
 class errorPhp
 {
     public static function config()
     {
-        if (file_exists(APP . '/configs/errors.php')) {
-
-            $iniFile = APP . '/configs/.errors.ini';
+        $errors = allConfig('errors');
+        if (!empty($errors)) {
             $errorCacheDir = APP . '/cache';
             $errorCacheFile = $errorCacheDir . '/errorCacheFile.php';
             $ERROR_INI_MB5 = null;
@@ -23,16 +21,12 @@ class errorPhp
                 ini_set('display_errors', 0);
                 ini_set('display_startup_errors', 0);
             }
-            if (file_exists($iniFile)) {
-                $mb5 = md5_file($iniFile);
-            }
-
+            $mb5 = md5(json_encode($errors));
 
             if (file_exists($errorCacheFile)) {
-
                 require $errorCacheFile;
                 if ($mb5 != $ERROR_INI_MB5) {
-                    $r = unlink($errorCacheFile);
+                    unlink($errorCacheFile);
                 }
             }
 
@@ -41,6 +35,8 @@ class errorPhp
             } elseif ($mb5 != $ERROR_INI_MB5) {
                 self::createCacheErrorReporting($errorCacheDir, $errorCacheFile, $mb5);
             }
+        }else{
+            throw new \Exception('Необходимо определить настройки вывода ошибок в конфигурации ошибок');
         }
     }
 

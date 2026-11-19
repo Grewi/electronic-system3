@@ -1,6 +1,7 @@
 <?php
 
 use system\core\app\app;
+use system\core\config\config;
 
 if (!function_exists('systemPanel')) {
     function systemPanel()
@@ -82,6 +83,7 @@ if (!function_exists('systemPanel')) {
                 flex: 33;
                 color: #7db185ff;
                 padding: 15px;
+                max-width: 33%;
             }
 
             .sp-col p {
@@ -268,19 +270,31 @@ if (!function_exists('systemPanel')) {
                     </ul>
                 </div>
                 <div class="sp-col">
-                    <p>Время</p>
-                    <ul>
-                        <?php foreach ($app->time->getArray() as $name => $view): ?>
-                            <li>
-                                <span><?= $name ?></span> <span><?= $view ?></span>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+
+                    <p>Конфигурация</p>
+                    <?php foreach ((new config)->allConfigs() as $file => $params): ?>
+                        <?= $file ?>
+                        <ul>
+                            <?php foreach ($params as $key => $value): ?>
+                                <li>
+                                    <?= $key ?> = <?= $value ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endforeach; ?>
                 </div>
                 <div class="sp-col">
                     <p>Память</p>
                     <ul>
                         <?php foreach ($app->memory->getArray() as $name => $view): ?>
+                            <li>
+                                <span><?= $name ?></span> <span><?= $view ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <p>Время</p>
+                    <ul>
+                        <?php foreach ($app->time->getArray() as $name => $view): ?>
                             <li>
                                 <span><?= $name ?></span> <span><?= $view ?></span>
                             </li>
